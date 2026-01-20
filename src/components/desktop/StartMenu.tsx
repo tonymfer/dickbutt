@@ -3,10 +3,52 @@
 import { useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useDesktop } from '@/context/DesktopContext';
+import { MenuList, MenuListItem, Separator } from 'react95';
+import styled from 'styled-components';
+import { Win95Icon } from '@/components/ui/Win95Icon';
 
 interface StartMenuProps {
   onClose: () => void;
 }
+
+const MenuContainer = styled.div`
+  position: fixed;
+  bottom: 36px;
+  left: 0;
+  z-index: 10000;
+  display: flex;
+`;
+
+const Sidebar = styled.div`
+  width: 24px;
+  background: linear-gradient(180deg, #808080 0%, #000080 100%);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 8px;
+`;
+
+const SidebarText = styled.span`
+  color: white;
+  font-size: 11px;
+  font-weight: bold;
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+`;
+
+const StyledMenuList = styled(MenuList)`
+  width: 200px;
+`;
+
+const MenuItem = styled(MenuListItem)`
+  font-size: 12px;
+`;
+
+const IconSpan = styled.span`
+  margin-right: 8px;
+  display: inline-flex;
+  align-items: center;
+`;
 
 export function StartMenu({ onClose }: StartMenuProps) {
   const menuRef = useRef<HTMLDivElement>(null);
@@ -16,7 +58,6 @@ export function StartMenu({ onClose }: StartMenuProps) {
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        // Check if click is on the Start button
         const target = e.target as HTMLElement;
         if (!target.closest('button')?.textContent?.includes('Start')) {
           onClose();
@@ -28,49 +69,73 @@ export function StartMenu({ onClose }: StartMenuProps) {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [onClose]);
 
-  const menuItems = [
-    { label: 'Meme Folder', icon: '📁', action: () => router.push('/meme') },
-    { label: 'IRL', icon: '📷', action: () => router.push('/irl') },
-    { label: 'Branding', icon: '🎨', action: () => router.push('/branding') },
-    { label: 'TV', icon: '📺', action: () => router.push('/tv') },
-    { divider: true },
-    { label: 'Origin Story', icon: '📜', action: () => openWindow('origin', 'Origin Story', '/assets/windows/origin1.png') },
-    { label: 'Roadmap', icon: '🗺️', action: () => openWindow('roadmap', 'Roadmap', '/assets/windows/roadmap.png') },
-    { label: 'Resources', icon: '📚', action: () => openWindow('resources', 'Resources', '/assets/windows/resources.png') },
-  ];
+  const handleRoute = (path: string) => {
+    router.push(path);
+    onClose();
+  };
+
+  const handleOpenWindow = (id: string, title: string) => {
+    openWindow(id, title, id, { contentType: 'component' });
+    onClose();
+  };
 
   return (
-    <div
-      ref={menuRef}
-      className="fixed bottom-9 left-0 w-56 bg-[#c0c0c0] win95-border z-[10000]"
-    >
-      {/* Windows 95 sidebar */}
-      <div className="flex">
-        <div className="w-6 bg-gradient-to-b from-[#808080] to-[#000080] flex items-end justify-center pb-1">
-          <span className="text-white text-xs font-bold [writing-mode:vertical-rl] rotate-180">
-            dickbutt95
-          </span>
-        </div>
-        <div className="flex-1">
-          {menuItems.map((item, i) =>
-            'divider' in item ? (
-              <div key={i} className="h-px bg-[#808080] mx-1 my-1" />
-            ) : (
-              <button
-                key={i}
-                className="w-full px-2 py-1 text-left text-sm hover:bg-[#000080] hover:text-white flex items-center gap-2"
-                onClick={() => {
-                  item.action();
-                  onClose();
-                }}
-              >
-                <span>{item.icon}</span>
-                <span>{item.label}</span>
-              </button>
-            )
-          )}
-        </div>
-      </div>
-    </div>
+    <MenuContainer ref={menuRef}>
+      <Sidebar>
+        <SidebarText>dickbutt95</SidebarText>
+      </Sidebar>
+      <StyledMenuList>
+        <MenuItem onClick={() => handleRoute('/meme')}>
+          <IconSpan><Win95Icon name="folder" size={16} /></IconSpan>
+          Meme Folder
+        </MenuItem>
+        <MenuItem onClick={() => handleRoute('/irl')}>
+          <IconSpan><Win95Icon name="camera" size={16} /></IconSpan>
+          IRL
+        </MenuItem>
+        <MenuItem onClick={() => handleRoute('/branding')}>
+          <IconSpan><Win95Icon name="paint" size={16} /></IconSpan>
+          Branding
+        </MenuItem>
+        <MenuItem onClick={() => handleRoute('/videos')}>
+          <IconSpan><Win95Icon name="tv" size={16} /></IconSpan>
+          Videos
+        </MenuItem>
+        <MenuItem onClick={() => handleRoute('/tv')}>
+          <IconSpan><Win95Icon name="media" size={16} /></IconSpan>
+          TV Channel
+        </MenuItem>
+        <Separator />
+        <MenuItem onClick={() => handleOpenWindow('origin', 'Origin Story')}>
+          <IconSpan><Win95Icon name="scroll" size={16} /></IconSpan>
+          Origin Story
+        </MenuItem>
+        <MenuItem onClick={() => handleOpenWindow('dickbutt', '$DICKBUTT')}>
+          <IconSpan><Win95Icon name="money" size={16} /></IconSpan>
+          $DICKBUTT
+        </MenuItem>
+        <MenuItem onClick={() => handleOpenWindow('roadmap', 'Roadmap')}>
+          <IconSpan><Win95Icon name="map" size={16} /></IconSpan>
+          Roadmap
+        </MenuItem>
+        <MenuItem onClick={() => handleOpenWindow('resources', 'Resources')}>
+          <IconSpan><Win95Icon name="book" size={16} /></IconSpan>
+          Resources
+        </MenuItem>
+        <MenuItem onClick={() => handleOpenWindow('wheretobuy', 'Where to Buy')}>
+          <IconSpan><Win95Icon name="cart" size={16} /></IconSpan>
+          Where to Buy
+        </MenuItem>
+        <MenuItem onClick={() => handleOpenWindow('disclaimer', 'Disclaimer')}>
+          <IconSpan><Win95Icon name="warning" size={16} /></IconSpan>
+          Disclaimer
+        </MenuItem>
+        <Separator />
+        <MenuItem onClick={() => handleOpenWindow('settings', 'Settings')}>
+          <IconSpan><Win95Icon name="settings" size={16} /></IconSpan>
+          Settings
+        </MenuItem>
+      </StyledMenuList>
+    </MenuContainer>
   );
 }

@@ -3,11 +3,6 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
-  --win95-gray: #c0c0c0;
-  --win95-dark-gray: #808080;
-  --win95-light-gray: #dfdfdf;
-  --win95-blue: #000080;
-  --win95-teal: #008080;
 }
 
 @theme inline {
@@ -17,74 +12,30 @@
   --font-mono: var(--font-geist-mono);
 }
 
+/* React95 font (MS Sans Serif) */
+@font-face {
+  font-family: "ms_sans_serif";
+  src: url("https://unpkg.com/react95/dist/fonts/ms_sans_serif.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "ms_sans_serif";
+  src: url("https://unpkg.com/react95/dist/fonts/ms_sans_serif_bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: "MS Sans Serif", "Segoe UI", Tahoma, sans-serif;
+  font-family: "ms_sans_serif", "MS Sans Serif", "Segoe UI", Tahoma, sans-serif;
   margin: 0;
   padding: 0;
   overflow: hidden;
-}
-
-/* Windows 95 Desktop Background */
-.win95-desktop {
-  background: linear-gradient(180deg, #008080 0%, #004040 100%);
-}
-
-/* Windows 95 Window */
-.win95-window {
-  background: #c0c0c0;
-  box-shadow:
-    inset -1px -1px 0 0 #0a0a0a,
-    inset 1px 1px 0 0 #dfdfdf,
-    inset -2px -2px 0 0 #808080,
-    inset 2px 2px 0 0 #ffffff;
-}
-
-/* Beveled border effect (outset) */
-.win95-border {
-  border: 2px solid;
-  border-color: #dfdfdf #808080 #808080 #dfdfdf;
-}
-
-/* Beveled border effect (inset) */
-.win95-border-inset {
-  border: 2px solid;
-  border-color: #808080 #dfdfdf #dfdfdf #808080;
-}
-
-/* Title bar */
-.win95-titlebar {
-  background: linear-gradient(90deg, #000080, #1084d0);
-  color: white;
-  font-weight: bold;
-  padding: 2px 4px;
-  font-size: 12px;
-  height: 18px;
-  display: flex;
-  align-items: center;
-}
-
-/* Win95 Button */
-.win95-button {
-  background: #c0c0c0;
-  border: 2px solid;
-  border-color: #dfdfdf #808080 #808080 #dfdfdf;
-  padding: 1px 4px;
-  font-size: 12px;
-  cursor: pointer;
-  font-family: "MS Sans Serif", "Segoe UI", Tahoma, sans-serif;
-}
-
-.win95-button:active,
-.win95-button-pressed {
-  border-color: #808080 #dfdfdf #dfdfdf #808080;
-  padding: 2px 3px 0px 5px;
-}
-
-.win95-button:focus {
-  outline: 1px dotted #000;
-  outline-offset: -4px;
 }
 
 /* Pixelated images for retro feel */
@@ -96,11 +47,13 @@ body {
 
 /* Webamp styling adjustments */
 .webamp-container {
-  pointer-events: auto;
+  /* Container has pointer-events: none to allow clicking through */
+  /* But children need pointer-events: auto */
 }
 
-.webamp-container #webamp {
-  position: absolute !important;
+.webamp-container #webamp,
+.webamp-container #webamp * {
+  pointer-events: auto;
 }
 
 /* Selection highlight */

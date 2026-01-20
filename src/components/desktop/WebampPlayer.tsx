@@ -1,88 +1,122 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import type Webamp from 'webamp';
 
-// Audio tracks - these could be loaded from an API or config
+// R2 base URL for audio assets
+const R2_AUDIO_URL = process.env.NEXT_PUBLIC_R2_PUBLIC_URL || 'https://pub-c5bbdf1eaf68478a9783e46a36a3c3b5.r2.dev';
+
+// Audio tracks served from Cloudflare R2
 const AUDIO_TRACKS = [
   {
     metaData: { artist: "Zeven", title: "Dickbutt Anthem (EDM Remix)" },
-    url: "https://dickbutt.b-cdn.net/audio/91538b54-dickbutt-anthem-zeven-s-edm-remix.mp3",
+    url: `${R2_AUDIO_URL}/v1/audio/91538b54-dickbutt-anthem-zeven-s-edm-remix.mp3`,
   },
   {
     metaData: { artist: "DJ Butt", title: "Fresh Prince of Dickbutt" },
-    url: "https://dickbutt.b-cdn.net/audio/bcb4ec9a-dj-butt-fresh-prince-of-dickbutt-bel-air.mp3",
+    url: `${R2_AUDIO_URL}/v1/audio/bcb4ec9a-dj-butt-fresh-prince-of-dickbutt-bel-air.mp3`,
   },
   {
     metaData: { artist: "Unknown", title: "Dickbutt Anthem" },
-    url: "https://dickbutt.b-cdn.net/audio/1d738abf-dickbuttanthem.mp3",
+    url: `${R2_AUDIO_URL}/v1/audio/1d738abf-dickbuttanthem.mp3`,
   },
   {
     metaData: { artist: "Herr Fuchs", title: "Dick Butt Dance" },
-    url: "https://dickbutt.b-cdn.net/audio/eeacb29b-dick-butt-dance-herr-fuchs.mp3",
+    url: `${R2_AUDIO_URL}/v1/audio/eeacb29b-dick-butt-dance-herr-fuchs.mp3`,
+  },
+  {
+    metaData: { artist: "JJokerDude", title: "Dickbutt Means Serious Business" },
+    url: `${R2_AUDIO_URL}/v1/audio/6f301e23-dickbutt-means-serious-business-jjokerdude.mp3`,
+  },
+  {
+    metaData: { artist: "Unknown", title: "Dickbutt - The Unofficial" },
+    url: `${R2_AUDIO_URL}/v1/audio/1ad5b9a0-dickbutt-the-unofficial.mp3`,
   },
 ];
 
 interface WebampPlayerProps {
-  initialPosition?: { x: number; y: number };
+  x: number;
+  y: number;
 }
 
-export function WebampPlayer({ initialPosition = { x: 20, y: 20 } }: WebampPlayerProps) {
+export function WebampPlayer({ x, y }: WebampPlayerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const webampRef = useRef<unknown>(null);
+  const webampRef = useRef<Webamp | null>(null);
+  const initializedRef = useRef(false);
+  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    // Only run on client
+    // Prevent double initialization (React Strict Mode)
+    if (initializedRef.current) return;
     if (typeof window === 'undefined') return;
 
     const initWebamp = async () => {
       try {
-        // Dynamic import since webamp requires window
         const WebampModule = await import('webamp');
-        const Webamp = WebampModule.default;
+        const WebampClass = WebampModule.default;
 
-        // Check if Webamp is supported
-        if (!Webamp.browserIsSupported()) {
+        if (!WebampClass.browserIsSupported()) {
           console.warn('Webamp is not supported in this browser');
           return;
         }
 
-        const webamp = new Webamp({
+        // Mark as initialized before async work
+        initializedRef.current = true;
+
+        const webamp = new WebampClass({
           initialTracks: AUDIO_TRACKS,
         });
 
         webampRef.current = webamp;
 
-        // Render into our container
         if (containerRef.current) {
           await webamp.renderWhenReady(containerRef.current);
-
-          // Position the player
-          const webampElement = containerRef.current.querySelector('#webamp') as HTMLElement;
-          if (webampElement) {
-            webampElement.style.position = 'absolute';
-            webampElement.style.left = `${initialPosition.x}px`;
-            webampElement.style.top = `${initialPosition.y}px`;
-          }
+          setIsReady(true);
+          webamp.play();
         }
       } catch (error) {
         console.error('Failed to initialize Webamp:', error);
+        initializedRef.current = false;
       }
     };
 
     initWebamp();
 
     return () => {
-      if (webampRef.current && typeof (webampRef.current as { dispose?: () => void }).dispose === 'function') {
-        (webampRef.current as { dispose: () => void }).dispose();
+      if (webampRef.current) {
+        webampRef.current.dispose();
+        webampRef.current = null;
       }
     };
-  }, [initialPosition]);
+  }, []);
+
+  // Reposition Webamp windows after render and when position changes
+  useEffect(() => {
+    if (!isReady || !containerRef.current) return;
+
+    const webampEl = containerRef.current.querySelector('#webamp') as HTMLElement;
+    if (webampEl) {
+      // Get all window elements
+      const windows = webampEl.querySelectorAll('[class*="window"]');
+
+      // Reset any existing transforms/positions on the main webamp container
+      webampEl.style.position = 'absolute';
+      webampEl.style.left = '0';
+      webampEl.style.top = '0';
+      webampEl.style.transform = 'none';
+    }
+  }, [isReady, x, y]);
 
   return (
     <div
       ref={containerRef}
       className="webamp-container"
-      style={{ position: 'absolute', zIndex: 100 }}
+      style={{
+        position: 'absolute',
+        left: x + 135,
+        top: y + 180,
+        zIndex: 100,
+      }}
     />
   );
 }

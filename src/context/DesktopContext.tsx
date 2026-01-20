@@ -1,21 +1,28 @@
 'use client';
 
-import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect, useRef, ReactNode, ComponentType } from 'react';
+
+export type WindowContentType = 'component' | 'image';
 
 export interface WindowState {
   id: string;
   title: string;
-  content: string;
+  content: string; // For 'image' type: path, for 'component' type: component key
+  contentType: WindowContentType;
   position: { x: number; y: number };
   zIndex: number;
   minimized: boolean;
   size?: { width: number; height: number };
 }
 
+export interface WindowContentProps {
+  onClose: () => void;
+}
+
 interface DesktopContextType {
   windows: WindowState[];
   activeWindowId: string | null;
-  openWindow: (id: string, title: string, content: string, defaultPosition?: { x: number; y: number }) => void;
+  openWindow: (id: string, title: string, content: string, options?: { defaultPosition?: { x: number; y: number }; contentType?: WindowContentType }) => void;
   closeWindow: (id: string) => void;
   minimizeWindow: (id: string) => void;
   focusWindow: (id: string) => void;
@@ -35,12 +42,39 @@ export function DesktopProvider({ children, defaultWindows = [] }: { children: R
     defaultWindows.length > 0 ? defaultWindows[defaultWindows.length - 1].id : null
   );
 
+  // Track if user has manually moved any windows
+  const userMovedWindows = useRef<Set<string>>(new Set());
+
   // Initialize nextZIndex based on default windows
   if (defaultWindows.length > 0) {
     nextZIndex = defaultWindows.length + 1;
   }
 
-  const openWindow = useCallback((id: string, title: string, content: string, defaultPosition?: { x: number; y: number }) => {
+  // Update window positions/sizes when viewport changes (defaultWindows recalculates)
+  // But preserve positions for windows the user has manually moved
+  useEffect(() => {
+    setWindows(prev => {
+      return prev.map(win => {
+        // If user manually moved this window, don't update its position
+        if (userMovedWindows.current.has(win.id)) {
+          return win;
+        }
+        // Find the new default for this window
+        const newDefault = defaultWindows.find(d => d.id === win.id);
+        if (newDefault) {
+          return {
+            ...win,
+            position: newDefault.position,
+            size: newDefault.size,
+          };
+        }
+        return win;
+      });
+    });
+  }, [defaultWindows]);
+
+  const openWindow = useCallback((id: string, title: string, content: string, options?: { defaultPosition?: { x: number; y: number }; contentType?: WindowContentType }) => {
+    const { defaultPosition, contentType = 'component' } = options || {};
     setWindows(prev => {
       const existing = prev.find(w => w.id === id);
       if (existing) {
@@ -64,6 +98,7 @@ export function DesktopProvider({ children, defaultWindows = [] }: { children: R
         id,
         title,
         content,
+        contentType,
         position: defaultPosition || { x: 50 + (prev.length * 30), y: 50 + (prev.length * 30) },
         zIndex: ++nextZIndex,
         minimized: false,
@@ -100,6 +135,8 @@ export function DesktopProvider({ children, defaultWindows = [] }: { children: R
   }, []);
 
   const updateWindowPosition = useCallback((id: string, position: { x: number; y: number }) => {
+    // Mark this window as user-moved so viewport resize won't reset it
+    userMovedWindows.current.add(id);
     setWindows(prev => prev.map(w =>
       w.id === id ? { ...w, position } : w
     ));

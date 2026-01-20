@@ -4,20 +4,55 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useDesktop } from '@/context/DesktopContext';
+import styled from 'styled-components';
 
 export interface IconConfig {
   id: string;
   label: string;
   icon: string;
+  // Some source icons (e.g. GIFs) have extra padding; allow per-icon visual scaling.
+  iconScale?: number;
   action: 'route' | 'link' | 'window';
   target: string;
   windowTitle?: string;
-  windowContent?: string;
+  hideLabel?: boolean;
 }
 
 interface DesktopIconProps {
   config: IconConfig;
 }
+
+const IconButton = styled.button<{ $selected: boolean }>`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  width: 80px;
+  text-align: center;
+  cursor: pointer;
+  background: ${({ $selected }) => ($selected ? 'rgba(0, 0, 128, 0.5)' : 'transparent')};
+  border: none;
+  outline: none;
+
+  &:focus {
+    background: rgba(0, 0, 128, 0.5);
+  }
+`;
+
+const IconImage = styled.div`
+  width: 48px;
+  height: 48px;
+  position: relative;
+`;
+
+const IconLabel = styled.span<{ $selected: boolean }>`
+  font-size: 12px;
+  color: white;
+  text-shadow: 1px 1px 0px rgba(0, 0, 0, 1);
+  background: ${({ $selected }) => ($selected ? '#000080' : 'transparent')};
+  padding: 1px 2px;
+`;
 
 export function DesktopIcon({ config }: DesktopIconProps) {
   const [isSelected, setIsSelected] = useState(false);
@@ -41,38 +76,40 @@ export function DesktopIcon({ config }: DesktopIconProps) {
         window.open(config.target, '_blank');
         break;
       case 'window':
-        if (config.windowTitle && config.windowContent) {
-          openWindow(config.id, config.windowTitle, config.windowContent);
+        if (config.windowTitle) {
+          openWindow(config.id, config.windowTitle, config.id, { contentType: 'component' });
         }
         break;
     }
   };
 
   return (
-    <button
-      className={`flex flex-col items-center gap-1 p-1 w-20 text-center cursor-pointer focus:outline-none ${
-        isSelected ? 'bg-[#000080]/50' : ''
-      }`}
+    <IconButton
+      $selected={isSelected}
       onClick={handleClick}
       onBlur={handleBlur}
       onDoubleClick={handleDoubleClick}
     >
-      <div className="w-12 h-12 relative">
+      <IconImage>
         <Image
           src={config.icon}
           alt={config.label}
           fill
-          className="object-contain pixelated"
+          sizes="48px"
+          style={{
+            objectFit: 'contain',
+            imageRendering: 'pixelated',
+            transform: `scale(${config.iconScale ?? 1})`,
+            transformOrigin: 'center',
+          }}
           draggable={false}
         />
-      </div>
-      <span
-        className={`text-xs text-white drop-shadow-[1px_1px_0px_rgba(0,0,0,1)] ${
-          isSelected ? 'bg-[#000080]' : ''
-        }`}
-      >
-        {config.label}
-      </span>
-    </button>
+      </IconImage>
+      {!config.hideLabel && (
+        <IconLabel $selected={isSelected}>
+          {config.label}
+        </IconLabel>
+      )}
+    </IconButton>
   );
 }

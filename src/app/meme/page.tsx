@@ -1,5 +1,5 @@
 import { fetchGalleryIndex } from '@/lib/assets';
-import { GalleryClient } from '@/components/gallery/GalleryClient';
+import { Win95GalleryClient } from '@/components/gallery/Win95GalleryClient';
 
 export const metadata = {
   title: 'Meme Gallery | Dickbutt',
@@ -18,11 +18,11 @@ export default async function MemePage() {
 
   if (error || !galleryIndex) {
     return (
-      <main className="min-h-screen bg-black text-white flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-bold text-red-500 mb-4">Failed to load gallery</h1>
-          <p className="text-gray-400">{error || 'Unknown error'}</p>
-          <p className="text-gray-500 mt-4 text-sm">
+      <main className="min-h-screen bg-[#008080] flex items-center justify-center">
+        <div className="text-center p-8 bg-[#c0c0c0] border-2 border-[#dfdfdf] border-r-[#808080] border-b-[#808080]">
+          <h1 className="text-lg font-bold mb-2">Error</h1>
+          <p className="text-sm">{error || 'Unknown error'}</p>
+          <p className="text-xs mt-4 text-gray-600">
             Make sure the R2 bucket is configured and assets are uploaded.
           </p>
         </div>
@@ -31,7 +31,7 @@ export default async function MemePage() {
   }
 
   return (
-    <GalleryClient
+    <Win95GalleryClient
       initialItems={galleryIndex.items}
       totalCount={galleryIndex.count}
     />

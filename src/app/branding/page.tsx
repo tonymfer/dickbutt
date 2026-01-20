@@ -1,10 +1,10 @@
+'use client';
+
 import Image from 'next/image';
 import Link from 'next/link';
-
-export const metadata = {
-  title: 'Branding | Dickbutt',
-  description: 'Official Dickbutt branding assets and logos for download.',
-};
+import { Window, WindowHeader, WindowContent, Button, Toolbar, Frame } from 'react95';
+import { React95Provider } from '@/components/providers/React95Provider';
+import styled from 'styled-components';
 
 const BRANDING_ASSETS = [
   {
@@ -64,84 +64,190 @@ const BRANDING_ASSETS = [
   },
 ];
 
+const PageContainer = styled.div`
+  min-height: 100vh;
+  background: #008080;
+  padding: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+`;
+
+const StyledWindow = styled(Window)`
+  width: 100%;
+  max-width: 1000px;
+`;
+
+const StyledWindowHeader = styled(WindowHeader)`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const CloseButton = styled(Button).withConfig({
+  shouldForwardProp: (prop) =>
+    !['active', 'primary', 'fullWidth', 'square'].includes(prop),
+})`
+  padding: 0 4px;
+  min-width: 20px;
+  height: 18px;
+  font-weight: bold;
+`;
+
+const Description = styled.p`
+  font-size: 12px;
+  margin-bottom: 16px;
+`;
+
+const AssetGrid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+
+  @media (max-width: 640px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const AssetCard = styled.div`
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+`;
+
+const PreviewArea = styled.div`
+  background: #008080;
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 150px;
+`;
+
+const InfoSection = styled.div`
+  padding: 8px;
+  flex: 1;
+`;
+
+const AssetName = styled.h3`
+  font-size: 12px;
+  font-weight: bold;
+  margin: 0 0 4px 0;
+`;
+
+const AssetDescription = styled.p`
+  font-size: 11px;
+  color: #666;
+  margin: 0 0 4px 0;
+`;
+
+const FileName = styled.p`
+  font-size: 10px;
+  color: #999;
+  margin: 0;
+`;
+
+const DownloadButton = styled(Button).withConfig({
+  shouldForwardProp: (prop) =>
+    !['active', 'primary', 'fullWidth', 'square'].includes(prop),
+})`
+  margin: 8px;
+  text-align: center;
+  text-decoration: none;
+  display: block;
+`;
+
+const StatusBar = styled.div`
+  display: flex;
+  gap: 4px;
+  padding: 4px 8px;
+`;
+
+const StatusItem = styled.div`
+  padding: 2px 8px;
+  font-size: 11px;
+`;
+
+function BrandingContent() {
+  return (
+    <PageContainer>
+      <StyledWindow>
+        <StyledWindowHeader>
+          <span>Branding Assets</span>
+          <Link href="/">
+            <CloseButton size="sm">
+              <span>X</span>
+            </CloseButton>
+          </Link>
+        </StyledWindowHeader>
+
+        <Toolbar>
+          <Link href="/">
+            <Button variant="thin" size="sm">← Back to Desktop</Button>
+          </Link>
+        </Toolbar>
+
+        <WindowContent>
+          <Description>
+            Download official Dickbutt branding assets. Right-click and save, or use the download buttons.
+          </Description>
+
+          <AssetGrid>
+            {BRANDING_ASSETS.map((asset) => (
+              <Frame key={asset.file} variant="field">
+                <AssetCard>
+                  <PreviewArea>
+                    <Image
+                      src={`/assets/branding/${asset.file}`}
+                      alt={asset.name}
+                      width={200}
+                      height={150}
+                      style={{
+                        maxWidth: '100%',
+                        maxHeight: '150px',
+                        width: 'auto',
+                        height: 'auto',
+                        objectFit: 'contain',
+                      }}
+                      unoptimized={asset.file.endsWith('.gif')}
+                    />
+                  </PreviewArea>
+
+                  <InfoSection>
+                    <AssetName>{asset.name}</AssetName>
+                    <AssetDescription>{asset.description}</AssetDescription>
+                    <FileName>{asset.file}</FileName>
+                  </InfoSection>
+
+                  <a
+                    href={`/assets/branding/${asset.file}`}
+                    download={asset.file}
+                    style={{ textDecoration: 'none' }}
+                  >
+                    <DownloadButton as="span">
+                      Download
+                    </DownloadButton>
+                  </a>
+                </AssetCard>
+              </Frame>
+            ))}
+          </AssetGrid>
+        </WindowContent>
+
+        <StatusBar>
+          <Frame variant="status" style={{ flex: 1 }}>
+            <StatusItem>{BRANDING_ASSETS.length} items</StatusItem>
+          </Frame>
+        </StatusBar>
+      </StyledWindow>
+    </PageContainer>
+  );
+}
+
 export default function BrandingPage() {
   return (
-    <main className="min-h-screen bg-[#008080] p-4">
-      {/* Window container */}
-      <div className="win95-window win95-border max-w-6xl mx-auto">
-        {/* Title bar */}
-        <div className="win95-titlebar flex items-center justify-between">
-          <span className="text-sm font-bold px-1">Branding Assets</span>
-          <Link
-            href="/"
-            className="win95-button w-4 h-4 flex items-center justify-center text-xs leading-none"
-          >
-            ×
-          </Link>
-        </div>
-
-        {/* Toolbar */}
-        <div className="bg-[#c0c0c0] p-1 flex gap-2 border-b border-[#808080]">
-          <Link
-            href="/"
-            className="win95-button px-3 py-1 text-sm flex items-center gap-1"
-          >
-            ← Back to Desktop
-          </Link>
-        </div>
-
-        {/* Content */}
-        <div className="p-4 bg-[#c0c0c0]">
-          <p className="text-sm mb-4">
-            Download official Dickbutt branding assets. Right-click and save, or use the download buttons.
-          </p>
-
-          {/* Asset grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {BRANDING_ASSETS.map((asset) => (
-              <div
-                key={asset.file}
-                className="win95-border-inset bg-white p-2 flex flex-col"
-              >
-                {/* Preview */}
-                <div className="bg-[#008080] p-2 flex items-center justify-center min-h-[150px] relative">
-                  <Image
-                    src={`/assets/branding/${asset.file}`}
-                    alt={asset.name}
-                    width={200}
-                    height={150}
-                    className="max-w-full max-h-[150px] w-auto h-auto object-contain"
-                    unoptimized={asset.file.endsWith('.gif')}
-                  />
-                </div>
-
-                {/* Info */}
-                <div className="mt-2 flex-1">
-                  <h3 className="font-bold text-sm">{asset.name}</h3>
-                  <p className="text-xs text-gray-600">{asset.description}</p>
-                  <p className="text-xs text-gray-500 mt-1">{asset.file}</p>
-                </div>
-
-                {/* Download button */}
-                <a
-                  href={`/assets/branding/${asset.file}`}
-                  download={asset.file}
-                  className="win95-button mt-2 px-3 py-1 text-sm text-center block"
-                >
-                  Download
-                </a>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Status bar */}
-        <div className="bg-[#c0c0c0] px-2 py-1 border-t border-[#dfdfdf] flex">
-          <div className="win95-border-inset px-2 py-0.5 text-xs flex-1">
-            {BRANDING_ASSETS.length} items
-          </div>
-        </div>
-      </div>
-    </main>
+    <React95Provider>
+      <BrandingContent />
+    </React95Provider>
   );
 }

@@ -1,17 +1,47 @@
 'use client';
 
+import styled from 'styled-components';
 import { DesktopIcon, IconConfig } from './DesktopIcon';
 
 interface DesktopIconGridProps {
-  icons: IconConfig[];
+  topIcons: IconConfig[];
+  bottomIcons: IconConfig[];
 }
 
-export function DesktopIconGrid({ icons }: DesktopIconGridProps) {
+const TopGrid = styled.div`
+  position: absolute;
+  top: 24px;
+  right: 16px;
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  z-index: 5000;
+`;
+
+const BottomGrid = styled.div`
+  position: absolute;
+  bottom: 52px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+  z-index: 5000;
+`;
+
+export function DesktopIconGrid({ topIcons, bottomIcons }: DesktopIconGridProps) {
   return (
-    <div className="absolute top-2 right-2 flex flex-col gap-2 z-0">
-      {icons.map((icon) => (
-        <DesktopIcon key={icon.id} config={icon} />
-      ))}
-    </div>
+    <>
+      <TopGrid>
+        {topIcons.map((icon) => (
+          <DesktopIcon key={icon.id} config={icon} />
+        ))}
+      </TopGrid>
+      <BottomGrid>
+        {bottomIcons.map((icon) => (
+          <DesktopIcon key={icon.id} config={icon} />
+        ))}
+      </BottomGrid>
+    </>
   );
 }

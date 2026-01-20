@@ -2,11 +2,13 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useCallback, useEffect } from 'react';
+import { Window, WindowHeader, WindowContent, Button, Toolbar, Frame } from 'react95';
+import { React95Provider } from '@/components/providers/React95Provider';
+import styled from 'styled-components';
 
 const R2_BASE = 'https://pub-c5bbdf1eaf68478a9783e46a36a3c3b5.r2.dev/v1/gallery';
 
-// Curated IRL dickbutt sightings - graffiti, street art, real-world photos
 const IRL_ITEMS = [
   {
     id: 'dickbuttgraffiti',
@@ -94,110 +96,331 @@ const IRL_ITEMS = [
   },
 ];
 
-export default function IrlPage() {
-  const [selectedImage, setSelectedImage] = useState<typeof IRL_ITEMS[0] | null>(null);
+const PageContainer = styled.div`
+  min-height: 100vh;
+  background: #008080;
+  padding: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+`;
+
+const StyledWindow = styled(Window)`
+  width: 100%;
+  max-width: 1000px;
+`;
+
+const StyledWindowHeader = styled(WindowHeader)`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+`;
+
+const CloseButton = styled(Button).withConfig({
+  shouldForwardProp: (prop) =>
+    !['active', 'primary', 'fullWidth', 'square'].includes(prop),
+})`
+  padding: 0 4px;
+  min-width: 20px;
+  height: 18px;
+  font-weight: bold;
+`;
+
+const Description = styled.p`
+  font-size: 12px;
+  margin-bottom: 16px;
+`;
+
+const Grid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+
+  @media (min-width: 640px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @media (min-width: 1024px) {
+    grid-template-columns: repeat(4, 1fr);
+  }
+`;
+
+const ThumbnailButton = styled.button<{ $selected?: boolean }>`
+  padding: 4px;
+  border: none;
+  background: ${props => props.$selected ? '#000080' : '#fff'};
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  transition: background-color 0.1s;
+
+  &:hover {
+    background: #000080;
+  }
+
+  &:hover span {
+    color: #fff;
+  }
+`;
+
+const ThumbnailFrame = styled(Frame)`
+  background: #008080;
+  padding: 0;
+  overflow: hidden;
+`;
+
+const ImageWrapper = styled.div`
+  aspect-ratio: 1;
+  position: relative;
+  background: #008080;
+`;
+
+const ItemTitle = styled.span<{ $selected?: boolean }>`
+  display: block;
+  font-size: 11px;
+  font-weight: bold;
+  padding: 4px 2px 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: ${props => props.$selected ? '#fff' : '#000'};
+`;
+
+const ItemDescription = styled.span<{ $selected?: boolean }>`
+  display: block;
+  font-size: 10px;
+  padding: 0 2px 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: ${props => props.$selected ? '#ccc' : '#666'};
+`;
+
+const StatusBar = styled.div`
+  display: flex;
+  gap: 4px;
+  padding: 4px 8px;
+`;
+
+const StatusItem = styled.div`
+  padding: 2px 8px;
+  font-size: 11px;
+`;
+
+// Lightbox components
+const LightboxOverlay = styled.div`
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+`;
+
+const LightboxWindow = styled(Window)`
+  max-width: 90vw;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+`;
+
+const LightboxHeader = styled(WindowHeader)`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+`;
+
+const LightboxContent = styled(WindowContent)`
+  flex: 1;
+  overflow: auto;
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`;
+
+const LightboxImageFrame = styled(Frame)`
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+const LightboxNavigation = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+`;
+
+const NavButton = styled(Button).withConfig({
+  shouldForwardProp: (prop) =>
+    !['active', 'primary', 'fullWidth', 'square'].includes(prop),
+})`
+  min-width: 80px;
+`;
+
+function IrlContent() {
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+
+  const selectedItem = selectedIndex !== null ? IRL_ITEMS[selectedIndex] : null;
+
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    if (selectedIndex === null) return;
+
+    switch (e.key) {
+      case 'Escape':
+        setSelectedIndex(null);
+        break;
+      case 'ArrowLeft':
+        if (selectedIndex > 0) setSelectedIndex(selectedIndex - 1);
+        break;
+      case 'ArrowRight':
+        if (selectedIndex < IRL_ITEMS.length - 1) setSelectedIndex(selectedIndex + 1);
+        break;
+    }
+  }, [selectedIndex]);
+
+  useEffect(() => {
+    if (selectedIndex !== null) {
+      document.addEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = 'hidden';
+      return () => {
+        document.removeEventListener('keydown', handleKeyDown);
+        document.body.style.overflow = '';
+      };
+    }
+  }, [selectedIndex, handleKeyDown]);
 
   return (
-    <main className="min-h-screen bg-[#008080] p-4">
-      {/* Lightbox */}
-      {selectedImage && (
-        <div
-          className="fixed inset-0 bg-black/90 z-[10000] flex items-center justify-center p-4"
-          onClick={() => setSelectedImage(null)}
-        >
-          <div className="relative max-w-4xl max-h-[90vh]">
-            <Image
-              src={`${R2_BASE}/${selectedImage.full}`}
-              alt={selectedImage.title}
-              width={1200}
-              height={900}
-              className="max-w-full max-h-[85vh] w-auto h-auto object-contain"
-              onClick={(e) => e.stopPropagation()}
-            />
-            <div className="absolute bottom-0 left-0 right-0 bg-black/70 text-white p-3">
-              <h3 className="font-bold">{selectedImage.title}</h3>
-              <p className="text-sm text-gray-300">{selectedImage.description}</p>
-            </div>
-            <button
-              className="absolute top-2 right-2 win95-button w-8 h-8 text-xl"
-              onClick={() => setSelectedImage(null)}
-            >
-              ×
-            </button>
-          </div>
-        </div>
-      )}
+    <>
+      <PageContainer>
+        <StyledWindow>
+          <StyledWindowHeader>
+            <span>Dickbutt IRL - Real World Sightings</span>
+            <Link href="/">
+              <CloseButton size="sm">
+                <span>X</span>
+              </CloseButton>
+            </Link>
+          </StyledWindowHeader>
 
-      {/* Window container */}
-      <div className="win95-window win95-border max-w-6xl mx-auto">
-        {/* Title bar */}
-        <div className="win95-titlebar flex items-center justify-between">
-          <span className="text-sm font-bold px-1">Dickbutt IRL - Real World Sightings</span>
-          <Link
-            href="/"
-            className="win95-button w-4 h-4 flex items-center justify-center text-xs leading-none"
-          >
-            ×
-          </Link>
-        </div>
+          <Toolbar>
+            <Link href="/">
+              <Button variant="thin" size="sm">← Back to Desktop</Button>
+            </Link>
+          </Toolbar>
 
-        {/* Toolbar */}
-        <div className="bg-[#c0c0c0] p-1 flex gap-2 border-b border-[#808080]">
-          <Link
-            href="/"
-            className="win95-button px-3 py-1 text-sm flex items-center gap-1"
-          >
-            ← Back to Desktop
-          </Link>
-        </div>
+          <WindowContent>
+            <Description>
+              Dickbutt spotted in the wild! Graffiti, street art, protests, and more.
+              Click any image to view full size.
+            </Description>
 
-        {/* Content */}
-        <div className="p-4 bg-[#c0c0c0]">
-          <p className="text-sm mb-4">
-            Dickbutt spotted in the wild! Graffiti, street art, protests, and more.
-            Click any image to view full size.
-          </p>
-
-          {/* Image grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-            {IRL_ITEMS.map((item) => (
-              <button
-                key={item.id}
-                className="win95-border-inset bg-white p-1 flex flex-col cursor-pointer hover:bg-[#000080] group transition-colors"
-                onClick={() => setSelectedImage(item)}
-              >
-                {/* Thumbnail */}
-                <div className="bg-[#008080] aspect-square relative overflow-hidden">
-                  <Image
-                    src={`${R2_BASE}/${item.thumb}`}
-                    alt={item.title}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                  />
-                </div>
-
-                {/* Label */}
-                <div className="p-1 text-left">
-                  <h3 className="text-xs font-bold truncate group-hover:text-white">
+            <Grid>
+              {IRL_ITEMS.map((item, index) => (
+                <ThumbnailButton
+                  key={item.id}
+                  $selected={selectedIndex === index}
+                  onClick={() => setSelectedIndex(index)}
+                >
+                  <ThumbnailFrame variant="field">
+                    <ImageWrapper>
+                      <Image
+                        src={`${R2_BASE}/${item.thumb}`}
+                        alt={item.title}
+                        fill
+                        sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                        style={{ objectFit: 'cover' }}
+                      />
+                    </ImageWrapper>
+                  </ThumbnailFrame>
+                  <ItemTitle $selected={selectedIndex === index}>
                     {item.title}
-                  </h3>
-                  <p className="text-xs text-gray-600 truncate group-hover:text-gray-300">
+                  </ItemTitle>
+                  <ItemDescription $selected={selectedIndex === index}>
                     {item.description}
-                  </p>
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
+                  </ItemDescription>
+                </ThumbnailButton>
+              ))}
+            </Grid>
+          </WindowContent>
 
-        {/* Status bar */}
-        <div className="bg-[#c0c0c0] px-2 py-1 border-t border-[#dfdfdf] flex">
-          <div className="win95-border-inset px-2 py-0.5 text-xs flex-1">
-            {IRL_ITEMS.length} items | Click to enlarge
-          </div>
-        </div>
-      </div>
-    </main>
+          <StatusBar>
+            <Frame variant="status" style={{ flex: 1 }}>
+              <StatusItem>{IRL_ITEMS.length} items | Click to enlarge</StatusItem>
+            </Frame>
+          </StatusBar>
+        </StyledWindow>
+      </PageContainer>
+
+      {selectedItem && (
+        <LightboxOverlay onClick={() => setSelectedIndex(null)}>
+          <LightboxWindow onClick={(e) => e.stopPropagation()}>
+            <LightboxHeader>
+              <span>{selectedItem.title}</span>
+              <CloseButton size="sm" onClick={() => setSelectedIndex(null)}>
+                <span>X</span>
+              </CloseButton>
+            </LightboxHeader>
+
+            <LightboxContent>
+              <LightboxImageFrame variant="well">
+                <Image
+                  src={`${R2_BASE}/${selectedItem.full}`}
+                  alt={selectedItem.title}
+                  width={1200}
+                  height={900}
+                  style={{
+                    maxWidth: '100%',
+                    maxHeight: '70vh',
+                    width: 'auto',
+                    height: 'auto',
+                    objectFit: 'contain',
+                  }}
+                  priority
+                />
+              </LightboxImageFrame>
+
+              <LightboxNavigation>
+                <NavButton
+                  onClick={() => setSelectedIndex(selectedIndex! - 1)}
+                  disabled={selectedIndex === 0}
+                >
+                  ← Previous
+                </NavButton>
+                <span style={{ fontSize: 12 }}>
+                  {selectedIndex! + 1} of {IRL_ITEMS.length}
+                </span>
+                <NavButton
+                  onClick={() => setSelectedIndex(selectedIndex! + 1)}
+                  disabled={selectedIndex === IRL_ITEMS.length - 1}
+                >
+                  Next →
+                </NavButton>
+              </LightboxNavigation>
+
+              <StatusBar style={{ padding: 0 }}>
+                <Frame variant="status" style={{ flex: 1 }}>
+                  <StatusItem>{selectedItem.description}</StatusItem>
+                </Frame>
+              </StatusBar>
+            </LightboxContent>
+          </LightboxWindow>
+        </LightboxOverlay>
+      )}
+    </>
+  );
+}
+
+export default function IrlPage() {
+  return (
+    <React95Provider>
+      <IrlContent />
+    </React95Provider>
   );
 }

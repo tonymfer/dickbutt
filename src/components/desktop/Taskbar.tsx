@@ -3,6 +3,70 @@
 import { useState, useEffect } from 'react';
 import { useDesktop } from '@/context/DesktopContext';
 import { StartMenu } from './StartMenu';
+import { AppBar, Toolbar, Button, Frame } from 'react95';
+import styled from 'styled-components';
+/* eslint-disable @next/next/no-img-element */
+
+const StyledAppBar = styled(AppBar)`
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  top: auto;
+  z-index: 9999;
+`;
+
+const StyledToolbar = styled(Toolbar)`
+  display: flex;
+  justify-content: space-between;
+  padding: 4px;
+`;
+
+const StartButton = styled(Button).withConfig({
+  shouldForwardProp: (prop) =>
+    !['active', 'primary', 'fullWidth', 'square'].includes(prop),
+})<{ $active: boolean }>`
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  ${({ $active }) => $active && 'box-shadow: inset 1px 1px 0px 1px #808080, inset -1px -1px 0px 1px #dfdfdf;'}
+`;
+
+const Divider = styled.div`
+  width: 2px;
+  height: 24px;
+  background: linear-gradient(to right, #808080, #ffffff);
+  margin: 0 4px;
+`;
+
+const WindowTabs = styled.div`
+  flex: 1;
+  display: flex;
+  gap: 4px;
+  padding: 0 4px;
+  overflow: hidden;
+`;
+
+const WindowTab = styled(Button).withConfig({
+  shouldForwardProp: (prop) =>
+    !['active', 'primary', 'fullWidth', 'square'].includes(prop),
+})<{ $active: boolean }>`
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  ${({ $active }) => $active && 'box-shadow: inset 1px 1px 0px 1px #808080, inset -1px -1px 0px 1px #dfdfdf;'}
+`;
+
+const Clock = styled(Frame)`
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  height: 24px;
+  font-size: 12px;
+`;
 
 export function Taskbar() {
   const { windows, activeWindowId, focusWindow } = useDesktop();
@@ -28,42 +92,35 @@ export function Taskbar() {
   return (
     <>
       {showStartMenu && <StartMenu onClose={() => setShowStartMenu(false)} />}
-      <div className="fixed bottom-0 left-0 right-0 h-9 bg-[#c0c0c0] win95-border z-[9999] flex items-center px-1">
-        {/* Start button */}
-        <button
-          className={`win95-button h-7 px-2 flex items-center gap-1 font-bold text-sm ${
-            showStartMenu ? 'win95-button-pressed' : ''
-          }`}
-          onClick={() => setShowStartMenu(!showStartMenu)}
-        >
-          <span className="text-base">🪟</span>
-          Start
-        </button>
+      <StyledAppBar>
+        <StyledToolbar>
+          <StartButton
+            $active={showStartMenu}
+            onClick={() => setShowStartMenu(!showStartMenu)}
+          >
+            <img src="/assets/icons/win95/windows.ico" alt="" width={16} height={16} style={{ imageRendering: 'pixelated' }} />
+            Start
+          </StartButton>
 
-        {/* Divider */}
-        <div className="w-px h-6 bg-[#808080] mx-1" />
-        <div className="w-px h-6 bg-white mx-0" />
+          <Divider />
 
-        {/* Window tabs */}
-        <div className="flex-1 flex gap-1 px-1 overflow-hidden">
-          {windows.map((win) => (
-            <button
-              key={win.id}
-              className={`win95-button h-7 px-2 text-sm truncate max-w-[150px] ${
-                activeWindowId === win.id && !win.minimized ? 'win95-button-pressed' : ''
-              }`}
-              onClick={() => focusWindow(win.id)}
-            >
-              {win.title}
-            </button>
-          ))}
-        </div>
+          <WindowTabs>
+            {windows.map((win) => (
+              <WindowTab
+                key={win.id}
+                $active={activeWindowId === win.id && !win.minimized}
+                onClick={() => focusWindow(win.id)}
+              >
+                {win.title}
+              </WindowTab>
+            ))}
+          </WindowTabs>
 
-        {/* System tray */}
-        <div className="win95-border-inset h-6 px-2 flex items-center text-sm bg-[#c0c0c0]">
-          {time}
-        </div>
-      </div>
+          <Clock variant="well">
+            {time}
+          </Clock>
+        </StyledToolbar>
+      </StyledAppBar>
     </>
   );
 }

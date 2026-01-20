@@ -1,30 +1,21 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import type { GalleryItem } from '@/lib/assets';
-import { GalleryGrid } from './GalleryGrid';
-import { GalleryModal } from './GalleryModal';
-import { useGalleryModal } from '@/hooks/useGalleryModal';
+import { LayoutGrid } from '@/components/ui/LayoutGrid';
 
 interface GalleryClientProps {
   initialItems: GalleryItem[];
   totalCount: number;
 }
 
-const BATCH_SIZE = 40;
+const BATCH_SIZE = 21; // Divisible by 3 for clean grid rows
 
 export function GalleryClient({ initialItems, totalCount }: GalleryClientProps) {
   const [displayedItems, setDisplayedItems] = useState<GalleryItem[]>(
     initialItems.slice(0, BATCH_SIZE)
   );
   const [allItems] = useState<GalleryItem[]>(initialItems);
-
-  const modal = useGalleryModal();
-
-  // Set items for modal navigation
-  useEffect(() => {
-    modal.setItems(allItems);
-  }, [allItems, modal]);
 
   const loadMore = () => {
     const currentCount = displayedItems.length;
@@ -35,27 +26,24 @@ export function GalleryClient({ initialItems, totalCount }: GalleryClientProps) 
   const hasMore = displayedItems.length < allItems.length;
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-dvh bg-black text-white">
       {/* Header */}
-      <header className="sticky top-0 z-40 bg-black/80 backdrop-blur-sm border-b border-gray-800 px-4 py-3">
+      <header className="sticky top-0 z-40 bg-black/80 backdrop-blur-sm border-b border-neutral-800 px-4 py-3">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <h1 className="text-xl font-bold text-yellow-400">Meme Gallery</h1>
-          <span className="text-sm text-gray-400">
-            {displayedItems.length} of {totalCount} items
+          <h1 className="text-xl font-bold text-yellow-400 text-balance">Meme Gallery</h1>
+          <span className="text-sm text-neutral-400 tabular-nums">
+            {displayedItems.length} of {totalCount}
           </span>
         </div>
       </header>
 
       {/* Gallery */}
-      <main className="max-w-7xl mx-auto px-4 py-6">
-        <GalleryGrid
-          items={displayedItems}
-          onItemClick={(item, index) => modal.open(item, index)}
-        />
+      <LayoutGrid items={displayedItems} />
 
-        {/* Load More Button */}
+      {/* Load More */}
+      <div className="max-w-7xl mx-auto px-4 pb-10">
         {hasMore && (
-          <div className="mt-8 text-center">
+          <div className="text-center">
             <button
               onClick={loadMore}
               className="px-6 py-3 bg-yellow-500 hover:bg-yellow-400 text-black font-semibold rounded-lg transition-colors"
@@ -66,22 +54,11 @@ export function GalleryClient({ initialItems, totalCount }: GalleryClientProps) 
         )}
 
         {!hasMore && displayedItems.length > 0 && (
-          <div className="mt-8 text-center text-gray-500 text-sm">
+          <div className="text-center text-neutral-500 text-sm">
             You&apos;ve seen all {totalCount} items
           </div>
         )}
-      </main>
-
-      {/* Modal */}
-      <GalleryModal
-        isOpen={modal.isOpen}
-        item={modal.currentItem}
-        currentIndex={modal.currentIndex}
-        totalItems={allItems.length}
-        onClose={modal.close}
-        onNext={modal.next}
-        onPrev={modal.prev}
-      />
+      </div>
     </div>
   );
 }

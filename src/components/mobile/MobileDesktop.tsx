@@ -1,17 +1,19 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import Image from 'next/image';
 import styled from 'styled-components';
 import { BASESCAN_CONTRACT_URL } from '@/lib/links';
 import { IconConfig } from '@/components/desktop/DesktopIcon';
 import { MobileSection } from './MobileSection';
 import { MobileIconRow } from './MobileIconRow';
+import { MobileWhereToBuy } from './MobileWhereToBuy';
+import { MobileResources } from './MobileResources';
+import { MobileOrigin } from './MobileOrigin';
+import { MobileProduct } from './MobileProduct';
 import {
   DickbuttOnBaseWindow,
-  OriginWindow,
   DickbuttWindow,
-  WhereToBuyWindow,
-  ResourcesWindow,
   RoadmapWindow,
   DisclaimerWindow,
 } from '@/components/desktop/windows';
@@ -100,7 +102,23 @@ const WebampWrapper = styled.div`
   display: flex;
   justify-content: center;
   padding: 8px 0;
+`;
+
+const MobileFooter = styled.footer`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 16px 0 24px;
   margin-top: auto;
+`;
+
+const CopyrightText = styled.p`
+  font-size: 11px;
+  color: #fff;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+  margin: 0;
+  text-align: center;
 `;
 
 // Webamp component for mobile - positioned at bottom of scroll
@@ -229,9 +247,14 @@ export function MobileDesktop() {
         {/* 3. Media Icons Row */}
         <MobileIconRow icons={MEDIA_ICONS} />
 
-        {/* 4. Origin */}
+        {/* 4. Product - Upcoming Book */}
+        <MobileSection title="Product" noPadding>
+          <MobileProduct />
+        </MobileSection>
+
+        {/* 5. Origin - Full width image on mobile */}
         <MobileSection title="Origin" noPadding>
-          <OriginWindow />
+          <MobileOrigin />
         </MobileSection>
 
         {/* 5. Tokenomics */}
@@ -239,14 +262,14 @@ export function MobileDesktop() {
           <DickbuttWindow />
         </MobileSection>
 
-        {/* 6. Where to Buy */}
+        {/* 6. Where to Buy - Enhanced with tabs */}
         <MobileSection title="Where to Buy" noPadding>
-          <WhereToBuyWindow />
+          <MobileWhereToBuy />
         </MobileSection>
 
-        {/* 7. Resources */}
+        {/* 7. Resources - Tree view style */}
         <MobileSection title="Resources" noPadding>
-          <ResourcesWindow />
+          <MobileResources />
         </MobileSection>
 
         {/* 8. Roadmap */}
@@ -259,8 +282,22 @@ export function MobileDesktop() {
           <DisclaimerWindow />
         </MobileSection>
 
-        {/* 10. Winamp at bottom */}
+        {/* 10. Winamp */}
         <MobileWebamp />
+
+        {/* 11. Footer */}
+        <MobileFooter>
+          <Image
+            src="/assets/dbi.gif"
+            alt="Dickbutt"
+            width={60}
+            height={60}
+            unoptimized
+          />
+          <CopyrightText>
+            2025 by Dickbutt on Base. All rights reserved.
+          </CopyrightText>
+        </MobileFooter>
       </ScrollContent>
     </MobileContainer>
   );

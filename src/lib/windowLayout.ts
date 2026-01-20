@@ -117,15 +117,15 @@ export function getLeftColumnX(viewportWidth: number, viewportHeight: number): n
   return grid.left.x;
 }
 
-// Get Webamp position (below Resources window)
+// Get Webamp position (below Where to Buy window in left column)
 export function getWebampPosition(viewportWidth: number, viewportHeight: number): { x: number; y: number } {
   const grid = getDesktopGrid(viewportWidth, viewportHeight);
-  const resourcesRect = calculateWindowRect(viewportWidth, viewportHeight, 'resources');
+  const whereToBuyRect = calculateWindowRect(viewportWidth, viewportHeight, 'wheretobuy');
 
-  // Position Webamp below Resources window
+  // Position Webamp below Where to Buy window
   return {
     x: grid.left.x,
-    y: resourcesRect.y + resourcesRect.height + GRID_GAP,
+    y: whereToBuyRect.y + whereToBuyRect.height + GRID_GAP,
   };
 }
 
@@ -158,68 +158,49 @@ export function calculateWindowRect(
   // Fixed dialog height - must not scroll
   const roadmapH = 150;
   // IMPORTANT: clamp heights BEFORE computing dependent y positions
+  // Origin needs more height for full-width image
   const originHMax = Math.max(MIN_H, belowBannerH - roadmapH - GRID_GAP);
-  const originH = clamp(Math.floor(originHMax * 0.58), MIN_H, originHMax);
+  const originH = clamp(Math.floor(originHMax * 0.68), MIN_H, originHMax);
 
-  // Left column: Resources - fills available height above Winamp area
-  const resourcesH = clamp(Math.floor(availableHeight * 0.50), 260, availableHeight - 200);
+  // Left column: Resources + WhereToBuy stacked above Winamp area
+  const whereToBuyH = 160; // Where to Buy with tabs needs decent height
+  const resourcesH = clamp(Math.floor(availableHeight * 0.38), 200, availableHeight - whereToBuyH - 200);
 
-  // Right column below banner: stack Tokenomics, WhereToBuy, Disclaimer
+  // Right column below banner: stack Tokenomics, Product, Disclaimer
   const rightTopY = belowBannerY;
   const rightAvailable = Math.max(MIN_H, belowBannerH);
 
   // Right column sizing priorities:
-  // - Tokenomics should be tall enough to show full list without scroll
-  // - WhereToBuy should be shorter (but still fits all buttons)
+  // - Tokenomics should be compact (just fits the checkboxes)
+  // - Product gets the book promo space
   // - Disclaimer stays compact
   const disclaimerH = 140;
-  const TOKENOMICS_MIN_H = 180;
-  const WHERE_TO_BUY_TARGET_H = 120;
-  const WHERE_TO_BUY_MIN_H = 110;
-
-  let whereToBuyH = WHERE_TO_BUY_TARGET_H;
-  let dickbuttH = rightAvailable - whereToBuyH - disclaimerH - GRID_GAP * 2;
-
-  // If tokenomics is too short, steal height from WhereToBuy (down to min)
-  if (dickbuttH < TOKENOMICS_MIN_H) {
-    const deficit = TOKENOMICS_MIN_H - dickbuttH;
-    whereToBuyH = Math.max(WHERE_TO_BUY_MIN_H, whereToBuyH - deficit);
-    dickbuttH = rightAvailable - whereToBuyH - disclaimerH - GRID_GAP * 2;
-  }
-
-  // Final clamps to guarantee non-negative + stable stacking.
-  // These clamps must be applied BEFORE computing y for stacked windows.
-  dickbuttH = clamp(dickbuttH, MIN_H, rightAvailable);
-  const whereToBuyMax = Math.max(
-    WHERE_TO_BUY_MIN_H,
-    rightAvailable - dickbuttH - disclaimerH - GRID_GAP * 2
-  );
-  whereToBuyH = clamp(whereToBuyH, WHERE_TO_BUY_MIN_H, whereToBuyMax);
-  // Recompute tokenomics after final whereToBuy clamp (prevents overlap)
-  dickbuttH = clamp(rightAvailable - whereToBuyH - disclaimerH - GRID_GAP * 2, MIN_H, rightAvailable);
+  const dickbuttH = 165; // Compact tokenomics - just enough for checkboxes
+  const productH = rightAvailable - dickbuttH - disclaimerH - GRID_GAP * 2;
 
   const rectById: Record<string, WindowRect> = {
     // Top banner spanning center + right
     dickbuttonbase: { x: grid.center.x, y: bannerY, width: bannerW, height: bannerH },
 
-    // Left column
+    // Left column - Resources + WhereToBuy stacked
     resources: { x: grid.left.x, y: GRID_GAP, width: grid.left.width, height: resourcesH },
+    wheretobuy: { x: grid.left.x, y: GRID_GAP + resourcesH + GRID_GAP, width: grid.left.width, height: whereToBuyH },
 
     // Center column (below banner)
     origin: { x: grid.center.x, y: belowBannerY, width: grid.center.width, height: originH },
     roadmap: { x: grid.center.x, y: belowBannerY + originH + GRID_GAP, width: grid.center.width, height: roadmapH },
 
-    // Right column (below banner)
+    // Right column (below banner) - Tokenomics + Product + Disclaimer
     dickbutt: { x: grid.right.x, y: rightTopY, width: grid.right.width, height: dickbuttH },
-    wheretobuy: {
+    product: {
       x: grid.right.x,
       y: rightTopY + dickbuttH + GRID_GAP,
       width: grid.right.width,
-      height: whereToBuyH,
+      height: productH,
     },
     disclaimer: {
       x: grid.right.x,
-      y: rightTopY + dickbuttH + GRID_GAP + whereToBuyH + GRID_GAP,
+      y: rightTopY + dickbuttH + GRID_GAP + productH + GRID_GAP,
       width: grid.right.width,
       height: disclaimerH,
     },
@@ -244,9 +225,11 @@ export function calculateWindowRect(
   // forced up to the global MIN_H, otherwise they overlap stacked/grid windows.
   const minHeightById: Record<string, number> = {
     dickbuttonbase: 180,
+    dickbutt: 165,
     roadmap: 150,
     disclaimer: 140,
-    wheretobuy: 110,
+    wheretobuy: 160,
+    product: 180,
   };
 
   const minH = minHeightById[windowId] ?? MIN_H;
@@ -267,7 +250,7 @@ export function getAllWindowPositions(
   viewportHeight: number
 ): Record<string, Position> {
   const positions: Record<string, Position> = {};
-  const windowIds = ['dickbuttonbase', 'resources', 'origin', 'dickbutt', 'wheretobuy', 'roadmap', 'disclaimer', 'settings'];
+  const windowIds = ['dickbuttonbase', 'resources', 'product', 'origin', 'dickbutt', 'wheretobuy', 'roadmap', 'disclaimer', 'settings'];
 
   for (const id of windowIds) {
     positions[id] = calculateWindowPosition(viewportWidth, viewportHeight, id);

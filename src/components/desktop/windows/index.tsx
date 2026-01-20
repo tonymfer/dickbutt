@@ -9,6 +9,7 @@ import { OriginWindow } from './OriginWindow';
 import { ResourcesWindow } from './ResourcesWindow';
 import { WhereToBuyWindow } from './WhereToBuyWindow';
 import { SettingsWindow } from './SettingsWindow';
+import { ProductWindow } from './ProductWindow';
 
 // Registry of window content components
 // Components can optionally receive onClose prop for close functionality
@@ -21,6 +22,7 @@ export const windowContentRegistry: Record<string, ComponentType<{ onClose?: () 
   resources: ResourcesWindow,
   wheretobuy: WhereToBuyWindow,
   settings: SettingsWindow,
+  product: ProductWindow,
 };
 
 export {
@@ -32,4 +34,5 @@ export {
   ResourcesWindow,
   WhereToBuyWindow,
   SettingsWindow,
+  ProductWindow,
 };

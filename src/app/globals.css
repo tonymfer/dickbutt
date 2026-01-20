@@ -98,3 +98,31 @@ body {
 ::-webkit-scrollbar-corner {
   background: #c0c0c0;
 }
+
+/* Mobile-specific styles */
+@media (max-width: 1023px) {
+  body {
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Touch-friendly scrollbar on mobile */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  /* Mobile webamp positioning */
+  .mobile-webamp #webamp {
+    position: relative !important;
+    left: 0 !important;
+    top: 0 !important;
+    transform: none !important;
+  }
+
+  /* Ensure window content is touch-scrollable */
+  .mobile-scrollable {
+    -webkit-overflow-scrolling: touch;
+    overflow-y: auto;
+  }
+}

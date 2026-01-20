@@ -1,33 +1,33 @@
 'use client';
 
 import { useState } from 'react';
-import { Frame, Separator } from 'react95';
+import { Frame, GroupBox, Button, Separator } from 'react95';
 import styled from 'styled-components';
 import { RESOURCE_LINKS } from '@/lib/links';
 
 const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  height: 100%;
-  box-sizing: border-box;
+  padding: 8px;
   background: #c0c0c0;
 `;
 
-const TreeContainer = styled(Frame)`
-  flex: 1;
-  margin: 4px;
+const StyledGroupBox = styled(GroupBox)`
+  margin-bottom: 8px;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+`;
+
+const GroupContent = styled.div`
   padding: 4px;
-  overflow-y: auto;
-  min-height: 0;
 `;
 
 const ResourceItem = styled.button`
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   width: 100%;
-  padding: 3px 6px;
+  padding: 6px 8px;
   background: transparent;
   border: none;
   cursor: pointer;
@@ -47,40 +47,52 @@ const ResourceItem = styled.button`
 `;
 
 const ResourceIcon = styled.span`
-  font-size: 14px;
-  width: 16px;
+  font-size: 16px;
+  width: 20px;
   text-align: center;
-  flex-shrink: 0;
 `;
 
 const ResourceLabel = styled.span`
   flex: 1;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 `;
 
 const ResourceArrow = styled.span`
-  font-size: 9px;
+  font-size: 10px;
   color: #808080;
+`;
+
+const FolderHeader = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 0;
+  font-weight: bold;
+  font-size: 11px;
+`;
+
+const FolderIcon = styled.span`
+  font-size: 16px;
 `;
 
 const TreeLine = styled.div`
   display: flex;
   flex-direction: column;
-  padding-left: 10px;
+  padding-left: 12px;
   border-left: 1px dotted #808080;
-  margin-left: 7px;
+  margin-left: 9px;
 `;
 
 const StatusFrame = styled(Frame)`
-  margin: 0 4px 4px;
-  padding: 2px 6px;
+  margin-top: 8px;
+  padding: 4px 8px;
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 9px;
-  flex-shrink: 0;
+  gap: 8px;
+  font-size: 10px;
+`;
+
+const ObjectCount = styled.span`
+  color: #444;
 `;
 
 // Group resources by category
@@ -111,18 +123,18 @@ const resourceGroups = [
     label: 'Tools & Fun',
     icon: '🛠️',
     items: [
-      { label: 'Price Checker', url: RESOURCE_LINKS.priceCheckerExtension, icon: '🔌' },
+      { label: 'Price Checker Extension', url: RESOURCE_LINKS.priceCheckerExtension, icon: '🔌' },
       { label: 'Dickbuttify', url: RESOURCE_LINKS.dickbuttify, icon: '🎨' },
-      { label: 'Accept DB', url: RESOURCE_LINKS.acceptDickbutt, icon: '✅' },
+      { label: 'Accept Dickbutt', url: RESOURCE_LINKS.acceptDickbutt, icon: '✅' },
       { label: 'Dickbuttazon', url: RESOURCE_LINKS.dickbuttazon, icon: '📦' },
       { label: 'CC0 Store', url: RESOURCE_LINKS.cc0Store, icon: '🏪' },
     ],
   },
 ];
 
-export function ResourcesWindow() {
+export function MobileResources() {
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(
-    new Set(['Price & Charts']) // Start with first group expanded
+    new Set(resourceGroups.map(g => g.label))
   );
 
   const handleClick = (url: string) => {
@@ -145,7 +157,7 @@ export function ResourcesWindow() {
 
   return (
     <Container>
-      <TreeContainer variant="field">
+      <Frame variant="field" style={{ padding: 8 }}>
         {resourceGroups.map((group, groupIndex) => (
           <div key={group.label}>
             <ResourceItem onClick={() => toggleGroup(group.label)}>
@@ -162,7 +174,7 @@ export function ResourcesWindow() {
 
             {expandedGroups.has(group.label) && (
               <TreeLine>
-                {group.items.map((item) => (
+                {group.items.map((item, itemIndex) => (
                   <ResourceItem
                     key={item.label}
                     onClick={() => handleClick(item.url)}
@@ -176,15 +188,16 @@ export function ResourcesWindow() {
             )}
 
             {groupIndex < resourceGroups.length - 1 && (
-              <Separator style={{ margin: '2px 0' }} />
+              <Separator style={{ margin: '4px 0' }} />
             )}
           </div>
         ))}
-      </TreeContainer>
+      </Frame>
 
       <StatusFrame variant="status">
         <span>📋</span>
-        <span>{totalItems} object(s)</span>
+        <ObjectCount>{totalItems} object(s)</ObjectCount>
+        <span style={{ marginLeft: 'auto' }}>🌐 Internet Explorer</span>
       </StatusFrame>
     </Container>
   );

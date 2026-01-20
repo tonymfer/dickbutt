@@ -1,12 +1,13 @@
 'use client';
 
-import Image from 'next/image';
+import { MobileDesktop } from '@/components/mobile';
 import { React95Provider } from '@/components/providers/React95Provider';
 import { DesktopProvider, useDesktop, WindowState } from '@/context/DesktopContext';
 import { DesktopSettingsProvider, getBackgroundStyle, useDesktopSettings } from '@/context/DesktopSettingsContext';
 import { useViewport } from '@/hooks/useViewport';
 import { BASESCAN_CONTRACT_URL } from '@/lib/links';
 import { calculateWindowRect, getWebampPosition } from '@/lib/windowLayout';
+import Image from 'next/image';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { IconConfig } from './DesktopIcon';
@@ -87,7 +88,7 @@ const DesktopContainer = styled.div<{ $background: string }>`
 
 const DesktopFooter = styled.footer`
   position: absolute;
-  bottom: 44px; /* Above taskbar */
+  bottom: 180px; /* Above taskbar */
   left: 50%;
   transform: translateX(-50%);
   display: flex;
@@ -95,20 +96,19 @@ const DesktopFooter = styled.footer`
   align-items: center;
   gap: 4px;
   pointer-events: none;
-  z-index: 1;
+  z-index: 0;
 `;
 
 const CopyrightText = styled.p`
   font-size: 11px;
-  color: #fff;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+  color: #000;
   margin: 0;
 `;
 
 // Generate window rects (position + size) based on viewport
 function useResponsiveWindowRects(viewportWidth: number, viewportHeight: number) {
   return useMemo(() => {
-    const windowIds = ['dickbuttonbase', 'resources', 'origin', 'dickbutt', 'wheretobuy', 'roadmap', 'disclaimer'];
+    const windowIds = ['dickbuttonbase', 'resources', 'product', 'origin', 'dickbutt', 'wheretobuy', 'roadmap', 'disclaimer'];
     const rects: Record<string, { x: number; y: number; width: number; height: number }> = {};
 
     for (const id of windowIds) {
@@ -131,6 +131,15 @@ function createDefaultWindows(
       contentType: 'component',
       position: rects.resources ? { x: rects.resources.x, y: rects.resources.y } : { x: 30, y: 60 },
       size: rects.resources ? { width: rects.resources.width, height: rects.resources.height } : undefined,
+      minimized: false,
+    },
+    {
+      id: 'product',
+      title: 'Product',
+      content: 'product',
+      contentType: 'component',
+      position: rects.product ? { x: rects.product.x, y: rects.product.y } : { x: 30, y: 300 },
+      size: rects.product ? { width: rects.product.width, height: rects.product.height } : undefined,
       minimized: false,
     },
     {
@@ -217,8 +226,8 @@ function DesktopContent() {
           <Image
             src="/assets/dbi.gif"
             alt="Dickbutt"
-            width={60}
-            height={60}
+            width={200}
+            height={200}
             unoptimized
           />
           <CopyrightText>
@@ -296,6 +305,7 @@ export function Desktop() {
   // Hydration-safe: server + first client render match (no startup),
   // then we decide after mount based on sessionStorage.
   const [showStartup, setShowStartup] = useState(false);
+  const { isDesktop } = useViewport();
 
   useEffect(() => {
     // Check if this is a navigation within the same session (came back from another route)
@@ -323,6 +333,18 @@ export function Desktop() {
     setShowStartup(false);
   };
 
+  // Mobile/Tablet view (< 1024px) - stacked column layout
+  if (!isDesktop) {
+    return (
+      <React95Provider>
+        <DesktopSettingsProvider>
+          <MobileDesktop />
+        </DesktopSettingsProvider>
+      </React95Provider>
+    );
+  }
+
+  // Desktop view (>= 1024px) - cascaded windows layout
   return (
     <React95Provider>
       {showStartup && <StartupScreen onComplete={handleStartupComplete} duration={2500} />}

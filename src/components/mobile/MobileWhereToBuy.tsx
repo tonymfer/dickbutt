@@ -1,39 +1,28 @@
 'use client';
 
 import { useState } from 'react';
-import { Button, Frame, Tabs, Tab, TabBody } from 'react95';
+import { Button, Frame, GroupBox, Tabs, Tab, TabBody, Tooltip } from 'react95';
 import styled from 'styled-components';
 import { BUY_LINKS } from '@/lib/links';
 
 const Container = styled.div`
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  height: 100%;
-  box-sizing: border-box;
+  padding: 8px;
   background: #c0c0c0;
 `;
 
 const StyledTabs = styled(Tabs)`
   width: 100%;
-  font-size: 10px;
-`;
-
-const StyledTab = styled(Tab)`
-  font-size: 10px;
-  padding: 2px 8px;
 `;
 
 const TabContent = styled(TabBody)`
-  padding: 4px;
-  flex: 1;
-  min-height: 0;
+  padding: 8px;
+  min-height: 140px;
 `;
 
 const ExchangeGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 3px;
+  gap: 8px;
 `;
 
 const ExchangeButton = styled(Button).withConfig({
@@ -41,12 +30,13 @@ const ExchangeButton = styled(Button).withConfig({
     !['active', 'primary', 'fullWidth', 'square'].includes(prop),
 })<{ $featured?: boolean }>`
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 4px;
-  padding: 4px;
-  height: 24px;
-  font-size: 9px;
+  padding: 12px 8px;
+  min-height: 70px;
+  font-size: 11px;
   font-weight: bold;
 
   ${props => props.$featured && `
@@ -55,10 +45,37 @@ const ExchangeButton = styled(Button).withConfig({
 `;
 
 const ExchangeIcon = styled.span`
-  font-size: 12px;
+  font-size: 24px;
 `;
 
-// DEX exchanges
+const ExchangeName = styled.span`
+  font-size: 10px;
+  text-align: center;
+`;
+
+const FeaturedBadge = styled.span`
+  font-size: 8px;
+  background: #000080;
+  color: white;
+  padding: 1px 4px;
+  border-radius: 2px;
+`;
+
+const BottomFrame = styled(Frame)`
+  margin-top: 8px;
+  padding: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+`;
+
+const HelpText = styled.span`
+  font-size: 10px;
+  color: #444;
+`;
+
+// DEX exchanges - decentralized
 const dexExchanges = [
   { label: 'Uniswap', url: BUY_LINKS.uniswap, icon: '🦄', featured: true },
   { label: 'Aerodrome', url: BUY_LINKS.aerodrome, icon: '✈️', featured: true },
@@ -66,7 +83,7 @@ const dexExchanges = [
   { label: 'Interface', url: BUY_LINKS.interface, icon: '🔮' },
 ];
 
-// CEX exchanges
+// CEX / Other exchanges
 const cexExchanges = [
   { label: 'Coinbase', url: BUY_LINKS.coinbase, icon: '🪙', featured: true },
   { label: 'Flooz', url: BUY_LINKS.flooz, icon: '💫' },
@@ -74,7 +91,7 @@ const cexExchanges = [
   { label: 'Slingshot', url: BUY_LINKS.slingshot, icon: '🎯' },
 ];
 
-export function WhereToBuyWindow() {
+export function MobileWhereToBuy() {
   const [activeTab, setActiveTab] = useState(0);
 
   const handleClick = (url: string) => {
@@ -84,8 +101,8 @@ export function WhereToBuyWindow() {
   return (
     <Container>
       <StyledTabs value={activeTab} onChange={(value) => setActiveTab(value)}>
-        <StyledTab value={0}>🔀 DEX</StyledTab>
-        <StyledTab value={1}>🏦 CEX</StyledTab>
+        <Tab value={0}>🔀 DEX</Tab>
+        <Tab value={1}>🏦 CEX</Tab>
       </StyledTabs>
 
       <TabContent>
@@ -98,7 +115,8 @@ export function WhereToBuyWindow() {
                 onClick={() => handleClick(exchange.url)}
               >
                 <ExchangeIcon>{exchange.icon}</ExchangeIcon>
-                {exchange.label}
+                <ExchangeName>{exchange.label}</ExchangeName>
+                {exchange.featured && <FeaturedBadge>POPULAR</FeaturedBadge>}
               </ExchangeButton>
             ))}
           </ExchangeGrid>
@@ -113,12 +131,18 @@ export function WhereToBuyWindow() {
                 onClick={() => handleClick(exchange.url)}
               >
                 <ExchangeIcon>{exchange.icon}</ExchangeIcon>
-                {exchange.label}
+                <ExchangeName>{exchange.label}</ExchangeName>
+                {exchange.featured && <FeaturedBadge>POPULAR</FeaturedBadge>}
               </ExchangeButton>
             ))}
           </ExchangeGrid>
         )}
       </TabContent>
+
+      <BottomFrame variant="status">
+        <span>💡</span>
+        <HelpText>Tap an exchange to buy $DICKBUTT</HelpText>
+      </BottomFrame>
     </Container>
   );
 }

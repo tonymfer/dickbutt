@@ -131,16 +131,34 @@ async function generateGifThumb(sourcePath, thumbPath) {
 }
 
 /**
- * Extract poster frame from video using ffmpeg
+ * Extract poster frame from video using ffmpeg, then convert to webp
  */
-function extractVideoPoster(sourcePath, thumbPath) {
+async function extractVideoPoster(sourcePath, thumbPath) {
+  const tempJpg = thumbPath.replace('.webp', '.tmp.jpg');
   try {
+    // Extract frame as JPG (ffmpeg can't encode webp)
     execSync(
-      `ffmpeg -y -i "${sourcePath}" -vf "thumbnail,scale='min(${THUMB_MAX_SIZE},iw)':'min(${THUMB_MAX_SIZE},ih)':force_original_aspect_ratio=decrease" -frames:v 1 "${thumbPath}"`,
+      `ffmpeg -y -i "${sourcePath}" -vf "thumbnail,scale='min(${THUMB_MAX_SIZE},iw)':'min(${THUMB_MAX_SIZE},ih)':force_original_aspect_ratio=decrease" -frames:v 1 "${tempJpg}"`,
       { stdio: 'pipe' }
     );
+
+    // Convert to webp using sharp
+    const sharp = (await import('sharp')).default;
+    await sharp(tempJpg)
+      .webp({ quality: THUMB_QUALITY })
+      .toFile(thumbPath);
+
+    // Clean up temp file
+    const { unlink } = await import('fs/promises');
+    await unlink(tempJpg);
+
     return true;
   } catch (error) {
+    // Clean up temp file if it exists
+    try {
+      const { unlink } = await import('fs/promises');
+      await unlink(tempJpg);
+    } catch {}
     console.warn(`Warning: Could not extract poster from ${sourcePath}`);
     return false;
   }
@@ -197,7 +215,7 @@ async function processFile(filename, hasFfmpeg) {
     await generateGifThumb(sourcePath, thumbPath);
     thumbGenerated = true;
   } else if (VIDEO_EXTS.includes(ext) && hasFfmpeg) {
-    thumbGenerated = extractVideoPoster(sourcePath, thumbPath);
+    thumbGenerated = await extractVideoPoster(sourcePath, thumbPath);
   }
 
   // Get dimensions (for images/gifs)

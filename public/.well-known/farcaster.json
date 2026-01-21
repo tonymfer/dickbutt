@@ -1,10 +1,10 @@
 {
   "accountAssociation": {
-    "header": "eyJmaWQiOjAsInR5cGUiOiJjdXN0b2R5Iiwia2V5IjoiMHgwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwIn0",
-    "payload": "eyJkb21haW4iOiJkaWNrYnV0dC5nb2xkIn0",
-    "signature": "PLACEHOLDER_SIGNATURE"
+    "header": "eyJmaWQiOjg5NDIsInR5cGUiOiJhdXRoIiwia2V5IjoiMHg0NDJDNDYzZWI0Nzc4QzFhNTc2ZDViODA5MjdCNDI5NzU2NzIzMDE0In0",
+    "payload": "eyJkb21haW4iOiJkaWNrYnV0dC1hbHBoYS52ZXJjZWwuYXBwIn0",
+    "signature": "XUojr52Zc92FWWZa+iDIjr0gdkwhfGFcPSs5glU34r8MnLJeNJA5cJsU8/3Fz8aDhk4+BM8v6EnI/UfOoN6vIxw="
   },
-  "frame": {
+  "miniapp": {
     "version": "1",
     "name": "Dickbutt on Base",
     "iconUrl": "https://dickbutt.gold/assets/branding/dickbuttpfp.jpg",

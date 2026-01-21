@@ -109,14 +109,12 @@ const MobileFooter = styled.footer`
   flex-direction: column;
   align-items: center;
   gap: 8px;
-  padding: 16px 0 24px;
-  margin-top: auto;
+  padding: 16px 0 32px;
 `;
 
 const CopyrightText = styled.p`
   font-size: 11px;
-  color: #fff;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+  color: #000;
   margin: 0;
   text-align: center;
 `;
@@ -290,8 +288,8 @@ export function MobileDesktop() {
           <Image
             src="/assets/dbi.gif"
             alt="Dickbutt"
-            width={60}
-            height={60}
+            width={90}
+            height={90}
             unoptimized
           />
           <CopyrightText>

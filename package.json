@@ -12,6 +12,7 @@
     "assets:upload": "./scripts/upload-r2-rclone.sh"
   },
   "dependencies": {
+    "@farcaster/miniapp-sdk": "^0.2.1",
     "framer-motion": "^12.27.0",
     "next": "16.1.3",
     "react": "19.2.3",

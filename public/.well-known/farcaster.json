@@ -7,10 +7,10 @@
   "miniapp": {
     "version": "1",
     "name": "Dickbutt on Base",
-    "iconUrl": "https://dickbutt.gold/assets/branding/dickbuttpfp.jpg",
-    "splashImageUrl": "https://dickbutt.gold/assets/branding/dickbuttog.png",
+    "iconUrl": "https://dickbutt-alpha.vercel.app/assets/branding/dickbuttpfp.jpg",
+    "splashImageUrl": "https://dickbutt-alpha.vercel.app/assets/branding/dickbuttog.png",
     "splashBackgroundColor": "#008080",
-    "homeUrl": "https://dickbutt.gold",
-    "webhookUrl": "https://dickbutt.gold/api/farcaster/webhook"
+    "homeUrl": "https://dickbutt-alpha.vercel.app",
+    "webhookUrl": "https://dickbutt-alpha.vercel.app/api/farcaster/webhook"
   }
 }

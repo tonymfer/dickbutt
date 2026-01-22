@@ -108,6 +108,8 @@ function MobileWebamp() {
   const containerRef = useRef<HTMLDivElement>(null);
   const webampRef = useRef<import('webamp').default | null>(null);
   const initializedRef = useRef(false);
+  const observerRef = useRef<MutationObserver | null>(null);
+  const isSettingUpRef = useRef(false);
 
   // R2 base URL for audio assets
   const R2_AUDIO_URL = process.env.NEXT_PUBLIC_R2_PUBLIC_URL || 'https://pub-c5bbdf1eaf68478a9783e46a36a3c3b5.r2.dev';
@@ -142,11 +144,15 @@ function MobileWebamp() {
   // Function to move webamp into our container and reset positioning
   // Webamp inserts itself into body by default, we need to move it into our scroll container
   const setupWebampForMobile = () => {
+    // Prevent infinite loop - if we're already setting up, skip
+    if (isSettingUpRef.current) return;
     if (!containerRef.current) return;
 
     // Webamp inserts #webamp as a child of body, so query from document
     const webampEl = document.getElementById('webamp') as HTMLElement;
     if (!webampEl) return;
+
+    isSettingUpRef.current = true;
 
     // Move webamp into our container if it's not already there
     if (webampEl.parentElement !== containerRef.current) {
@@ -162,6 +168,11 @@ function MobileWebamp() {
       const htmlEl = el as HTMLElement;
       htmlEl.style.cssText = 'position: static !important; left: auto !important; top: auto !important; transform: none !important; margin: 4px auto;';
     });
+
+    // Allow future calls after a short delay
+    setTimeout(() => {
+      isSettingUpRef.current = false;
+    }, 50);
   };
 
   useEffect(() => {
@@ -196,6 +207,7 @@ function MobileWebamp() {
           const observer = new MutationObserver(() => {
             setupWebampForMobile();
           });
+          observerRef.current = observer;
 
           const webampEl = document.getElementById('webamp');
           if (webampEl) {
@@ -221,6 +233,11 @@ function MobileWebamp() {
     initWebamp();
 
     return () => {
+      // Disconnect observer to prevent memory leaks
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+        observerRef.current = null;
+      }
       if (webampRef.current) {
         webampRef.current.dispose();
         webampRef.current = null;

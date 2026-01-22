@@ -1,22 +1,22 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
-import styled from 'styled-components';
-import { BASESCAN_CONTRACT_URL } from '@/lib/links';
 import { IconConfig } from '@/components/desktop/DesktopIcon';
-import { MobileSection } from './MobileSection';
-import { MobileIconRow } from './MobileIconRow';
-import { MobileWhereToBuy } from './MobileWhereToBuy';
-import { MobileResources } from './MobileResources';
-import { MobileOrigin } from './MobileOrigin';
-import { MobileProduct } from './MobileProduct';
 import {
   DickbuttOnBaseWindow,
   DickbuttWindow,
-  RoadmapWindow,
   DisclaimerWindow,
+  RoadmapWindow,
 } from '@/components/desktop/windows';
 import { getBackgroundStyle, useDesktopSettings } from '@/context/DesktopSettingsContext';
+import { BASESCAN_CONTRACT_URL } from '@/lib/links';
+import { useEffect, useRef } from 'react';
+import styled from 'styled-components';
+import { MobileIconRow } from './MobileIconRow';
+import { MobileOrigin } from './MobileOrigin';
+import { MobileProduct } from './MobileProduct';
+import { MobileResources } from './MobileResources';
+import { MobileSection } from './MobileSection';
+import { MobileWhereToBuy } from './MobileWhereToBuy';
 
 // Desktop icon definitions - folder row
 const FOLDER_ICONS: IconConfig[] = [
@@ -101,8 +101,8 @@ const WebampWrapper = styled.div`
   width: 100%;
   display: flex;
   justify-content: center;
-  padding: 80px 0 400px 0;
-  margin-top: 24px;
+  padding: 80px 0 200px 0;
+  margin-top: 100px;
 `;
 
 // Webamp component for mobile - positioned at bottom of scroll

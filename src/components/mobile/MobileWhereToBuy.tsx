@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { Button, Frame, GroupBox, Tabs, Tab, TabBody, Tooltip } from 'react95';
+import { Button, Frame, Tabs, Tab, TabBody } from 'react95';
 import styled from 'styled-components';
-import { BUY_LINKS } from '@/lib/links';
+import { WHERE_TO_BUY_CONTENT } from '@/lib/windowContent';
 
 const Container = styled.div`
   padding: 8px;
@@ -75,22 +75,6 @@ const HelpText = styled.span`
   color: #444;
 `;
 
-// DEX exchanges - decentralized
-const dexExchanges = [
-  { label: 'Uniswap', url: BUY_LINKS.uniswap, icon: '🦄', featured: true },
-  { label: 'Aerodrome', url: BUY_LINKS.aerodrome, icon: '✈️', featured: true },
-  { label: 'Matcha', url: BUY_LINKS.matcha, icon: '🍵' },
-  { label: 'Interface', url: BUY_LINKS.interface, icon: '🔮' },
-];
-
-// CEX / Other exchanges
-const cexExchanges = [
-  { label: 'Coinbase', url: BUY_LINKS.coinbase, icon: '🪙', featured: true },
-  { label: 'Flooz', url: BUY_LINKS.flooz, icon: '💫' },
-  { label: 'XT.com', url: BUY_LINKS.xtcom, icon: '📊' },
-  { label: 'Slingshot', url: BUY_LINKS.slingshot, icon: '🎯' },
-];
-
 export function MobileWhereToBuy() {
   const [activeTab, setActiveTab] = useState(0);
 
@@ -108,7 +92,7 @@ export function MobileWhereToBuy() {
       <TabContent>
         {activeTab === 0 && (
           <ExchangeGrid>
-            {dexExchanges.map((exchange) => (
+            {WHERE_TO_BUY_CONTENT.dexExchanges.map((exchange) => (
               <ExchangeButton
                 key={exchange.label}
                 $featured={exchange.featured}
@@ -124,7 +108,7 @@ export function MobileWhereToBuy() {
 
         {activeTab === 1 && (
           <ExchangeGrid>
-            {cexExchanges.map((exchange) => (
+            {WHERE_TO_BUY_CONTENT.cexExchanges.map((exchange) => (
               <ExchangeButton
                 key={exchange.label}
                 $featured={exchange.featured}

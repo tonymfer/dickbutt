@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Frame, Separator } from 'react95';
 import styled from 'styled-components';
-import { RESOURCE_LINKS } from '@/lib/links';
+import { RESOURCES_CONTENT } from '@/lib/windowContent';
 
 const Container = styled.div`
   display: flex;
@@ -83,46 +83,9 @@ const StatusFrame = styled(Frame)`
   flex-shrink: 0;
 `;
 
-// Group resources by category
-const resourceGroups = [
-  {
-    label: 'Price & Charts',
-    icon: '📈',
-    items: [
-      { label: 'DexTools', url: RESOURCE_LINKS.dextools, icon: '📊' },
-      { label: 'DexScreener', url: RESOURCE_LINKS.dexscreener, icon: '📉' },
-      { label: 'CoinGecko', url: RESOURCE_LINKS.coingecko, icon: '🦎' },
-      { label: 'CoinMarketCap', url: RESOURCE_LINKS.coinmarketcap, icon: '💹' },
-    ],
-  },
-  {
-    label: 'Social Media',
-    icon: '💬',
-    items: [
-      { label: 'X (Twitter)', url: RESOURCE_LINKS.x, icon: '🐦' },
-      { label: 'Telegram', url: RESOURCE_LINKS.telegram, icon: '✈️' },
-      { label: 'Farcaster', url: RESOURCE_LINKS.farcaster, icon: '🟣' },
-      { label: 'Instagram', url: RESOURCE_LINKS.instagram, icon: '📸' },
-      { label: 'TikTok', url: RESOURCE_LINKS.tiktok, icon: '🎵' },
-      { label: 'YouTube', url: RESOURCE_LINKS.youtube, icon: '📺' },
-    ],
-  },
-  {
-    label: 'Tools & Fun',
-    icon: '🛠️',
-    items: [
-      { label: 'Price Checker', url: RESOURCE_LINKS.priceCheckerExtension, icon: '🔌' },
-      { label: 'Dickbuttify', url: RESOURCE_LINKS.dickbuttify, icon: '🎨' },
-      { label: 'Accept DB', url: RESOURCE_LINKS.acceptDickbutt, icon: '✅' },
-      { label: 'Dickbuttazon', url: RESOURCE_LINKS.dickbuttazon, icon: '📦' },
-      { label: 'CC0 Store', url: RESOURCE_LINKS.cc0Store, icon: '🏪' },
-    ],
-  },
-];
-
 export function ResourcesWindow() {
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(
-    new Set(['Price & Charts']) // Start with first group expanded
+    new Set([RESOURCES_CONTENT[0].label])
   );
 
   const handleClick = (url: string) => {
@@ -141,12 +104,12 @@ export function ResourcesWindow() {
     });
   };
 
-  const totalItems = resourceGroups.reduce((acc, g) => acc + g.items.length, 0);
+  const totalItems = RESOURCES_CONTENT.reduce((acc, g) => acc + g.items.length, 0);
 
   return (
     <Container>
       <TreeContainer variant="field">
-        {resourceGroups.map((group, groupIndex) => (
+        {RESOURCES_CONTENT.map((group, groupIndex) => (
           <div key={group.label}>
             <ResourceItem onClick={() => toggleGroup(group.label)}>
               <ResourceIcon>
@@ -175,7 +138,7 @@ export function ResourcesWindow() {
               </TreeLine>
             )}
 
-            {groupIndex < resourceGroups.length - 1 && (
+            {groupIndex < RESOURCES_CONTENT.length - 1 && (
               <Separator style={{ margin: '2px 0' }} />
             )}
           </div>

@@ -28,12 +28,14 @@ export const PRODUCT_CONTENT = {
 export const ORIGIN_CONTENT = {
   windowTitle: 'Origin',
   imageUrl: '/assets/dickbutt-comic.png',
-  imageAlt: 'Original Dickbutt comic',
+  imageAlt: 'Dickbutt origin comic',
+  imageWidth: 900,
+  imageHeight: 520,
   paragraphs: [
-    'Dickbutt is a phallic cartoon character created by illustrator KC Green in 2006 as part of his webcomic Horribleville. The character has since become a popular reaction image on the internet.',
-    'The original comic features a crudely drawn figure with a penis-shaped head and a butt for a body, with another smaller penis emerging from the butt.',
-    'Dickbutt has become one of the most enduring and beloved memes in internet history, representing the absurdist humor that defines online culture.',
-    'Now, Dickbutt lives on the blockchain as a community token on Base, continuing its legacy as a symbol of internet culture and decentralized humor.',
+    'Over the years, Dickbutt has remained a timeless meme, beloved by millions and widely recognized across social media, forums and internet subcultures. Its longevity and universal appeal have solidified its place as one of the most legendary and enduring memes in online history.',
+    'The Dickbutt meme originated on July 2, 2006, when artist K.C. Green published a webcomic titled "Tree. You\'ve Been Good to Us" as part of his Horribleville series. The comic humorously depicted a character who draws a crude, anthropomorphic figure with a penis and buttocks protruding from its backside. This absurd and intentionally juvenile creation quickly gained traction on internet forums like 4Chan and Reddit, becoming a staple of early meme culture.',
+    'Dickbutt\'s enduring popularity can be attributed to its simplicity, shock value and adaptability. It became a symbol of internet absurdity, often used in image macros, GIFs, and as a punchline in various contexts. Its influence is comparable to other early internet memes like Pepe the Frog and Doge, which also emerged from niche communities and organically became widely recognized symbols of internet culture.',
+    'Dickbutt has transcended its origins, appearing in various forms of media and even inspiring NFT projects like CryptoDickbutts. Despite its crude nature, the meme\'s longevity and cultural impact highlight the internet\'s capacity to elevate even the most absurd creations to iconic status.',
   ],
 } as const;
 
@@ -70,21 +72,20 @@ export const RESOURCES_CONTENT: ResourceGroup[] = [
       { label: 'X (Twitter)', url: RESOURCE_LINKS.x, icon: '🐦' },
       { label: 'Telegram', url: RESOURCE_LINKS.telegram, icon: '✈️' },
       { label: 'Farcaster', url: RESOURCE_LINKS.farcaster, icon: '🟣' },
+      { label: 'Instagram', url: RESOURCE_LINKS.instagram, icon: '📸' },
       { label: 'TikTok', url: RESOURCE_LINKS.tiktok, icon: '🎵' },
       { label: 'YouTube', url: RESOURCE_LINKS.youtube, icon: '📺' },
-      { label: 'Instagram', url: RESOURCE_LINKS.instagram, icon: '📸' },
-      { label: 'Linktree', url: RESOURCE_LINKS.linktree, icon: '🌳' },
     ],
   },
   {
     label: 'Tools & Fun',
     icon: '🛠️',
     items: [
-      { label: 'Price Checker Extension', url: RESOURCE_LINKS.priceCheckerExtension, icon: '🔌' },
-      { label: 'CC0 Store', url: RESOURCE_LINKS.cc0Store, icon: '🛒' },
-      { label: 'Accept Dickbutt', url: RESOURCE_LINKS.acceptDickbutt, icon: '✅' },
-      { label: 'Dickbuttazon', url: RESOURCE_LINKS.dickbuttazon, icon: '📦' },
+      { label: 'Price Checker', url: RESOURCE_LINKS.priceCheckerExtension, icon: '🔌' },
       { label: 'Dickbuttify', url: RESOURCE_LINKS.dickbuttify, icon: '🎨' },
+      { label: 'Accept DB', url: RESOURCE_LINKS.acceptDickbutt, icon: '✅' },
+      { label: 'Dickbuttazon', url: RESOURCE_LINKS.dickbuttazon, icon: '📦' },
+      { label: 'CC0 Store', url: RESOURCE_LINKS.cc0Store, icon: '🏪' },
     ],
   },
 ];

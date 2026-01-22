@@ -1,25 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import { Frame, GroupBox, Button, Separator } from 'react95';
+import { Frame, Separator } from 'react95';
 import styled from 'styled-components';
-import { RESOURCE_LINKS } from '@/lib/links';
+import { RESOURCES_CONTENT } from '@/lib/windowContent';
 
 const Container = styled.div`
   padding: 8px;
   background: #c0c0c0;
-`;
-
-const StyledGroupBox = styled(GroupBox)`
-  margin-bottom: 8px;
-
-  &:last-child {
-    margin-bottom: 0;
-  }
-`;
-
-const GroupContent = styled.div`
-  padding: 4px;
 `;
 
 const ResourceItem = styled.button`
@@ -61,19 +49,6 @@ const ResourceArrow = styled.span`
   color: #808080;
 `;
 
-const FolderHeader = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 4px 0;
-  font-weight: bold;
-  font-size: 11px;
-`;
-
-const FolderIcon = styled.span`
-  font-size: 16px;
-`;
-
 const TreeLine = styled.div`
   display: flex;
   flex-direction: column;
@@ -95,46 +70,9 @@ const ObjectCount = styled.span`
   color: #444;
 `;
 
-// Group resources by category
-const resourceGroups = [
-  {
-    label: 'Price & Charts',
-    icon: '📈',
-    items: [
-      { label: 'DexTools', url: RESOURCE_LINKS.dextools, icon: '📊' },
-      { label: 'DexScreener', url: RESOURCE_LINKS.dexscreener, icon: '📉' },
-      { label: 'CoinGecko', url: RESOURCE_LINKS.coingecko, icon: '🦎' },
-      { label: 'CoinMarketCap', url: RESOURCE_LINKS.coinmarketcap, icon: '💹' },
-    ],
-  },
-  {
-    label: 'Social Media',
-    icon: '💬',
-    items: [
-      { label: 'X (Twitter)', url: RESOURCE_LINKS.x, icon: '🐦' },
-      { label: 'Telegram', url: RESOURCE_LINKS.telegram, icon: '✈️' },
-      { label: 'Farcaster', url: RESOURCE_LINKS.farcaster, icon: '🟣' },
-      { label: 'Instagram', url: RESOURCE_LINKS.instagram, icon: '📸' },
-      { label: 'TikTok', url: RESOURCE_LINKS.tiktok, icon: '🎵' },
-      { label: 'YouTube', url: RESOURCE_LINKS.youtube, icon: '📺' },
-    ],
-  },
-  {
-    label: 'Tools & Fun',
-    icon: '🛠️',
-    items: [
-      { label: 'Price Checker Extension', url: RESOURCE_LINKS.priceCheckerExtension, icon: '🔌' },
-      { label: 'Dickbuttify', url: RESOURCE_LINKS.dickbuttify, icon: '🎨' },
-      { label: 'Accept Dickbutt', url: RESOURCE_LINKS.acceptDickbutt, icon: '✅' },
-      { label: 'Dickbuttazon', url: RESOURCE_LINKS.dickbuttazon, icon: '📦' },
-      { label: 'CC0 Store', url: RESOURCE_LINKS.cc0Store, icon: '🏪' },
-    ],
-  },
-];
-
 export function MobileResources() {
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(
-    new Set(resourceGroups.map(g => g.label))
+    new Set(RESOURCES_CONTENT.map(g => g.label))
   );
 
   const handleClick = (url: string) => {
@@ -153,12 +91,12 @@ export function MobileResources() {
     });
   };
 
-  const totalItems = resourceGroups.reduce((acc, g) => acc + g.items.length, 0);
+  const totalItems = RESOURCES_CONTENT.reduce((acc, g) => acc + g.items.length, 0);
 
   return (
     <Container>
       <Frame variant="field" style={{ padding: 8 }}>
-        {resourceGroups.map((group, groupIndex) => (
+        {RESOURCES_CONTENT.map((group, groupIndex) => (
           <div key={group.label}>
             <ResourceItem onClick={() => toggleGroup(group.label)}>
               <ResourceIcon>
@@ -174,7 +112,7 @@ export function MobileResources() {
 
             {expandedGroups.has(group.label) && (
               <TreeLine>
-                {group.items.map((item, itemIndex) => (
+                {group.items.map((item) => (
                   <ResourceItem
                     key={item.label}
                     onClick={() => handleClick(item.url)}
@@ -187,7 +125,7 @@ export function MobileResources() {
               </TreeLine>
             )}
 
-            {groupIndex < resourceGroups.length - 1 && (
+            {groupIndex < RESOURCES_CONTENT.length - 1 && (
               <Separator style={{ margin: '4px 0' }} />
             )}
           </div>

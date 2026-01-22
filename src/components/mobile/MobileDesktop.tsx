@@ -85,6 +85,7 @@ const MobileContainer = styled.div<{ $background: string }>`
   overflow-x: hidden;
   background: ${props => props.$background};
   -webkit-overflow-scrolling: touch;
+  overflow-anchor: none;
 `;
 
 const ScrollContent = styled.div`
@@ -143,7 +144,7 @@ function MobileWebamp() {
 
   // Function to move webamp into our container and reset positioning
   // Webamp inserts itself into body by default, we need to move it into our scroll container
-  const setupWebampForMobile = () => {
+  const setupWebampForMobile = (resetScroll = false) => {
     // Prevent infinite loop - if we're already setting up, skip
     if (isSettingUpRef.current) return;
     if (!containerRef.current) return;
@@ -168,6 +169,16 @@ function MobileWebamp() {
       const htmlEl = el as HTMLElement;
       htmlEl.style.cssText = 'position: static !important; left: auto !important; top: auto !important; transform: none !important; margin: 4px auto;';
     });
+
+    // Reset scroll to top after DOM manipulation if requested
+    if (resetScroll) {
+      const scrollContainer = containerRef.current.closest('[style*="overflow"]') as HTMLElement
+        || document.querySelector('[class*="MobileContainer"]') as HTMLElement;
+      if (scrollContainer) {
+        scrollContainer.scrollTop = 0;
+      }
+      window.scrollTo(0, 0);
+    }
 
     // Allow future calls after a short delay
     setTimeout(() => {
@@ -219,8 +230,9 @@ function MobileWebamp() {
           }
 
           // Also reset after a short delay to catch any async updates
+          // Pass true to reset scroll to top after final setup
           setTimeout(setupWebampForMobile, 100);
-          setTimeout(setupWebampForMobile, 500);
+          setTimeout(() => setupWebampForMobile(true), 500);
 
           webamp.play();
         }
@@ -258,18 +270,9 @@ function MobileWebamp() {
 export function MobileDesktop() {
   const { settings } = useDesktopSettings();
   const backgroundStyle = getBackgroundStyle(settings);
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  // Scroll to top on mount
-  useEffect(() => {
-    if (containerRef.current) {
-      containerRef.current.scrollTop = 0;
-    }
-    window.scrollTo(0, 0);
-  }, []);
 
   return (
-    <MobileContainer ref={containerRef} $background={backgroundStyle}>
+    <MobileContainer $background={backgroundStyle}>
       <ScrollContent>
         {/* 1. Dickbutt on Base - Banner */}
         <MobileSection title="Dickbutt on Base" noPadding>

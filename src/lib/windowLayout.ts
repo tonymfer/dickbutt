@@ -45,7 +45,7 @@ function clampRectToViewport(
 
 // Winamp is approximately 275px wide
 const WINAMP_WIDTH = 275;
-const BOTTOM_ICONS_RESERVE = 100; // Space for TV/Videos/NFT icons at bottom
+const BOTTOM_ICONS_RESERVE = 180; // Space for two rows of icons at bottom (80px each + gap)
 
 function getDesktopGrid(viewportWidth: number, viewportHeight: number) {
   const availableHeight = viewportHeight - HEADER_HEIGHT - TASKBAR_HEIGHT - GRID_GAP * 2 - BOTTOM_ICONS_RESERVE;
@@ -126,6 +126,38 @@ export function getWebampPosition(viewportWidth: number, viewportHeight: number)
   return {
     x: grid.left.x,
     y: whereToBuyRect.y + whereToBuyRect.height + GRID_GAP,
+  };
+}
+
+// Get icon grid positions (centered at bottom, two rows just above taskbar)
+export function getIconGridPositions(
+  viewportWidth: number,
+  viewportHeight: number,
+  topIconCount: number,
+  bottomIconCount: number
+): { topRow: { x: number; y: number }; bottomRow: { x: number; y: number } } {
+  const iconWidth = 80;
+  const iconHeight = 80;
+  const horizontalGap = 16;
+  const rowGap = 8;
+
+  // Bottom row sits just above taskbar (taskbar is 36px)
+  const bottomRowY = viewportHeight - TASKBAR_HEIGHT - iconHeight - 8;
+
+  // Top row sits above bottom row
+  const topRowY = bottomRowY - rowGap - iconHeight;
+
+  // Top row - centered
+  const topRowWidth = topIconCount * iconWidth + (topIconCount - 1) * horizontalGap;
+  const topRowX = (viewportWidth - topRowWidth) / 2;
+
+  // Bottom row - centered
+  const bottomRowWidth = bottomIconCount * iconWidth + (bottomIconCount - 1) * horizontalGap;
+  const bottomRowX = (viewportWidth - bottomRowWidth) / 2;
+
+  return {
+    topRow: { x: topRowX, y: topRowY },
+    bottomRow: { x: bottomRowX, y: bottomRowY },
   };
 }
 

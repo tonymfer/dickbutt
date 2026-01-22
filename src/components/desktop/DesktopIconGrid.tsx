@@ -1,6 +1,9 @@
 'use client';
 
-import styled from 'styled-components';
+import { useIconPositions } from '@/context/IconPositionContext';
+import { useViewport } from '@/hooks/useViewport';
+import { getIconGridPositions } from '@/lib/windowLayout';
+import { useEffect } from 'react';
 import { DesktopIcon, IconConfig } from './DesktopIcon';
 
 interface DesktopIconGridProps {
@@ -8,40 +11,63 @@ interface DesktopIconGridProps {
   bottomIcons: IconConfig[];
 }
 
-const TopGrid = styled.div`
-  position: absolute;
-  top: 24px;
-  right: 16px;
-  display: flex;
-  flex-direction: row;
-  gap: 8px;
-  z-index: 5000;
-`;
+const ICON_WIDTH = 80;
+const HORIZONTAL_GAP = 16;
 
-const BottomGrid = styled.div`
-  position: absolute;
-  bottom: 52px;
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: row;
-  gap: 16px;
-  z-index: 5000;
-`;
+// Calculate initial icon positions using windowLayout helper
+function calculateIconPositions(
+  topIcons: IconConfig[],
+  bottomIcons: IconConfig[],
+  viewportWidth: number,
+  viewportHeight: number
+): Record<string, { x: number; y: number }> {
+  const positions: Record<string, { x: number; y: number }> = {};
+
+  const gridPos = getIconGridPositions(viewportWidth, viewportHeight, topIcons.length, bottomIcons.length);
+
+  // Top row icons
+  topIcons.forEach((icon, index) => {
+    positions[icon.id] = {
+      x: gridPos.topRow.x + index * (ICON_WIDTH + HORIZONTAL_GAP),
+      y: gridPos.topRow.y,
+    };
+  });
+
+  // Bottom row icons
+  bottomIcons.forEach((icon, index) => {
+    positions[icon.id] = {
+      x: gridPos.bottomRow.x + index * (ICON_WIDTH + HORIZONTAL_GAP),
+      y: gridPos.bottomRow.y,
+    };
+  });
+
+  return positions;
+}
 
 export function DesktopIconGrid({ topIcons, bottomIcons }: DesktopIconGridProps) {
+  const { width, height } = useViewport();
+  const { positions, initializePositions } = useIconPositions();
+
+  // Initialize positions on mount
+  useEffect(() => {
+    if (width > 0 && height > 0) {
+      const initialPositions = calculateIconPositions(topIcons, bottomIcons, width, height);
+      initializePositions(initialPositions);
+    }
+  }, [width, height, topIcons, bottomIcons, initializePositions]);
+
+  const allIcons = [...topIcons, ...bottomIcons];
+  const initialPositions = calculateIconPositions(topIcons, bottomIcons, width, height);
+
   return (
     <>
-      <TopGrid>
-        {topIcons.map((icon) => (
-          <DesktopIcon key={icon.id} config={icon} />
-        ))}
-      </TopGrid>
-      <BottomGrid>
-        {bottomIcons.map((icon) => (
-          <DesktopIcon key={icon.id} config={icon} />
-        ))}
-      </BottomGrid>
+      {allIcons.map((icon) => (
+        <DesktopIcon
+          key={icon.id}
+          config={icon}
+          initialPosition={positions[icon.id] || initialPositions[icon.id] || { x: 0, y: 0 }}
+        />
+      ))}
     </>
   );
 }

@@ -1,9 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useDesktop } from '@/context/DesktopContext';
+import { useIconPositions } from '@/context/IconPositionContext';
+import { motion, useMotionValue } from 'framer-motion';
 import styled from 'styled-components';
 
 export interface IconConfig {
@@ -20,9 +22,11 @@ export interface IconConfig {
 
 interface DesktopIconProps {
   config: IconConfig;
+  initialPosition: { x: number; y: number };
 }
 
-const IconButton = styled.button<{ $selected: boolean }>`
+const IconContainer = styled(motion.div)<{ $selected: boolean }>`
+  position: absolute;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -34,6 +38,8 @@ const IconButton = styled.button<{ $selected: boolean }>`
   background: ${({ $selected }) => ($selected ? 'rgba(0, 0, 128, 0.5)' : 'transparent')};
   border: none;
   outline: none;
+  user-select: none;
+  z-index: 5000;
 
   &:focus {
     background: rgba(0, 0, 128, 0.5);
@@ -54,13 +60,28 @@ const IconLabel = styled.span<{ $selected: boolean }>`
   padding: 1px 2px;
 `;
 
-export function DesktopIcon({ config }: DesktopIconProps) {
+export function DesktopIcon({ config, initialPosition }: DesktopIconProps) {
   const [isSelected, setIsSelected] = useState(false);
   const router = useRouter();
   const { openWindow } = useDesktop();
+  const { positions, updatePosition } = useIconPositions();
+  const isDraggingRef = useRef(false);
+
+  // Use stored position or initial position
+  const position = positions[config.id] || initialPosition;
+  const x = useMotionValue(position.x);
+  const y = useMotionValue(position.y);
+
+  // Sync motion values when position changes (e.g., from viewport resize)
+  useEffect(() => {
+    x.set(position.x);
+    y.set(position.y);
+  }, [position.x, position.y, x, y]);
 
   const handleClick = () => {
-    setIsSelected(true);
+    if (!isDraggingRef.current) {
+      setIsSelected(true);
+    }
   };
 
   const handleBlur = () => {
@@ -68,6 +89,8 @@ export function DesktopIcon({ config }: DesktopIconProps) {
   };
 
   const handleDoubleClick = () => {
+    if (isDraggingRef.current) return;
+
     switch (config.action) {
       case 'route':
         router.push(config.target);
@@ -84,11 +107,27 @@ export function DesktopIcon({ config }: DesktopIconProps) {
   };
 
   return (
-    <IconButton
+    <IconContainer
       $selected={isSelected}
+      style={{ x, y }}
+      drag
+      dragMomentum={false}
+      dragElastic={0}
+      onDragStart={() => {
+        isDraggingRef.current = true;
+      }}
+      onDragEnd={() => {
+        // Save position after drag
+        updatePosition(config.id, { x: x.get(), y: y.get() });
+        // Reset dragging flag after a short delay to prevent click
+        setTimeout(() => {
+          isDraggingRef.current = false;
+        }, 100);
+      }}
       onClick={handleClick}
       onBlur={handleBlur}
       onDoubleClick={handleDoubleClick}
+      tabIndex={0}
     >
       <IconImage>
         <Image
@@ -110,6 +149,6 @@ export function DesktopIcon({ config }: DesktopIconProps) {
           {config.label}
         </IconLabel>
       )}
-    </IconButton>
+    </IconContainer>
   );
 }

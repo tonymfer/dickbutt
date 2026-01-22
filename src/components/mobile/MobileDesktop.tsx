@@ -1,7 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import Image from 'next/image';
+import { useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { BASESCAN_CONTRACT_URL } from '@/lib/links';
 import { IconConfig } from '@/components/desktop/DesktopIcon';
@@ -104,27 +103,11 @@ const WebampWrapper = styled.div`
   padding: 8px 0;
 `;
 
-const MobileFooter = styled.footer`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  padding: 16px 0 32px;
-`;
-
-const CopyrightText = styled.p`
-  font-size: 11px;
-  color: #000;
-  margin: 0;
-  text-align: center;
-`;
-
 // Webamp component for mobile - positioned at bottom of scroll
 function MobileWebamp() {
   const containerRef = useRef<HTMLDivElement>(null);
   const webampRef = useRef<import('webamp').default | null>(null);
   const initializedRef = useRef(false);
-  const [isReady, setIsReady] = useState(false);
 
   // R2 base URL for audio assets
   const R2_AUDIO_URL = process.env.NEXT_PUBLIC_R2_PUBLIC_URL || 'https://pub-c5bbdf1eaf68478a9783e46a36a3c3b5.r2.dev';
@@ -156,6 +139,31 @@ function MobileWebamp() {
     },
   ];
 
+  // Function to move webamp into our container and reset positioning
+  // Webamp inserts itself into body by default, we need to move it into our scroll container
+  const setupWebampForMobile = () => {
+    if (!containerRef.current) return;
+
+    // Webamp inserts #webamp as a child of body, so query from document
+    const webampEl = document.getElementById('webamp') as HTMLElement;
+    if (!webampEl) return;
+
+    // Move webamp into our container if it's not already there
+    if (webampEl.parentElement !== containerRef.current) {
+      containerRef.current.appendChild(webampEl);
+    }
+
+    // Reset positioning styles to flow with content
+    webampEl.style.cssText = 'position: static !important; transform: none !important;';
+
+    // Reset all window elements
+    const elements = webampEl.querySelectorAll('#main-window, #playlist-window, #equalizer-window');
+    elements.forEach((el) => {
+      const htmlEl = el as HTMLElement;
+      htmlEl.style.cssText = 'position: static !important; left: auto !important; top: auto !important; transform: none !important; margin: 4px auto;';
+    });
+  };
+
   useEffect(() => {
     if (initializedRef.current) return;
     if (typeof window === 'undefined') return;
@@ -180,7 +188,28 @@ function MobileWebamp() {
 
         if (containerRef.current) {
           await webamp.renderWhenReady(containerRef.current);
-          setIsReady(true);
+
+          // Move webamp into our container and reset positioning
+          setupWebampForMobile();
+
+          // Use MutationObserver to catch any style changes Webamp makes
+          const observer = new MutationObserver(() => {
+            setupWebampForMobile();
+          });
+
+          const webampEl = document.getElementById('webamp');
+          if (webampEl) {
+            observer.observe(webampEl, {
+              attributes: true,
+              attributeFilter: ['style'],
+              subtree: true,
+            });
+          }
+
+          // Also reset after a short delay to catch any async updates
+          setTimeout(setupWebampForMobile, 100);
+          setTimeout(setupWebampForMobile, 500);
+
           webamp.play();
         }
       } catch (error) {
@@ -199,29 +228,11 @@ function MobileWebamp() {
     };
   }, []);
 
-  // Reset webamp positioning for mobile
-  useEffect(() => {
-    if (!isReady || !containerRef.current) return;
-
-    const webampEl = containerRef.current.querySelector('#webamp') as HTMLElement;
-    if (webampEl) {
-      webampEl.style.position = 'relative';
-      webampEl.style.left = '0';
-      webampEl.style.top = '0';
-      webampEl.style.transform = 'none';
-    }
-  }, [isReady]);
-
   return (
     <WebampWrapper>
       <div
         ref={containerRef}
         className="webamp-container mobile-webamp"
-        style={{
-          position: 'relative',
-          width: '275px',
-          minHeight: '116px',
-        }}
       />
     </WebampWrapper>
   );
@@ -282,20 +293,6 @@ export function MobileDesktop() {
 
         {/* 10. Winamp */}
         <MobileWebamp />
-
-        {/* 11. Footer */}
-        <MobileFooter>
-          <Image
-            src="/assets/dbi.gif"
-            alt="Dickbutt"
-            width={90}
-            height={90}
-            unoptimized
-          />
-          <CopyrightText>
-            2025 by Dickbutt on Base. All rights reserved.
-          </CopyrightText>
-        </MobileFooter>
       </ScrollContent>
     </MobileContainer>
   );

@@ -4,10 +4,10 @@ import { MobileDesktop } from '@/components/mobile';
 import { React95Provider } from '@/components/providers/React95Provider';
 import { DesktopProvider, useDesktop, WindowState } from '@/context/DesktopContext';
 import { DesktopSettingsProvider, getBackgroundStyle, useDesktopSettings } from '@/context/DesktopSettingsContext';
+import { IconPositionProvider } from '@/context/IconPositionContext';
 import { useViewport } from '@/hooks/useViewport';
 import { BASESCAN_CONTRACT_URL } from '@/lib/links';
 import { calculateWindowRect, getWebampPosition } from '@/lib/windowLayout';
-import Image from 'next/image';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { IconConfig } from './DesktopIcon';
@@ -86,25 +86,6 @@ const DesktopContainer = styled.div<{ $background: string }>`
   background: ${props => props.$background};
 `;
 
-const DesktopFooter = styled.footer`
-  position: absolute;
-  bottom: 180px; /* Above taskbar */
-  left: 50%;
-  transform: translateX(-50%);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 4px;
-  pointer-events: none;
-  z-index: 0;
-`;
-
-const CopyrightText = styled.p`
-  font-size: 11px;
-  color: #000;
-  margin: 0;
-`;
-
 // Generate window rects (position + size) based on viewport
 function useResponsiveWindowRects(viewportWidth: number, viewportHeight: number) {
   return useMemo(() => {
@@ -135,7 +116,7 @@ function createDefaultWindows(
     },
     {
       id: 'product',
-      title: 'Product',
+      title: 'Education',
       content: 'product',
       contentType: 'component',
       position: rects.product ? { x: rects.product.x, y: rects.product.y } : { x: 30, y: 300 },
@@ -221,20 +202,6 @@ function DesktopContent() {
         {/* Webamp player - positioned below Resources */}
         <WebampPlayer x={webampPos.x} y={webampPos.y} />
 
-        {/* Footer */}
-        <DesktopFooter>
-          <Image
-            src="/assets/dbi.gif"
-            alt="Dickbutt"
-            width={200}
-            height={200}
-            unoptimized
-          />
-          <CopyrightText>
-            ©2025 by Dickbutt on Base. All rights reserved.
-          </CopyrightText>
-        </DesktopFooter>
-
         {/* Taskbar */}
         <Taskbar />
     </DesktopContainer>
@@ -291,9 +258,11 @@ function DesktopWithProviders() {
 
   return (
     <DesktopSettingsProvider>
-      <DesktopProvider defaultWindows={defaultWindows}>
-        <DesktopContent />
-      </DesktopProvider>
+      <IconPositionProvider>
+        <DesktopProvider defaultWindows={defaultWindows}>
+          <DesktopContent />
+        </DesktopProvider>
+      </IconPositionProvider>
     </DesktopSettingsProvider>
   );
 }

@@ -4,8 +4,8 @@ import { Button, Frame } from 'react95';
 import styled from 'styled-components';
 import Image from 'next/image';
 
-const BOOK_IMAGE_URL = 'https://dickbuttazon.com/wp-content/uploads/2025/05/dickbutt-standard-1.png';
-const PRODUCT_URL = 'https://dickbuttazon.com/product/the-dickbutt-standard/';
+const BOOK_IMAGE_URL = 'https://m.media-amazon.com/images/I/51EvPlS4NjL._SL1491_.jpg';
+const PRODUCT_URL = 'https://www.amazon.com/dp/B0GHQWJQNN?ref=cm_sw_r_ffobk_cso_cp_apin_dp_EXNXMNTNVB378VWQF5FH&ref_=cm_sw_r_ffobk_cso_cp_apin_dp_EXNXMNTNVB378VWQF5FH&social_share=cm_sw_r_ffobk_cso_cp_apin_dp_EXNXMNTNVB378VWQF5FH&bestFormat=true';
 
 const Container = styled.div`
   display: flex;
@@ -131,7 +131,7 @@ export function ProductWindow() {
         </BookDescription>
 
         <StyledButton primary onClick={handleViewProduct}>
-          📚 View on Dickbuttazon
+          📚 Amazon
         </StyledButton>
 
         <StatusFrame variant="status">

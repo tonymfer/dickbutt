@@ -3,9 +3,7 @@
 import { Button, Frame } from 'react95';
 import styled from 'styled-components';
 import Image from 'next/image';
-
-const BOOK_IMAGE_URL = 'https://m.media-amazon.com/images/I/51EvPlS4NjL._SL1491_.jpg';
-const PRODUCT_URL = 'https://www.amazon.com/dp/B0GHQWJQNN?ref=cm_sw_r_ffobk_cso_cp_apin_dp_EXNXMNTNVB378VWQF5FH&ref_=cm_sw_r_ffobk_cso_cp_apin_dp_EXNXMNTNVB378VWQF5FH&social_share=cm_sw_r_ffobk_cso_cp_apin_dp_EXNXMNTNVB378VWQF5FH&bestFormat=true';
+import { PRODUCT_CONTENT } from '@/lib/windowContent';
 
 const Container = styled.div`
   display: flex;
@@ -99,7 +97,7 @@ const StatusFrame = styled(Frame)`
 
 export function ProductWindow() {
   const handleViewProduct = () => {
-    window.open(PRODUCT_URL, '_blank', 'noopener,noreferrer');
+    window.open(PRODUCT_CONTENT.productUrl, '_blank', 'noopener,noreferrer');
   };
 
   return (
@@ -107,8 +105,8 @@ export function ProductWindow() {
       <BookFrame variant="field">
         <BookImageWrapper>
           <Image
-            src={BOOK_IMAGE_URL}
-            alt="The Dickbutt Standard"
+            src={PRODUCT_CONTENT.imageUrl}
+            alt={PRODUCT_CONTENT.imageAlt}
             fill
             style={{ objectFit: 'contain' }}
             unoptimized
@@ -119,23 +117,20 @@ export function ProductWindow() {
       <InfoSection>
         <div>
           <BookTitle>
-            The Dickbutt Standard
-            <NewBadge>NEW</NewBadge>
+            {PRODUCT_CONTENT.title}
+            {PRODUCT_CONTENT.newBadge && <NewBadge>NEW</NewBadge>}
           </BookTitle>
-          <ComingSoonBadge>COMING SOON</ComingSoonBadge>
+          <ComingSoonBadge>{PRODUCT_CONTENT.badge}</ComingSoonBadge>
         </div>
 
-        <BookDescription>
-          A comprehensive exploration of Dickbutt and its place in monetary history.
-          The decentralized alternative to central banking.
-        </BookDescription>
+        <BookDescription>{PRODUCT_CONTENT.description}</BookDescription>
 
         <StyledButton primary onClick={handleViewProduct}>
-          📚 Amazon
+          {PRODUCT_CONTENT.buttonText}
         </StyledButton>
 
         <StatusFrame variant="status">
-          <span>By Saifedean Ammous • Available on Amazon</span>
+          <span>By {PRODUCT_CONTENT.author} • {PRODUCT_CONTENT.availability}</span>
         </StatusFrame>
       </InfoSection>
     </Container>

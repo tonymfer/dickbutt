@@ -1,11 +1,9 @@
 'use client';
 
-import { Button, Frame, GroupBox } from 'react95';
+import { Button, Frame } from 'react95';
 import styled from 'styled-components';
 import Image from 'next/image';
-
-const BOOK_IMAGE_URL = 'https://dickbuttazon.com/wp-content/uploads/2025/05/dickbutt-standard-1.png';
-const PRODUCT_URL = 'https://dickbuttazon.com/product/the-dickbutt-standard/';
+import { PRODUCT_CONTENT } from '@/lib/windowContent';
 
 const Container = styled.div`
   padding: 12px;
@@ -98,7 +96,7 @@ const NewBadge = styled.span`
 
 export function MobileProduct() {
   const handleViewProduct = () => {
-    window.open(PRODUCT_URL, '_blank', 'noopener,noreferrer');
+    window.open(PRODUCT_CONTENT.productUrl, '_blank', 'noopener,noreferrer');
   };
 
   return (
@@ -106,8 +104,8 @@ export function MobileProduct() {
       <BookFrame variant="field">
         <BookImageWrapper>
           <Image
-            src={BOOK_IMAGE_URL}
-            alt="The Dickbutt Standard - Book Cover"
+            src={PRODUCT_CONTENT.imageUrl}
+            alt={PRODUCT_CONTENT.imageAlt}
             fill
             style={{
               objectFit: 'contain',
@@ -119,25 +117,22 @@ export function MobileProduct() {
 
       <InfoSection>
         <div>
-          <BookTitle>The Dickbutt Standard</BookTitle>
-          <ComingSoonBadge>COMING SOON</ComingSoonBadge>
+          <BookTitle>{PRODUCT_CONTENT.title}</BookTitle>
+          <ComingSoonBadge>{PRODUCT_CONTENT.badge}</ComingSoonBadge>
         </div>
-        <BookDescription>
-          A comprehensive and authoritative exploration of Dickbutt and its place
-          in monetary history. The decentralized alternative to central banking.
-        </BookDescription>
+        <BookDescription>{PRODUCT_CONTENT.description}</BookDescription>
       </InfoSection>
 
       <ButtonRow>
         <StyledButton primary onClick={handleViewProduct}>
-          View on Dickbuttazon
+          {PRODUCT_CONTENT.buttonText}
         </StyledButton>
       </ButtonRow>
 
       <StatusFrame variant="status">
-        <NewBadge>NEW</NewBadge>
-        <span>Available soon on Amazon</span>
-        <span style={{ marginLeft: 'auto' }}>By Saifedean Ammous</span>
+        {PRODUCT_CONTENT.newBadge && <NewBadge>NEW</NewBadge>}
+        <span>{PRODUCT_CONTENT.availability}</span>
+        <span style={{ marginLeft: 'auto' }}>By {PRODUCT_CONTENT.author}</span>
       </StatusFrame>
     </Container>
   );

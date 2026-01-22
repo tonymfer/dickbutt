@@ -313,8 +313,8 @@ export function MobileDesktop() {
         {/* 3. Media Icons Row */}
         <MobileIconRow icons={MEDIA_ICONS} />
 
-        {/* 4. Product - Upcoming Book */}
-        <MobileSection title="Product" noPadding>
+        {/* 4. Education - Upcoming Book */}
+        <MobileSection title="Education" noPadding>
           <MobileProduct />
         </MobileSection>
 

@@ -172,8 +172,7 @@ function MobileWebamp() {
 
     // Reset scroll to top after DOM manipulation if requested
     if (resetScroll) {
-      const scrollContainer = containerRef.current.closest('[style*="overflow"]') as HTMLElement
-        || document.querySelector('[class*="MobileContainer"]') as HTMLElement;
+      const scrollContainer = document.getElementById('mobile-scroll-container');
       if (scrollContainer) {
         scrollContainer.scrollTop = 0;
       }
@@ -229,12 +228,17 @@ function MobileWebamp() {
             });
           }
 
-          // Also reset after a short delay to catch any async updates
+          // Also reset after delays to catch any async updates
           // Pass true to reset scroll to top after final setup
           setTimeout(setupWebampForMobile, 100);
-          setTimeout(() => setupWebampForMobile(true), 500);
+          setTimeout(() => setupWebampForMobile(true), 300);
 
-          webamp.play();
+          // Delay play to avoid focus-triggered scroll
+          setTimeout(() => {
+            webamp.play();
+            // Final scroll reset after play
+            setTimeout(() => setupWebampForMobile(true), 100);
+          }, 500);
         }
       } catch (error) {
         console.error('Failed to initialize Webamp:', error);
@@ -271,8 +275,31 @@ export function MobileDesktop() {
   const { settings } = useDesktopSettings();
   const backgroundStyle = getBackgroundStyle(settings);
 
+  // Force scroll to top on mount and prevent scroll jumps
+  useEffect(() => {
+    const container = document.getElementById('mobile-scroll-container');
+    if (container) {
+      container.scrollTop = 0;
+    }
+    window.scrollTo(0, 0);
+
+    // Also prevent any focus-triggered scrolling
+    const preventScroll = (e: Event) => {
+      const target = e.target as HTMLElement;
+      if (target?.closest?.('.webamp-container')) {
+        const cont = document.getElementById('mobile-scroll-container');
+        if (cont) cont.scrollTop = 0;
+      }
+    };
+    document.addEventListener('focus', preventScroll, true);
+
+    return () => {
+      document.removeEventListener('focus', preventScroll, true);
+    };
+  }, []);
+
   return (
-    <MobileContainer $background={backgroundStyle}>
+    <MobileContainer id="mobile-scroll-container" $background={backgroundStyle}>
       <ScrollContent>
         {/* 1. Dickbutt on Base - Banner */}
         <MobileSection title="Dickbutt on Base" noPadding>

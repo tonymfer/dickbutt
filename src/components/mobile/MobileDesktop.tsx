@@ -100,7 +100,7 @@ const WebampWrapper = styled.div`
   width: 100%;
   display: flex;
   justify-content: center;
-  padding: 8px 0;
+  padding: 24px 0 80px 0;
 `;
 
 // Webamp component for mobile - positioned at bottom of scroll
@@ -258,9 +258,18 @@ function MobileWebamp() {
 export function MobileDesktop() {
   const { settings } = useDesktopSettings();
   const backgroundStyle = getBackgroundStyle(settings);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Scroll to top on mount
+  useEffect(() => {
+    if (containerRef.current) {
+      containerRef.current.scrollTop = 0;
+    }
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
-    <MobileContainer $background={backgroundStyle}>
+    <MobileContainer ref={containerRef} $background={backgroundStyle}>
       <ScrollContent>
         {/* 1. Dickbutt on Base - Banner */}
         <MobileSection title="Dickbutt on Base" noPadding>

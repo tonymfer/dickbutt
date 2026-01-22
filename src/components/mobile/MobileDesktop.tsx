@@ -101,7 +101,7 @@ const WebampWrapper = styled.div`
   width: 100%;
   display: flex;
   justify-content: center;
-  padding: 24px 0 80px 0;
+  padding: 24px 0 400px 0;
 `;
 
 // Webamp component for mobile - positioned at bottom of scroll

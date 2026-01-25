@@ -188,11 +188,11 @@ export function calculateWindowRect(
 
   // Center column below banner: Origin + Roadmap
   // Fixed dialog height - must not scroll
-  const roadmapH = 150;
+  const roadmapH = 140;
   // IMPORTANT: clamp heights BEFORE computing dependent y positions
-  // Origin needs more height for full-width image
+  // Origin needs more height for full-width image (2x larger)
   const originHMax = Math.max(MIN_H, belowBannerH - roadmapH - GRID_GAP);
-  const originH = clamp(Math.floor(originHMax * 0.68), MIN_H, originHMax);
+  const originH = clamp(originHMax, MIN_H, originHMax);
 
   // Left column: Resources + WhereToBuy stacked above Winamp area
   const whereToBuyH = 160; // Where to Buy with tabs needs decent height
@@ -210,6 +210,12 @@ export function calculateWindowRect(
   const dickbuttH = 165; // Compact tokenomics - just enough for checkboxes
   const productH = rightAvailable - dickbuttH - disclaimerH - GRID_GAP * 2;
 
+  // Gallery windows - large centered overlays (80% width max 1100px, 85% height)
+  const galleryW = Math.min(1100, Math.floor(viewportWidth * 0.8));
+  const galleryH = Math.floor(availableHeight * 0.85);
+  const galleryX = Math.round((viewportWidth - galleryW) / 2);
+  const galleryY = Math.round((availableHeight - galleryH) / 2);
+
   const rectById: Record<string, WindowRect> = {
     // Top banner spanning center + right
     dickbuttonbase: { x: grid.center.x, y: bannerY, width: bannerW, height: bannerH },
@@ -218,7 +224,7 @@ export function calculateWindowRect(
     resources: { x: grid.left.x, y: GRID_GAP, width: grid.left.width, height: resourcesH },
     wheretobuy: { x: grid.left.x, y: GRID_GAP + resourcesH + GRID_GAP, width: grid.left.width, height: whereToBuyH },
 
-    // Center column (below banner)
+    // Center column (below banner) - Origin takes most space, Roadmap at bottom
     origin: { x: grid.center.x, y: belowBannerY, width: grid.center.width, height: originH },
     roadmap: { x: grid.center.x, y: belowBannerY + originH + GRID_GAP, width: grid.center.width, height: roadmapH },
 
@@ -244,6 +250,11 @@ export function calculateWindowRect(
       width: 420,
       height: 320,
     },
+
+    // Gallery windows (large centered overlays)
+    meme: { x: galleryX, y: galleryY, width: galleryW, height: galleryH },
+    branding: { x: galleryX, y: galleryY, width: galleryW, height: galleryH },
+    irl: { x: galleryX, y: galleryY, width: galleryW, height: galleryH },
   };
 
   const fallback: WindowRect = {
@@ -258,10 +269,13 @@ export function calculateWindowRect(
   const minHeightById: Record<string, number> = {
     dickbuttonbase: 180,
     dickbutt: 165,
-    roadmap: 150,
+    roadmap: 140,
     disclaimer: 140,
     wheretobuy: 160,
     product: 180,
+    meme: 400,
+    branding: 400,
+    irl: 400,
   };
 
   const minH = minHeightById[windowId] ?? MIN_H;
@@ -282,7 +296,7 @@ export function getAllWindowPositions(
   viewportHeight: number
 ): Record<string, Position> {
   const positions: Record<string, Position> = {};
-  const windowIds = ['dickbuttonbase', 'resources', 'product', 'origin', 'dickbutt', 'wheretobuy', 'roadmap', 'disclaimer', 'settings'];
+  const windowIds = ['dickbuttonbase', 'resources', 'product', 'origin', 'dickbutt', 'wheretobuy', 'roadmap', 'disclaimer', 'settings', 'meme', 'branding', 'irl'];
 
   for (const id of windowIds) {
     positions[id] = calculateWindowPosition(viewportWidth, viewportHeight, id);

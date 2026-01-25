@@ -1,14 +1,14 @@
 'use client';
 
-import { motion, useMotionValue, useDragControls } from 'framer-motion';
 import { useDesktop, WindowState } from '@/context/DesktopContext';
+import { motion, useDragControls, useMotionValue } from 'framer-motion';
 import Image from 'next/image';
 import { useEffect, type CSSProperties } from 'react';
 import {
-  Window as Win95Window,
-  WindowHeader,
-  WindowContent,
   Button,
+  Window as Win95Window,
+  WindowContent,
+  WindowHeader,
 } from 'react95';
 import styled from 'styled-components';
 import { windowContentRegistry } from './windows';
@@ -24,44 +24,53 @@ const StyledWindow = styled(Win95Window)`
   max-width: 90vw;
   max-height: calc(100vh - 36px - 16px);
   user-select: none;
+  padding: 0px;
 `;
 
-const StyledWindowHeader = styled(WindowHeader)<{ $isActive: boolean }>`
+const StyledWindowHeader = styled(WindowHeader)`
   display: flex;
   align-items: center;
   justify-content: space-between;
   cursor: move;
-  ${({ $isActive }) => !$isActive && 'background: linear-gradient(90deg, #808080, #a0a0a0);'}
+  padding: 2px 2px 2px 4px;
+  min-height: 18px;
 `;
 
 const TitleText = styled.span`
-  font-size: 12px;
+  font-size: 11px;
   font-weight: bold;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   flex: 1;
+  line-height: 1;
 `;
 
 const ButtonGroup = styled.div`
   display: flex;
-  gap: 2px;
-  margin-left: 4px;
+  gap: 1px;
+  margin-left: 2px;
 `;
 
 const WindowButton = styled(Button).withConfig({
   shouldForwardProp: (prop) =>
     !['active', 'primary', 'fullWidth', 'square'].includes(prop),
 })`
-  width: 18px;
-  height: 18px;
-  min-width: 18px;
+  width: 16px;
+  height: 14px;
+  min-width: 16px;
+  min-height: 14px;
   padding: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 10px;
-  font-weight: bold;
+  background: #c0c0c0;
+  border: none;
+  box-shadow: inset -1px -1px #0a0a0a, inset 1px 1px #ffffff, inset -2px -2px #808080, inset 2px 2px #dfdfdf;
+
+  &:active {
+    box-shadow: inset 1px 1px #0a0a0a, inset -1px -1px #ffffff, inset 2px 2px #808080, inset -2px -2px #dfdfdf;
+  }
 `;
 
 const StyledWindowContent = styled(WindowContent)`
@@ -113,6 +122,14 @@ export function Window({ window: win }: WindowProps) {
         top: 0,
         left: 0,
       }}
+      initial={{ scale: 0.8, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      transition={{
+        type: 'spring',
+        stiffness: 400,
+        damping: 25,
+        duration: 0.3,
+      }}
       drag
       dragControls={dragControls}
       dragListener={false}
@@ -128,7 +145,7 @@ export function Window({ window: win }: WindowProps) {
     >
       <StyledWindow style={windowStyle}>
         <StyledWindowHeader
-          $isActive={isActive}
+          active={isActive}
           onPointerDown={(e) => {
             // Don't start drag if clicking buttons
             if ((e.target as HTMLElement).closest('button')) return;
@@ -143,7 +160,7 @@ export function Window({ window: win }: WindowProps) {
                 minimizeWindow(win.id);
               }}
             >
-              _
+              <span style={{ marginTop: '2px' }}>_</span>
             </WindowButton>
             <WindowButton
               onClick={(e: React.MouseEvent) => {

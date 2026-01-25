@@ -8,7 +8,7 @@ import styled from 'styled-components';
 
 const PageContainer = styled.div`
   min-height: 100vh;
-  background: #008080;
+  background: #c0c0c0;
   padding: 16px;
   display: flex;
   justify-content: center;

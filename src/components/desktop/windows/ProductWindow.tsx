@@ -1,9 +1,9 @@
 'use client';
 
+import { PRODUCT_CONTENT } from '@/lib/windowContent';
+import Image from 'next/image';
 import { Button, Frame } from 'react95';
 import styled from 'styled-components';
-import Image from 'next/image';
-import { PRODUCT_CONTENT } from '@/lib/windowContent';
 
 const Container = styled.div`
   display: flex;
@@ -58,7 +58,7 @@ const ComingSoonBadge = styled.span`
 
 const BookDescription = styled.p`
   font-size: 10px;
-  line-height: 1.4;
+  line-height: 1.1;
   margin: 0;
   color: #333;
   flex: 1;
@@ -68,7 +68,9 @@ const StyledButton = styled(Button).withConfig({
   shouldForwardProp: (prop) =>
     !['active', 'primary', 'fullWidth', 'square'].includes(prop),
 })`
-  height: 24px;
+  height: 40px;
+  minHeight: 40px;
+  padding: 5px;
   font-size: 10px;
   font-weight: bold;
 `;
@@ -129,9 +131,9 @@ export function ProductWindow() {
           {PRODUCT_CONTENT.buttonText}
         </StyledButton>
 
-        <StatusFrame variant="status">
+        {/* <StatusFrame variant="status">
           <span>By {PRODUCT_CONTENT.author} • {PRODUCT_CONTENT.availability}</span>
-        </StatusFrame>
+        </StatusFrame> */}
       </InfoSection>
     </Container>
   );

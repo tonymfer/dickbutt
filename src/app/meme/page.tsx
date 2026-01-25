@@ -1,3 +1,5 @@
+import { headers } from 'next/headers';
+import { redirect } from 'next/navigation';
 import { fetchGalleryIndex } from '@/lib/assets';
 import { Win95GalleryClient } from '@/components/gallery/Win95GalleryClient';
 
@@ -7,6 +9,13 @@ export const metadata = {
 };
 
 export default async function MemePage() {
+  // Redirect desktop users to window-based view
+  const headersList = await headers();
+  const userAgent = headersList.get('user-agent') || '';
+  const isMobile = /mobile|android|iphone|ipad|tablet/i.test(userAgent);
+  if (!isMobile) {
+    redirect('/?window=meme');
+  }
   let galleryIndex;
   let error = null;
 

@@ -2,66 +2,58 @@
 
 import { useIconPositions } from '@/context/IconPositionContext';
 import { useViewport } from '@/hooks/useViewport';
-import { getIconGridPositions } from '@/lib/windowLayout';
 import { useEffect } from 'react';
 import { DesktopIcon, IconConfig } from './DesktopIcon';
 
 interface DesktopIconGridProps {
-  topIcons: IconConfig[];
-  bottomIcons: IconConfig[];
+  icons: IconConfig[];
 }
 
-const ICON_WIDTH = 80;
-const HORIZONTAL_GAP = 16;
+const ICON_HEIGHT = 70;
+const VERTICAL_GAP = 16;
+const LEFT_MARGIN = 10;
+const TOP_MARGIN = 10;
 
-// Calculate initial icon positions using windowLayout helper
+// Calculate icon positions for left-side vertical layout (like Windows 95)
 function calculateIconPositions(
-  topIcons: IconConfig[],
-  bottomIcons: IconConfig[],
-  viewportWidth: number,
+  icons: IconConfig[],
   viewportHeight: number
 ): Record<string, { x: number; y: number }> {
   const positions: Record<string, { x: number; y: number }> = {};
+  const taskbarHeight = 36;
+  const availableHeight = viewportHeight - taskbarHeight - TOP_MARGIN * 2;
+  const iconsPerColumn = Math.floor(availableHeight / (ICON_HEIGHT + VERTICAL_GAP));
 
-  const gridPos = getIconGridPositions(viewportWidth, viewportHeight, topIcons.length, bottomIcons.length);
+  icons.forEach((icon, index) => {
+    const column = Math.floor(index / iconsPerColumn);
+    const row = index % iconsPerColumn;
 
-  // Top row icons
-  topIcons.forEach((icon, index) => {
     positions[icon.id] = {
-      x: gridPos.topRow.x + index * (ICON_WIDTH + HORIZONTAL_GAP),
-      y: gridPos.topRow.y,
-    };
-  });
-
-  // Bottom row icons
-  bottomIcons.forEach((icon, index) => {
-    positions[icon.id] = {
-      x: gridPos.bottomRow.x + index * (ICON_WIDTH + HORIZONTAL_GAP),
-      y: gridPos.bottomRow.y,
+      x: LEFT_MARGIN + column * 85,
+      y: TOP_MARGIN + row * (ICON_HEIGHT + VERTICAL_GAP),
     };
   });
 
   return positions;
 }
 
-export function DesktopIconGrid({ topIcons, bottomIcons }: DesktopIconGridProps) {
-  const { width, height } = useViewport();
+export function DesktopIconGrid({ icons }: DesktopIconGridProps) {
+  const { height } = useViewport();
   const { positions, initializePositions } = useIconPositions();
 
   // Initialize positions on mount
   useEffect(() => {
-    if (width > 0 && height > 0) {
-      const initialPositions = calculateIconPositions(topIcons, bottomIcons, width, height);
+    if (height > 0) {
+      const initialPositions = calculateIconPositions(icons, height);
       initializePositions(initialPositions);
     }
-  }, [width, height, topIcons, bottomIcons, initializePositions]);
+  }, [height, icons, initializePositions]);
 
-  const allIcons = [...topIcons, ...bottomIcons];
-  const initialPositions = calculateIconPositions(topIcons, bottomIcons, width, height);
+  const initialPositions = calculateIconPositions(icons, height);
 
   return (
     <>
-      {allIcons.map((icon) => (
+      {icons.map((icon) => (
         <DesktopIcon
           key={icon.id}
           config={icon}

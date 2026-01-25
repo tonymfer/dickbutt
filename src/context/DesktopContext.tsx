@@ -19,15 +19,26 @@ export interface WindowContentProps {
   onClose: () => void;
 }
 
+export interface WindowConfig {
+  id: string;
+  title: string;
+  content: string;
+  contentType: WindowContentType;
+  position: { x: number; y: number };
+  size?: { width: number; height: number };
+}
+
 interface DesktopContextType {
   windows: WindowState[];
   activeWindowId: string | null;
-  openWindow: (id: string, title: string, content: string, options?: { defaultPosition?: { x: number; y: number }; contentType?: WindowContentType }) => void;
+  openWindow: (id: string, title: string, content: string, options?: { defaultPosition?: { x: number; y: number }; defaultSize?: { width: number; height: number }; contentType?: WindowContentType }) => void;
   closeWindow: (id: string) => void;
   minimizeWindow: (id: string) => void;
   focusWindow: (id: string) => void;
   updateWindowPosition: (id: string, position: { x: number; y: number }) => void;
+  updateWindowSize: (id: string, size: { width: number; height: number }) => void;
   isWindowOpen: (id: string) => boolean;
+  openWindowsSequentially: (configs: WindowConfig[], interval?: number) => Promise<void>;
 }
 
 const DesktopContext = createContext<DesktopContextType | null>(null);
@@ -73,8 +84,8 @@ export function DesktopProvider({ children, defaultWindows = [] }: { children: R
     });
   }, [defaultWindows]);
 
-  const openWindow = useCallback((id: string, title: string, content: string, options?: { defaultPosition?: { x: number; y: number }; contentType?: WindowContentType }) => {
-    const { defaultPosition, contentType = 'component' } = options || {};
+  const openWindow = useCallback((id: string, title: string, content: string, options?: { defaultPosition?: { x: number; y: number }; defaultSize?: { width: number; height: number }; contentType?: WindowContentType }) => {
+    const { defaultPosition, defaultSize, contentType = 'component' } = options || {};
     setWindows(prev => {
       const existing = prev.find(w => w.id === id);
       if (existing) {
@@ -100,6 +111,7 @@ export function DesktopProvider({ children, defaultWindows = [] }: { children: R
         content,
         contentType,
         position: defaultPosition || { x: 50 + (prev.length * 30), y: 50 + (prev.length * 30) },
+        size: defaultSize,
         zIndex: ++nextZIndex,
         minimized: false,
       };
@@ -142,9 +154,29 @@ export function DesktopProvider({ children, defaultWindows = [] }: { children: R
     ));
   }, []);
 
+  const updateWindowSize = useCallback((id: string, size: { width: number; height: number }) => {
+    setWindows(prev => prev.map(w =>
+      w.id === id ? { ...w, size } : w
+    ));
+  }, []);
+
   const isWindowOpen = useCallback((id: string) => {
     return windows.some(w => w.id === id && !w.minimized);
   }, [windows]);
+
+  const openWindowsSequentially = useCallback(async (
+    configs: WindowConfig[],
+    interval = 150
+  ) => {
+    for (const config of configs) {
+      openWindow(config.id, config.title, config.content, {
+        defaultPosition: config.position,
+        defaultSize: config.size,
+        contentType: config.contentType,
+      });
+      await new Promise(resolve => setTimeout(resolve, interval));
+    }
+  }, [openWindow]);
 
   return (
     <DesktopContext.Provider value={{
@@ -155,7 +187,9 @@ export function DesktopProvider({ children, defaultWindows = [] }: { children: R
       minimizeWindow,
       focusWindow,
       updateWindowPosition,
+      updateWindowSize,
       isWindowOpen,
+      openWindowsSequentially,
     }}>
       {children}
     </DesktopContext.Provider>

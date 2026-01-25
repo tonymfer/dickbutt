@@ -35,7 +35,7 @@ const VIDEO_CLIPS = [
 
 const PageContainer = styled.div`
   min-height: 100vh;
-  background: #008080;
+  background: #c0c0c0;
   padding: 16px;
   display: flex;
   justify-content: center;
@@ -185,6 +185,15 @@ function VideosContent() {
                 <Button onClick={playNext} disabled={currentIndex === VIDEO_CLIPS.length - 1}>
                   Next ⏭
                 </Button>
+                <a
+                  href={`${R2_BASE}/gallery/${currentVideo.video}`}
+                  download={`${currentVideo.title}.mp4`}
+                  style={{ textDecoration: 'none' }}
+                >
+                  <Button as="span">
+                    💾 Download
+                  </Button>
+                </a>
               </ControlButtons>
 
               <Frame variant="field">

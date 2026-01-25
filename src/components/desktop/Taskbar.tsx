@@ -14,12 +14,22 @@ const StyledAppBar = styled(AppBar)`
   right: 0;
   top: auto;
   z-index: 9999;
+  height: 28px;
 `;
 
 const StyledToolbar = styled(Toolbar)`
   display: flex;
   justify-content: space-between;
-  padding: 4px;
+  align-items: center;
+  padding: 2px 2px;
+  min-height: 24px;
+  height: 24px;
+`;
+
+const LeftSection = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 2px;
 `;
 
 const StartButton = styled(Button).withConfig({
@@ -27,23 +37,59 @@ const StartButton = styled(Button).withConfig({
     !['active', 'primary', 'fullWidth', 'square'].includes(prop),
 })<{ $active: boolean }>`
   font-weight: bold;
+  font-size: 11px;
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 3px;
+  padding: 2px 6px;
+  height: 22px;
   ${({ $active }) => $active && 'box-shadow: inset 1px 1px 0px 1px #808080, inset -1px -1px 0px 1px #dfdfdf;'}
 `;
 
-const Divider = styled.div`
+const VerticalDivider = styled.div`
   width: 2px;
-  height: 24px;
-  background: linear-gradient(to right, #808080, #ffffff);
-  margin: 0 4px;
+  height: 22px;
+  margin: 0 2px;
+  box-shadow: inset 1px 0 #808080, inset -1px 0 #fff;
+`;
+
+const QuickLaunch = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 0 4px;
+`;
+
+const QuickLaunchIcon = styled.button`
+  width: 20px;
+  height: 20px;
+  padding: 2px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  &:active {
+    background: rgba(0, 0, 0, 0.1);
+  }
+
+  img {
+    width: 16px;
+    height: 16px;
+    image-rendering: pixelated;
+  }
 `;
 
 const WindowTabs = styled.div`
   flex: 1;
   display: flex;
-  gap: 4px;
+  gap: 2px;
   padding: 0 4px;
   overflow: hidden;
 `;
@@ -52,20 +98,76 @@ const WindowTab = styled(Button).withConfig({
   shouldForwardProp: (prop) =>
     !['active', 'primary', 'fullWidth', 'square'].includes(prop),
 })<{ $active: boolean }>`
-  max-width: 150px;
+  min-width: 24px;
+  max-width: 140px;
+  height: 22px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: 12px;
+  font-size: 11px;
+  padding: 2px 4px;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  justify-content: flex-start;
   ${({ $active }) => $active && 'box-shadow: inset 1px 1px 0px 1px #808080, inset -1px -1px 0px 1px #dfdfdf;'}
 `;
 
-const Clock = styled(Frame)`
+const TabIcon = styled.img`
+  width: 16px;
+  height: 16px;
+  image-rendering: pixelated;
+  flex-shrink: 0;
+`;
+
+const TabTitle = styled.span`
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+`;
+
+// Map window IDs to their icons
+const WINDOW_ICONS: Record<string, string> = {
+  resources: '/assets/icons/win95/book.ico',
+  product: '/assets/icons/win95/book.ico',
+  origin: '/assets/icons/win95/scroll.ico',
+  dickbutt: '/assets/icons/win95/money.ico',
+  wheretobuy: '/assets/icons/win95/cart.ico',
+  roadmap: '/assets/icons/win95/map.ico',
+  disclaimer: '/assets/icons/win95/warning.ico',
+  dickbuttonbase: '/assets/icons/win95/computer.ico',
+  settings: '/assets/icons/win95/settings.ico',
+  meme: '/assets/icons/win95/folder-hires.ico',
+  branding: '/assets/icons/win95/folder-hires.ico',
+  irl: '/assets/icons/win95/folder-hires.ico',
+};
+
+const SystemTray = styled(Frame)`
   display: flex;
   align-items: center;
-  padding: 0 8px;
-  height: 24px;
-  font-size: 12px;
+  gap: 4px;
+  padding: 2px 6px;
+  height: 22px;
+`;
+
+const TrayIcon = styled.div`
+  width: 16px;
+  height: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  img {
+    width: 16px;
+    height: 16px;
+    image-rendering: pixelated;
+  }
+`;
+
+const Clock = styled.span`
+  font-size: 11px;
+  margin-left: 4px;
 `;
 
 export function Taskbar() {
@@ -94,15 +196,28 @@ export function Taskbar() {
       {showStartMenu && <StartMenu onClose={() => setShowStartMenu(false)} />}
       <StyledAppBar>
         <StyledToolbar>
-          <StartButton
-            $active={showStartMenu}
-            onClick={() => setShowStartMenu(!showStartMenu)}
-          >
-            <img src="/assets/icons/win95/windows.ico" alt="" width={16} height={16} style={{ imageRendering: 'pixelated' }} />
-            Start
-          </StartButton>
+          <LeftSection>
+            <StartButton
+              $active={showStartMenu}
+              onClick={() => setShowStartMenu(!showStartMenu)}
+            >
+              <img src="/assets/icons/win95/windows-logo.ico" alt="" width={16} height={16} style={{ imageRendering: 'pixelated' }} />
+              Start
+            </StartButton>
 
-          <Divider />
+            <VerticalDivider />
+
+            <QuickLaunch>
+              <QuickLaunchIcon title="Contract">
+                <img src="/assets/icons/win95/contract.ico" alt="Contract" />
+              </QuickLaunchIcon>
+              <QuickLaunchIcon title="Meme Folder">
+                <img src="/assets/icons/win95/folder-hires.ico" alt="Folder" />
+              </QuickLaunchIcon>
+            </QuickLaunch>
+
+            <VerticalDivider />
+          </LeftSection>
 
           <WindowTabs>
             {windows.map((win) => (
@@ -111,14 +226,21 @@ export function Taskbar() {
                 $active={activeWindowId === win.id && !win.minimized}
                 onClick={() => focusWindow(win.id)}
               >
-                {win.title}
+                <TabIcon
+                  src={WINDOW_ICONS[win.id] || '/assets/icons/win95/document.ico'}
+                  alt=""
+                />
+                <TabTitle>{win.title}</TabTitle>
               </WindowTab>
             ))}
           </WindowTabs>
 
-          <Clock variant="well">
-            {time}
-          </Clock>
+          <SystemTray variant="well">
+            <TrayIcon title="Volume">
+              <img src="/assets/icons/win95/speaker.ico" alt="Volume" />
+            </TrayIcon>
+            <Clock>{time}</Clock>
+          </SystemTray>
         </StyledToolbar>
       </StyledAppBar>
     </>

@@ -37,13 +37,16 @@ const AUDIO_TRACKS = [
 interface WebampPlayerProps {
   x: number;
   y: number;
+  visible?: boolean;
+  shouldPlay?: boolean;
 }
 
-export function WebampPlayer({ x, y }: WebampPlayerProps) {
+export function WebampPlayer({ x, y, visible = true, shouldPlay = false }: WebampPlayerProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const webampRef = useRef<Webamp | null>(null);
   const initializedRef = useRef(false);
   const [isReady, setIsReady] = useState(false);
+  const hasPlayedRef = useRef(false);
 
   useEffect(() => {
     // Prevent double initialization (React Strict Mode)
@@ -72,7 +75,7 @@ export function WebampPlayer({ x, y }: WebampPlayerProps) {
         if (containerRef.current) {
           await webamp.renderWhenReady(containerRef.current);
           setIsReady(true);
-          webamp.play();
+          // Don't auto-play on init - wait for shouldPlay prop
         }
       } catch (error) {
         console.error('Failed to initialize Webamp:', error);
@@ -89,6 +92,14 @@ export function WebampPlayer({ x, y }: WebampPlayerProps) {
       }
     };
   }, []);
+
+  // Handle play trigger
+  useEffect(() => {
+    if (shouldPlay && isReady && webampRef.current && !hasPlayedRef.current) {
+      hasPlayedRef.current = true;
+      webampRef.current.play();
+    }
+  }, [shouldPlay, isReady]);
 
   // Reposition Webamp windows after render and when position changes
   useEffect(() => {
@@ -116,6 +127,9 @@ export function WebampPlayer({ x, y }: WebampPlayerProps) {
         left: x + 135,
         top: y + 180,
         zIndex: 100,
+        visibility: visible ? 'visible' : 'hidden',
+        opacity: visible ? 1 : 0,
+        transition: 'opacity 0.3s ease-in-out',
       }}
     />
   );

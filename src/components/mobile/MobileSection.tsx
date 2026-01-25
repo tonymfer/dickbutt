@@ -17,14 +17,17 @@ const SectionContainer = styled.div`
 
 const StyledWindow = styled(Window)`
   width: 100%;
+  padding: 2px;
 `;
 
 const StyledWindowHeader = styled(WindowHeader)`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  font-size: 12px;
+  font-size: 11px;
   padding: 3px 4px;
+  min-height: 20px;
+  height: 20px;
   user-select: none;
 `;
 

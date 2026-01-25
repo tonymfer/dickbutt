@@ -41,7 +41,7 @@ const ThumbnailButton = styled.button<{ $selected?: boolean }>`
 `;
 
 const ThumbnailFrame = styled(Frame)`
-  background: #008080;
+  background: #fff;
   padding: 0;
   overflow: hidden;
 `;
@@ -49,7 +49,7 @@ const ThumbnailFrame = styled(Frame)`
 const ImageWrapper = styled.div`
   aspect-ratio: 1;
   position: relative;
-  background: #008080;
+  background: #c0c0c0;
 `;
 
 const PreviewVideo = styled.video`

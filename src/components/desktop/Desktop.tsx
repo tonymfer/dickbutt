@@ -2,23 +2,27 @@
 
 import { MobileDesktop } from '@/components/mobile';
 import { React95Provider } from '@/components/providers/React95Provider';
-import { DesktopProvider, useDesktop, WindowState } from '@/context/DesktopContext';
+import { DesktopProvider, useDesktop, WindowState, WindowConfig } from '@/context/DesktopContext';
 import { DesktopSettingsProvider, getBackgroundStyle, useDesktopSettings } from '@/context/DesktopSettingsContext';
 import { IconPositionProvider } from '@/context/IconPositionContext';
+import { WizardProvider, useWizard } from '@/context/WizardContext';
 import { useViewport } from '@/hooks/useViewport';
 import { BASESCAN_CONTRACT_URL } from '@/lib/links';
 import { calculateWindowRect, getWebampPosition } from '@/lib/windowLayout';
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
+import { DickbuttAssistant } from './DickbuttAssistant';
 import { IconConfig } from './DesktopIcon';
 import { DesktopIconGrid } from './DesktopIconGrid';
+import { SetupWizardWindow } from './SetupWizard';
 import { StartupScreen } from './StartupScreen';
 import { Taskbar } from './Taskbar';
 import { WebampPlayer } from './WebampPlayer';
 import { Window } from './Window';
 
-// Desktop icon definitions - top-right row
-const TOP_ICONS: IconConfig[] = [
+// Desktop icons - left side vertical layout (Windows 95 style)
+const DESKTOP_ICONS: IconConfig[] = [
   {
     id: 'contract',
     label: 'Contract',
@@ -30,33 +34,33 @@ const TOP_ICONS: IconConfig[] = [
     id: 'meme',
     label: 'Meme Folder',
     icon: '/assets/icons/win95/folder-hires.ico',
-    action: 'route',
-    target: '/meme',
+    action: 'window',
+    target: 'meme',
+    windowTitle: 'Meme Gallery',
+    routeFallback: '/meme',
   },
   {
     id: 'branding',
     label: 'Branding',
     icon: '/assets/icons/win95/folder-hires.ico',
-    action: 'route',
-    target: '/branding',
+    action: 'window',
+    target: 'branding',
+    windowTitle: 'Branding Assets',
+    routeFallback: '/branding',
   },
   {
     id: 'irl',
     label: 'Dickbutts IRL',
     icon: '/assets/icons/win95/folder-hires.ico',
-    action: 'route',
-    target: '/irl',
+    action: 'window',
+    target: 'irl',
+    windowTitle: 'Dickbutt IRL - Real World Sightings',
+    routeFallback: '/irl',
   },
-];
-
-// Desktop icon definitions - bottom area near taskbar
-// iconScale tuned so the three icons appear visually similar in size
-const BOTTOM_ICONS: IconConfig[] = [
   {
     id: 'tv',
     label: 'TV',
-    icon: '/assets/icons/windowsplustv.gif',
-    iconScale: 1.35, // GIF has internal padding, scale up
+    icon: '/assets/icons/win95/tv.ico',
     action: 'route',
     target: '/tv',
   },
@@ -64,7 +68,6 @@ const BOTTOM_ICONS: IconConfig[] = [
     id: 'videos',
     label: 'Videos',
     icon: '/assets/icons/win95/video.ico',
-    iconScale: 0.85, // ICO is larger, scale down slightly
     action: 'route',
     target: '/videos',
   },
@@ -72,9 +75,15 @@ const BOTTOM_ICONS: IconConfig[] = [
     id: 'nfts',
     label: 'NFT Collection',
     icon: '/assets/icons/win95/nft.ico',
-    iconScale: 0.85, // Match Videos
     action: 'route',
     target: '/dickbutt-nfts',
+  },
+  {
+    id: 'dickbutt-exe',
+    label: 'dickbutt.exe',
+    icon: '/assets/branding/dickbuttpfp.jpg',
+    action: 'wizard',
+    target: 'wizard',
   },
 ];
 
@@ -100,89 +109,84 @@ function useResponsiveWindowRects(viewportWidth: number, viewportHeight: number)
   }, [viewportWidth, viewportHeight]);
 }
 
+// Window configuration data
+const WINDOW_CONFIGS = [
+  { id: 'resources', title: 'Resources', content: 'resources', fallback: { x: 30, y: 60 } },
+  { id: 'product', title: 'Education', content: 'product', fallback: { x: 30, y: 300 } },
+  { id: 'origin', title: 'Origin', content: 'origin', fallback: { x: 270, y: 60 } },
+  { id: 'dickbutt', title: 'Tokenomics', content: 'dickbutt', fallback: { x: 620, y: 160 } },
+  { id: 'wheretobuy', title: 'Where to buy', content: 'wheretobuy', fallback: { x: 620, y: 380 } },
+  { id: 'roadmap', title: 'Roadmap', content: 'roadmap', fallback: { x: 270, y: 530 } },
+  { id: 'disclaimer', title: 'Disclaimer', content: 'disclaimer', fallback: { x: 620, y: 650 } },
+  { id: 'dickbuttonbase', title: 'Dickbutt on Base', content: 'dickbuttonbase', fallback: { x: 300, y: 16 } },
+];
+
 // Generate default windows with responsive rects
 function createDefaultWindows(
   rects: Record<string, { x: number; y: number; width: number; height: number }>
 ): Omit<WindowState, 'zIndex'>[] {
-  return [
-    {
-      id: 'resources',
-      title: 'Resources',
-      content: 'resources',
-      contentType: 'component',
-      position: rects.resources ? { x: rects.resources.x, y: rects.resources.y } : { x: 30, y: 60 },
-      size: rects.resources ? { width: rects.resources.width, height: rects.resources.height } : undefined,
-      minimized: false,
-    },
-    {
-      id: 'product',
-      title: 'Education',
-      content: 'product',
-      contentType: 'component',
-      position: rects.product ? { x: rects.product.x, y: rects.product.y } : { x: 30, y: 300 },
-      size: rects.product ? { width: rects.product.width, height: rects.product.height } : undefined,
-      minimized: false,
-    },
-    {
-      id: 'origin',
-      title: 'Origin',
-      content: 'origin',
-      contentType: 'component',
-      position: rects.origin ? { x: rects.origin.x, y: rects.origin.y } : { x: 270, y: 60 },
-      size: rects.origin ? { width: rects.origin.width, height: rects.origin.height } : undefined,
-      minimized: false,
-    },
-    {
-      id: 'dickbutt',
-      title: 'Tokenomics',
-      content: 'dickbutt',
-      contentType: 'component',
-      position: rects.dickbutt ? { x: rects.dickbutt.x, y: rects.dickbutt.y } : { x: 620, y: 160 },
-      size: rects.dickbutt ? { width: rects.dickbutt.width, height: rects.dickbutt.height } : undefined,
-      minimized: false,
-    },
-    {
-      id: 'wheretobuy',
-      title: 'Where to buy',
-      content: 'wheretobuy',
-      contentType: 'component',
-      position: rects.wheretobuy ? { x: rects.wheretobuy.x, y: rects.wheretobuy.y } : { x: 620, y: 380 },
-      size: rects.wheretobuy ? { width: rects.wheretobuy.width, height: rects.wheretobuy.height } : undefined,
-      minimized: false,
-    },
-    {
-      id: 'roadmap',
-      title: 'Roadmap',
-      content: 'roadmap',
-      contentType: 'component',
-      position: rects.roadmap ? { x: rects.roadmap.x, y: rects.roadmap.y } : { x: 270, y: 530 },
-      size: rects.roadmap ? { width: rects.roadmap.width, height: rects.roadmap.height } : undefined,
-      minimized: false,
-    },
-    {
-      id: 'disclaimer',
-      title: 'Disclaimer',
-      content: 'disclaimer',
-      contentType: 'component',
-      position: rects.disclaimer ? { x: rects.disclaimer.x, y: rects.disclaimer.y } : { x: 620, y: 650 },
-      size: rects.disclaimer ? { width: rects.disclaimer.width, height: rects.disclaimer.height } : undefined,
-      minimized: false,
-    },
-    {
-      id: 'dickbuttonbase',
-      title: 'Dickbutt on Base',
-      content: 'dickbuttonbase',
-      contentType: 'component',
-      position: rects.dickbuttonbase ? { x: rects.dickbuttonbase.x, y: rects.dickbuttonbase.y } : { x: 300, y: 16 },
-      size: rects.dickbuttonbase ? { width: rects.dickbuttonbase.width, height: rects.dickbuttonbase.height } : undefined,
-      minimized: false,
-    },
-  ];
+  return WINDOW_CONFIGS.map(config => ({
+    id: config.id,
+    title: config.title,
+    content: config.content,
+    contentType: 'component' as const,
+    position: rects[config.id] ? { x: rects[config.id].x, y: rects[config.id].y } : config.fallback,
+    size: rects[config.id] ? { width: rects[config.id].width, height: rects[config.id].height } : undefined,
+    minimized: false,
+  }));
+}
+
+// Generate window configs for sequential opening
+function createWindowConfigs(
+  rects: Record<string, { x: number; y: number; width: number; height: number }>
+): WindowConfig[] {
+  return WINDOW_CONFIGS.map(config => ({
+    id: config.id,
+    title: config.title,
+    content: config.content,
+    contentType: 'component' as const,
+    position: rects[config.id] ? { x: rects[config.id].x, y: rects[config.id].y } : config.fallback,
+    size: rects[config.id] ? { width: rects[config.id].width, height: rects[config.id].height } : undefined,
+  }));
+}
+
+// Window titles for auto-open via query param
+const WINDOW_TITLES: Record<string, string> = {
+  meme: 'Meme Gallery',
+  branding: 'Branding Assets',
+  irl: 'Dickbutt IRL - Real World Sightings',
+};
+
+// Separate component for handling search params (must be wrapped in Suspense)
+function WindowQueryParamHandler() {
+  const { openWindow } = useDesktop();
+  const { width, height } = useViewport();
+  const searchParams = useSearchParams();
+  const hasOpenedWindowRef = useRef(false);
+
+  useEffect(() => {
+    if (hasOpenedWindowRef.current) return;
+    if (width === 0 || height === 0) return; // Wait for viewport
+
+    const windowParam = searchParams.get('window');
+    if (windowParam && WINDOW_TITLES[windowParam]) {
+      hasOpenedWindowRef.current = true;
+      const rect = calculateWindowRect(width, height, windowParam);
+      openWindow(windowParam, WINDOW_TITLES[windowParam], windowParam, {
+        contentType: 'component',
+        defaultPosition: { x: rect.x, y: rect.y },
+        defaultSize: { width: rect.width, height: rect.height },
+      });
+    }
+  }, [searchParams, openWindow, width, height]);
+
+  return null;
 }
 
 function DesktopContent() {
   const { windows } = useDesktop();
   const { settings } = useDesktopSettings();
+  const { wizardVisible } = useWizard();
   const backgroundStyle = getBackgroundStyle(settings);
   const { width, height } = useViewport();
 
@@ -191,16 +195,29 @@ function DesktopContent() {
 
   return (
     <DesktopContainer $background={backgroundStyle}>
+        {/* Handle ?window= query param */}
+        <Suspense fallback={null}>
+          <WindowQueryParamHandler />
+        </Suspense>
+
         {/* Desktop icons */}
-        <DesktopIconGrid topIcons={TOP_ICONS} bottomIcons={BOTTOM_ICONS} />
+        <DesktopIconGrid icons={DESKTOP_ICONS} />
 
         {/* Windows */}
         {windows.map((win) => (
           <Window key={win.id} window={win} />
         ))}
 
-        {/* Webamp player - positioned below Resources */}
-        <WebampPlayer x={webampPos.x} y={webampPos.y} />
+        {/* Webamp player - hidden during wizard, plays when wizard closes */}
+        <WebampPlayer
+          x={webampPos.x}
+          y={webampPos.y}
+          visible={!wizardVisible}
+          shouldPlay={!wizardVisible}
+        />
+
+        {/* Dickbutt Assistant - bottom right, reopens wizard */}
+        <DickbuttAssistant />
 
         {/* Taskbar */}
         <Taskbar />
@@ -208,10 +225,41 @@ function DesktopContent() {
   );
 }
 
+// Component that handles wizard display and window cascade on completion
+function WizardCascadeHandler({ rects }: { rects: Record<string, { x: number; y: number; width: number; height: number }> }) {
+  const { wizardVisible } = useWizard();
+  const { openWindowsSequentially, windows } = useDesktop();
+  const hasCascadedRef = useRef(false);
+  const wasVisibleRef = useRef(wizardVisible);
+
+  // Watch for wizard becoming hidden (completed or skipped)
+  useEffect(() => {
+    // If wizard was visible and now isn't, trigger cascade (only if no windows exist yet)
+    if (wasVisibleRef.current && !wizardVisible && windows.length === 0) {
+      // Small delay to ensure wizard is fully hidden
+      setTimeout(() => {
+        const configs = createWindowConfigs(rects);
+        openWindowsSequentially(configs, 150);
+      }, 100);
+    }
+
+    wasVisibleRef.current = wizardVisible;
+  }, [wizardVisible, openWindowsSequentially, rects, windows.length]);
+
+  // Don't show wizard if it's not visible
+  if (!wizardVisible) return null;
+
+  return <SetupWizardWindow />;
+}
+
 function DesktopWithProviders() {
   const { width, height } = useViewport();
   const rects = useResponsiveWindowRects(width, height);
-  const defaultWindows = useMemo(() => createDefaultWindows(rects), [rects]);
+
+  // Always start with no windows - they'll cascade in after wizard
+  const defaultWindows = useMemo(() => {
+    return []; // Windows cascade in after wizard completes
+  }, []);
 
   const loggedRef = useRef(false);
   useEffect(() => {
@@ -260,6 +308,7 @@ function DesktopWithProviders() {
     <DesktopSettingsProvider>
       <IconPositionProvider>
         <DesktopProvider defaultWindows={defaultWindows}>
+          <WizardCascadeHandler rects={rects} />
           <DesktopContent />
         </DesktopProvider>
       </IconPositionProvider>
@@ -316,8 +365,10 @@ export function Desktop() {
   // Desktop view (>= 1024px) - cascaded windows layout
   return (
     <React95Provider>
-      {showStartup && <StartupScreen onComplete={handleStartupComplete} duration={2500} />}
-      <DesktopWithProviders />
+      <WizardProvider>
+        {showStartup && <StartupScreen onComplete={handleStartupComplete} duration={2500} />}
+        <DesktopWithProviders />
+      </WizardProvider>
     </React95Provider>
   );
 }

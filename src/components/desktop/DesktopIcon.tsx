@@ -5,6 +5,9 @@ import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { useDesktop } from '@/context/DesktopContext';
 import { useIconPositions } from '@/context/IconPositionContext';
+import { useWizard } from '@/context/WizardContext';
+import { useViewport } from '@/hooks/useViewport';
+import { calculateWindowRect } from '@/lib/windowLayout';
 import { motion, useMotionValue } from 'framer-motion';
 import styled from 'styled-components';
 
@@ -14,10 +17,12 @@ export interface IconConfig {
   icon: string;
   // Some source icons (e.g. GIFs) have extra padding; allow per-icon visual scaling.
   iconScale?: number;
-  action: 'route' | 'link' | 'window';
+  action: 'route' | 'link' | 'window' | 'wizard';
   target: string;
   windowTitle?: string;
   hideLabel?: boolean;
+  // For 'window' action: fallback route on mobile devices
+  routeFallback?: string;
 }
 
 interface DesktopIconProps {
@@ -65,6 +70,8 @@ export function DesktopIcon({ config, initialPosition }: DesktopIconProps) {
   const router = useRouter();
   const { openWindow } = useDesktop();
   const { positions, updatePosition } = useIconPositions();
+  const { showWizard } = useWizard();
+  const { isDesktop, width: viewportWidth, height: viewportHeight } = useViewport();
   const isDraggingRef = useRef(false);
 
   // Use stored position or initial position
@@ -99,9 +106,20 @@ export function DesktopIcon({ config, initialPosition }: DesktopIconProps) {
         window.open(config.target, '_blank');
         break;
       case 'window':
-        if (config.windowTitle) {
-          openWindow(config.id, config.windowTitle, config.id, { contentType: 'component' });
+        // On mobile, use route fallback if available
+        if (!isDesktop && config.routeFallback) {
+          router.push(config.routeFallback);
+        } else if (config.windowTitle) {
+          const rect = calculateWindowRect(viewportWidth, viewportHeight, config.id);
+          openWindow(config.id, config.windowTitle, config.id, {
+            contentType: 'component',
+            defaultPosition: { x: rect.x, y: rect.y },
+            defaultSize: { width: rect.width, height: rect.height },
+          });
         }
+        break;
+      case 'wizard':
+        showWizard();
         break;
     }
   };

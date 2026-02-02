@@ -126,7 +126,7 @@ export function WebampPlayer({ x, y, visible = true, shouldPlay = false }: Webam
         position: 'absolute',
         left: x + 135,
         top: y + 180,
-        zIndex: 100,
+        zIndex: 0,
         visibility: visible ? 'visible' : 'hidden',
         opacity: visible ? 1 : 0,
         transition: 'opacity 0.3s ease-in-out',

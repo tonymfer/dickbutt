@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import { useState, useCallback, useEffect } from 'react';
 import styled from 'styled-components';
-import { Window, WindowHeader, WindowContent, Frame } from 'react95';
+import { Window, WindowContent, Frame } from 'react95';
 
 const R2_BASE = 'https://pub-c5bbdf1eaf68478a9783e46a36a3c3b5.r2.dev/v1/gallery';
 
@@ -203,26 +203,86 @@ const LightboxWindow = styled(Window)`
   flex-direction: column;
 `;
 
-const LightboxHeader = styled(WindowHeader)`
+const WindowTitlebar = styled.div`
+  height: 18px;
+  background: linear-gradient(to right, var(--ActiveTitle) 0%, var(--GradientActiveTitle) 100%);
+  color: var(--TitleText);
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  padding: 0 2px;
+  gap: 3px;
+  flex-shrink: 0;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 12px;
+  font-weight: bold;
+`;
+
+const TitlebarIcon = styled.img`
+  width: 16px;
+  height: 16px;
+  image-rendering: pixelated;
   flex-shrink: 0;
 `;
 
-const CloseButton = styled.button`
-  padding: 0 4px;
-  min-width: 20px;
-  height: 18px;
-  font-weight: bold;
-  font-size: 12px;
+const WindowTitleArea = styled.div`
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+`;
+
+const WindowTitle = styled.span`
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1;
+`;
+
+const WindowButton = styled.button`
+  width: 16px;
+  height: 14px;
+  padding: 0;
+  margin: 0;
   background: #c0c0c0;
-  border: 2px solid;
-  border-color: #dfdfdf #808080 #808080 #dfdfdf;
+  border: none;
+  box-shadow: inset -1px -1px #0a0a0a, inset 1px 1px #ffffff, inset -2px -2px #808080, inset 2px 2px #dfdfdf;
   cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
 
   &:active {
-    border-color: #808080 #dfdfdf #dfdfdf #808080;
+    box-shadow: inset 1px 1px #0a0a0a, inset -1px -1px #ffffff, inset 2px 2px #808080, inset -2px -2px #dfdfdf;
+  }
+
+  &:active .window-button-icon {
+    transform: translate(calc(-50% + 1px), calc(-50% + 1px));
+  }
+
+  .window-button-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 8px;
+    height: 8px;
+  }
+
+  .window-button-icon::before,
+  .window-button-icon::after {
+    content: '';
+    position: absolute;
+    width: 10px;
+    height: 2px;
+    background-color: #000;
+    top: 50%;
+    left: 50%;
+  }
+
+  .window-button-icon::before {
+    transform: translate(-50%, -50%) rotate(45deg);
+  }
+
+  .window-button-icon::after {
+    transform: translate(-50%, -50%) rotate(-45deg);
   }
 `;
 
@@ -345,10 +405,15 @@ export function IrlGalleryWindow() {
       {selectedItem && (
         <LightboxOverlay onClick={() => setSelectedIndex(null)}>
           <LightboxWindow onClick={(e) => e.stopPropagation()}>
-            <LightboxHeader>
-              <span>{selectedItem.title}</span>
-              <CloseButton onClick={() => setSelectedIndex(null)}>X</CloseButton>
-            </LightboxHeader>
+            <WindowTitlebar>
+              <TitlebarIcon src="/assets/icons/win95/camera.ico" alt="" />
+              <WindowTitleArea>
+                <WindowTitle>{selectedItem.title}</WindowTitle>
+              </WindowTitleArea>
+              <WindowButton onClick={() => setSelectedIndex(null)}>
+                <span className="window-button-icon" />
+              </WindowButton>
+            </WindowTitlebar>
 
             <LightboxContent>
               <LightboxImageFrame variant="well">

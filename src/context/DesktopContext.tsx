@@ -43,11 +43,11 @@ interface DesktopContextType {
 
 const DesktopContext = createContext<DesktopContextType | null>(null);
 
-let nextZIndex = 1;
+let nextZIndex = 100;
 
 export function DesktopProvider({ children, defaultWindows = [] }: { children: ReactNode; defaultWindows?: Omit<WindowState, 'zIndex'>[] }) {
   const [windows, setWindows] = useState<WindowState[]>(() =>
-    defaultWindows.map((w, i) => ({ ...w, zIndex: i + 1 }))
+    defaultWindows.map((w, i) => ({ ...w, zIndex: 100 + i }))
   );
   const [activeWindowId, setActiveWindowId] = useState<string | null>(
     defaultWindows.length > 0 ? defaultWindows[defaultWindows.length - 1].id : null
@@ -58,7 +58,7 @@ export function DesktopProvider({ children, defaultWindows = [] }: { children: R
 
   // Initialize nextZIndex based on default windows
   if (defaultWindows.length > 0) {
-    nextZIndex = defaultWindows.length + 1;
+    nextZIndex = 100 + defaultWindows.length;
   }
 
   // Update window positions/sizes when viewport changes (defaultWindows recalculates)

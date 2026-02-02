@@ -170,7 +170,7 @@ const WindowButton = styled.button`
 `;
 
 const StyledWindowContent = styled(WindowContent)`
-  padding: 0;
+  padding: 0 !important;
   flex: 1;
   overflow: auto;
 `;

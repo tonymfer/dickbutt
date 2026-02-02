@@ -216,6 +216,12 @@ export function calculateWindowRect(
   const galleryX = Math.round((viewportWidth - galleryW) / 2);
   const galleryY = Math.round((availableHeight - galleryH) / 2);
 
+  // Videos window - larger for video player + playlist (900px wide, 600px tall min)
+  const videosW = Math.min(900, Math.floor(viewportWidth * 0.75));
+  const videosH = Math.min(600, Math.floor(availableHeight * 0.8));
+  const videosX = Math.round((viewportWidth - videosW) / 2);
+  const videosY = Math.round((availableHeight - videosH) / 2);
+
   const rectById: Record<string, WindowRect> = {
     // Top banner spanning center + right
     dickbuttonbase: { x: grid.center.x, y: bannerY, width: bannerW, height: bannerH },
@@ -255,6 +261,9 @@ export function calculateWindowRect(
     meme: { x: galleryX, y: galleryY, width: galleryW, height: galleryH },
     branding: { x: galleryX, y: galleryY, width: galleryW, height: galleryH },
     irl: { x: galleryX, y: galleryY, width: galleryW, height: galleryH },
+
+    // Videos window (large centered for video player + playlist)
+    videos: { x: videosX, y: videosY, width: videosW, height: videosH },
   };
 
   const fallback: WindowRect = {
@@ -276,6 +285,7 @@ export function calculateWindowRect(
     meme: 400,
     branding: 400,
     irl: 400,
+    videos: 500,
   };
 
   const minH = minHeightById[windowId] ?? MIN_H;
@@ -296,7 +306,7 @@ export function getAllWindowPositions(
   viewportHeight: number
 ): Record<string, Position> {
   const positions: Record<string, Position> = {};
-  const windowIds = ['dickbuttonbase', 'resources', 'product', 'origin', 'dickbutt', 'wheretobuy', 'roadmap', 'disclaimer', 'settings', 'meme', 'branding', 'irl'];
+  const windowIds = ['dickbuttonbase', 'resources', 'product', 'origin', 'dickbutt', 'wheretobuy', 'roadmap', 'disclaimer', 'settings', 'meme', 'branding', 'irl', 'videos'];
 
   for (const id of windowIds) {
     positions[id] = calculateWindowPosition(viewportWidth, viewportHeight, id);

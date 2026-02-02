@@ -44,7 +44,7 @@ const IconContainer = styled(motion.div)<{ $selected: boolean }>`
   border: none;
   outline: none;
   user-select: none;
-  z-index: 5000;
+  z-index: 1;
 
   &:focus {
     background: rgba(0, 0, 128, 0.5);

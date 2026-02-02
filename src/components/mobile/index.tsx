@@ -13,3 +13,6 @@ export { MobileWin95Desktop } from './MobileWin95Desktop';
 export { MobileIconGrid } from './MobileIconGrid';
 export { MobileTaskbar } from './MobileTaskbar';
 export { MobileStartMenu } from './MobileStartMenu';
+export { MobileStartupScreen, shouldShowMobileBoot } from './MobileStartupScreen';
+export { EasterEggOverlay } from './EasterEggOverlay';
+export { BSODOverlay } from './BSODOverlay';

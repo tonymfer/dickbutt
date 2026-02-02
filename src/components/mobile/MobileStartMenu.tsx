@@ -1,6 +1,6 @@
 'use client';
 
-import { useRef, useCallback } from 'react';
+import { useRef, useCallback, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useWizard } from '@/context/WizardContext';
 import { useClickOutside } from '@/hooks/useClickOutside';
@@ -9,6 +9,7 @@ import styled from 'styled-components';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BASESCAN_CONTRACT_URL } from '@/lib/links';
 import { Win98Separator } from '@/components/ui/win98';
+import { BSODOverlay } from './BSODOverlay';
 
 interface MobileStartMenuProps {
   isOpen: boolean;
@@ -23,7 +24,7 @@ const Overlay = styled(motion.div)`
 
 const MenuContainer = styled(motion.div)`
   position: fixed;
-  bottom: 28px;
+  bottom: 36px;
   left: 0;
   z-index: 9999;
   display: flex;
@@ -83,6 +84,7 @@ export function MobileStartMenu({ isOpen, onClose }: MobileStartMenuProps) {
   const menuRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const { showWizard } = useWizard();
+  const [showBSOD, setShowBSOD] = useState(false);
 
   const handleClickOutside = useCallback(() => {
     onClose();
@@ -108,8 +110,20 @@ export function MobileStartMenu({ isOpen, onClose }: MobileStartMenuProps) {
     onClose();
   };
 
+  const handleShutDown = () => {
+    onClose();
+    // Small delay to let menu close animation start
+    setTimeout(() => setShowBSOD(true), 100);
+  };
+
+  const handleBSODClose = () => {
+    setShowBSOD(false);
+  };
+
   return (
-    <AnimatePresence>
+    <>
+      {showBSOD && <BSODOverlay onClose={handleBSODClose} />}
+      <AnimatePresence>
       {isOpen && (
         <>
           <Overlay
@@ -173,14 +187,15 @@ export function MobileStartMenu({ isOpen, onClose }: MobileStartMenuProps) {
 
               <Win98Separator />
 
-              <MenuItem onClick={onClose}>
+              <MenuItem onClick={handleShutDown}>
                 <MenuIcon src="/assets/icons/win95/shutdown.ico" alt="" />
-                <MenuLabel>Close Menu</MenuLabel>
+                <MenuLabel>Shut Down...</MenuLabel>
               </MenuItem>
             </StyledMenuList>
           </MenuContainer>
         </>
       )}
     </AnimatePresence>
+    </>
   );
 }

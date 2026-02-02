@@ -1,11 +1,13 @@
 'use client';
 
 import { MobileWin95Desktop } from '@/components/mobile';
+import { MobileStartupScreen, shouldShowMobileBoot } from '@/components/mobile/MobileStartupScreen';
 import { MobileWizard } from '@/components/mobile/wizard';
 import { React95Provider } from '@/components/providers/React95Provider';
 import { DesktopProvider, useDesktop, WindowConfig } from '@/context/DesktopContext';
 import { DesktopSettingsProvider, getBackgroundStyle, useDesktopSettings } from '@/context/DesktopSettingsContext';
 import { IconPositionProvider } from '@/context/IconPositionContext';
+import { SoundProvider } from '@/context/SoundContext';
 import { WizardProvider, useWizard } from '@/context/WizardContext';
 import { useViewport } from '@/hooks/useViewport';
 import { DESKTOP_ICONS } from '@/lib/constants/icons';
@@ -235,9 +237,22 @@ function DesktopWithProviders() {
   );
 }
 
-// Mobile view component - shows wizard or desktop based on completion
+// Mobile view component - shows startup, wizard or desktop based on state
 function MobileView() {
   const { wizardVisible } = useWizard();
+  const [showMobileStartup, setShowMobileStartup] = useState(false);
+
+  useEffect(() => {
+    // Check if we should show boot screen (first visit in session)
+    if (shouldShowMobileBoot()) {
+      setTimeout(() => setShowMobileStartup(true), 0);
+    }
+  }, []);
+
+  // Show startup screen first (if applicable)
+  if (showMobileStartup) {
+    return <MobileStartupScreen onComplete={() => setShowMobileStartup(false)} duration={2000} />;
+  }
 
   // Show wizard if it's visible (either first time or reopened)
   if (wizardVisible) {
@@ -288,9 +303,11 @@ export function Desktop() {
     return (
       <React95Provider>
         <DesktopSettingsProvider>
-          <WizardProvider>
-            <MobileView />
-          </WizardProvider>
+          <SoundProvider>
+            <WizardProvider>
+              <MobileView />
+            </WizardProvider>
+          </SoundProvider>
         </DesktopSettingsProvider>
       </React95Provider>
     );

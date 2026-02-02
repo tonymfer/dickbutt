@@ -1,19 +1,22 @@
 'use client';
 
+import { useState } from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { getBackgroundStyle, useDesktopSettings } from '@/context/DesktopSettingsContext';
 import { useWizard } from '@/context/WizardContext';
+import { useKonamiCode } from '@/hooks/useKonamiCode';
 import { MOBILE_ICONS } from '@/lib/constants/icons';
 import { MobileIconGrid } from './MobileIconGrid';
 import { MobileTaskbar } from './MobileTaskbar';
+import { EasterEggOverlay } from './EasterEggOverlay';
 
 const DesktopContainer = styled(motion.div)<{ $background: string }>`
   position: fixed;
   inset: 0;
   overflow: hidden;
-  padding-bottom: 28px; /* Taskbar height */
+  padding-bottom: 36px; /* Taskbar height - increased for larger touch targets */
   background: ${props => props.$background};
   display: flex;
   flex-direction: column;
@@ -83,9 +86,15 @@ export function MobileWin95Desktop() {
   const { settings } = useDesktopSettings();
   const { showWizard } = useWizard();
   const backgroundStyle = getBackgroundStyle(settings);
+  const [showEasterEgg, setShowEasterEgg] = useState(false);
+
+  // Konami code easter egg
+  useKonamiCode(() => setShowEasterEgg(true));
 
   return (
-    <DesktopContainer
+    <>
+      {showEasterEgg && <EasterEggOverlay onClose={() => setShowEasterEgg(false)} />}
+      <DesktopContainer
       $background={backgroundStyle}
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
@@ -121,5 +130,6 @@ export function MobileWin95Desktop() {
 
       <MobileTaskbar />
     </DesktopContainer>
+    </>
   );
 }

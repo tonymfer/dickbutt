@@ -4,11 +4,12 @@ import { useState } from 'react';
 import styled from 'styled-components';
 import { motion } from 'framer-motion';
 import { useClock } from '@/hooks/useClock';
+import { useSoundOptional } from '@/context/SoundContext';
 import { MobileStartMenu } from './MobileStartMenu';
 import { Win98AppBar, Win98Toolbar, Win98Frame } from '@/components/ui/win98';
 
 const StyledAppBar = styled(motion(Win98AppBar))`
-  height: 28px;
+  height: 36px;
   z-index: 9997;
 `;
 
@@ -17,8 +18,8 @@ const StyledToolbar = styled(Win98Toolbar)`
   justify-content: space-between;
   align-items: center;
   padding: 2px 4px;
-  min-height: 24px;
-  height: 24px;
+  min-height: 32px;
+  height: 32px;
 `;
 
 const StartButton = styled.button<{ $active: boolean }>`
@@ -28,8 +29,8 @@ const StartButton = styled.button<{ $active: boolean }>`
   display: flex;
   align-items: center;
   gap: 4px;
-  padding: 2px 8px;
-  height: 22px;
+  padding: 4px 12px;
+  height: 30px;
   cursor: pointer;
   border: 2px solid;
   ${({ $active }) => $active
@@ -59,9 +60,33 @@ const StartIcon = styled.img`
 const SystemTray = styled(Win98Frame)`
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   padding: 2px 8px;
-  height: 22px;
+  height: 30px;
+`;
+
+const SoundToggle = styled.button<{ $muted: boolean }>`
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: ${props => props.$muted ? 0.5 : 1};
+  -webkit-tap-highlight-color: transparent;
+
+  &:active {
+    transform: scale(0.9);
+  }
+`;
+
+const SoundIcon = styled.img`
+  width: 16px;
+  height: 16px;
+  image-rendering: pixelated;
 `;
 
 const Clock = styled.span`
@@ -71,6 +96,17 @@ const Clock = styled.span`
 export function MobileTaskbar() {
   const [showStartMenu, setShowStartMenu] = useState(false);
   const time = useClock();
+  const sound = useSoundOptional();
+
+  const handleSoundToggle = () => {
+    if (sound) {
+      sound.toggleEnabled();
+      // Play click sound if turning on (feedback that sound is working)
+      if (!sound.enabled) {
+        setTimeout(() => sound.playClick(), 50);
+      }
+    }
+  };
 
   return (
     <>
@@ -79,7 +115,7 @@ export function MobileTaskbar() {
         onClose={() => setShowStartMenu(false)}
       />
       <StyledAppBar
-        initial={{ y: 30 }}
+        initial={{ y: 36 }}
         animate={{ y: 0 }}
         transition={{ delay: 0.5, type: 'spring', stiffness: 300, damping: 25 }}
       >
@@ -93,6 +129,18 @@ export function MobileTaskbar() {
           </StartButton>
 
           <SystemTray $variant="well">
+            {sound && (
+              <SoundToggle
+                onClick={handleSoundToggle}
+                $muted={!sound.enabled}
+                title={sound.enabled ? 'Sound On - Tap to mute' : 'Sound Off - Tap to unmute'}
+              >
+                <SoundIcon
+                  src="/assets/icons/win95/speaker.ico"
+                  alt={sound.enabled ? 'Sound on' : 'Sound off'}
+                />
+              </SoundToggle>
+            )}
             <Clock>{time}</Clock>
           </SystemTray>
         </StyledToolbar>

@@ -53,7 +53,9 @@ const StartButton = styled(Button).withConfig({
     `
     : `
       background-color: #c0c0c0;
-      box-shadow: inset -1px -1px #0a0a0a, inset 1px 1px #fff, inset -2px -2px #808080, inset 2px 2px #dfdfdf;
+      border: 2px solid;
+      border-color: rgb(223, 223, 223) rgb(128, 128, 128) rgb(128, 128, 128) rgb(223, 223, 223);
+      box-shadow: none;
     `
   }
 `;
@@ -132,7 +134,9 @@ const WindowTab = styled(Button).withConfig({
     `
     : `
       background-color: #c0c0c0;
-      box-shadow: inset -1px -1px #0a0a0a, inset 1px 1px #fff, inset -2px -2px #808080, inset 2px 2px #dfdfdf;
+      border: 2px solid;
+      border-color: rgb(223, 223, 223) rgb(128, 128, 128) rgb(128, 128, 128) rgb(223, 223, 223);
+      box-shadow: none;
     `
   }
 `;

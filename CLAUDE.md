@@ -5,14 +5,14 @@ This project uses authentic Windows 98 styling. All UI components must follow th
 ## Color Palette
 
 ### Grays (3D Elements)
-- `#dfdfdf` - Highlight (light edge)
-- `#c0c0c0` - Button face / base gray
-- `#808080` - Shadow (dark edge)
+- `#dfdfdf` / `rgb(223, 223, 223)` - Highlight (light edge)
+- `#c0c0c0` / `rgb(192, 192, 192)` - Button face / base gray
+- `#808080` / `rgb(128, 128, 128)` - Shadow (dark edge)
 - `#0a0a0a` - Darkest shadow
 
 ### Blues (Titlebar)
 - `--ActiveTitle` / `#000080` - Active titlebar start
-- `--GradientActiveTitle` / `#1f50a0` - Active titlebar end
+- `--GradientActiveTitle` / `rgb(16, 132, 208)` - Active titlebar end
 - `--InactiveTitle` / `#808080` - Inactive titlebar start
 - `--GradientInactiveTitle` / `#b5b5b5` - Inactive titlebar end
 - `--TitleText` / `#ffffff` - Active title text
@@ -20,14 +20,18 @@ This project uses authentic Windows 98 styling. All UI components must follow th
 
 ## 3D Border / Bevel Specifications
 
+Use the `border` approach for 3D button effects (not `box-shadow`).
+
 ### Raised Button (default state)
 ```css
-box-shadow: inset -1px -1px #0a0a0a, inset 1px 1px #ffffff, inset -2px -2px #808080, inset 2px 2px #dfdfdf;
+border: 2px solid;
+border-color: rgb(223, 223, 223) rgb(128, 128, 128) rgb(128, 128, 128) rgb(223, 223, 223);
 ```
 
 ### Pressed Button (active state)
 ```css
-box-shadow: inset 1px 1px #0a0a0a, inset -1px -1px #ffffff, inset 2px 2px #808080, inset -2px -2px #dfdfdf;
+border: 2px solid;
+border-color: rgb(128, 128, 128) rgb(223, 223, 223) rgb(223, 223, 223) rgb(128, 128, 128);
 ```
 
 ### Window Frame
@@ -53,7 +57,26 @@ box-shadow: inset -1px -1px #0a0a0a, inset 1px 1px #dfdfdf, inset -2px -2px #808
 
 - **Size:** 16px wide × 14px tall
 - **Background:** `#c0c0c0` (var(--ButtonFace))
-- **Border:** none (uses box-shadow for 3D effect)
+- **Border:** 2px solid with 3D colors
+
+### Button Styling (styled-components)
+
+```css
+const WindowButton = styled.button`
+  width: 16px;
+  height: 14px;
+  padding: 0;
+  background: #c0c0c0;
+  border: 2px solid;
+  border-color: rgb(223, 223, 223) rgb(128, 128, 128) rgb(128, 128, 128) rgb(223, 223, 223);
+  cursor: pointer;
+  position: relative;
+
+  &:active {
+    border-color: rgb(128, 128, 128) rgb(223, 223, 223) rgb(223, 223, 223) rgb(128, 128, 128);
+  }
+`;
+```
 
 ### Button Icons (CSS-based)
 
@@ -114,6 +137,20 @@ box-shadow: inset -1px -1px #0a0a0a, inset 1px 1px #dfdfdf, inset -2px -2px #808
 | Titlebar padding | 0 2px |
 | Icon-to-title gap | 3px (via margin-right on icon) |
 | Button spacing | 2px (via margin-left) |
+
+## CSS Variables Reference
+
+The following CSS variables are defined in `globals.css`:
+
+```css
+--ActiveTitle: #000080;
+--GradientActiveTitle: rgb(16, 132, 208);
+--InactiveTitle: #808080;
+--GradientInactiveTitle: #b5b5b5;
+--TitleText: #ffffff;
+--InactiveTitleText: #c0c0c0;
+--ButtonFace: #c0c0c0;
+```
 
 ## Reference Implementation
 

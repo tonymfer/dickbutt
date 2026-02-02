@@ -1,91 +1,25 @@
 'use client';
 
-import { MobileDesktop } from '@/components/mobile';
+import { MobileWin95Desktop } from '@/components/mobile';
+import { MobileWizard } from '@/components/mobile/wizard';
 import { React95Provider } from '@/components/providers/React95Provider';
-import { DesktopProvider, useDesktop, WindowState, WindowConfig } from '@/context/DesktopContext';
+import { DesktopProvider, useDesktop, WindowConfig } from '@/context/DesktopContext';
 import { DesktopSettingsProvider, getBackgroundStyle, useDesktopSettings } from '@/context/DesktopSettingsContext';
 import { IconPositionProvider } from '@/context/IconPositionContext';
 import { WizardProvider, useWizard } from '@/context/WizardContext';
 import { useViewport } from '@/hooks/useViewport';
-import { BASESCAN_CONTRACT_URL } from '@/lib/links';
+import { DESKTOP_ICONS } from '@/lib/constants/icons';
 import { calculateWindowRect, getWebampPosition } from '@/lib/windowLayout';
 import { useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { DickbuttAssistant } from './DickbuttAssistant';
-import { IconConfig } from './DesktopIcon';
 import { DesktopIconGrid } from './DesktopIconGrid';
 import { SetupWizardWindow } from './SetupWizard';
 import { StartupScreen } from './StartupScreen';
 import { Taskbar } from './Taskbar';
 import { WebampPlayer } from './WebampPlayer';
 import { Window } from './Window';
-
-// Desktop icons - left side vertical layout (Windows 95 style)
-const DESKTOP_ICONS: IconConfig[] = [
-  {
-    id: 'contract',
-    label: 'Contract',
-    icon: '/assets/icons/win95/contract.ico',
-    action: 'link',
-    target: BASESCAN_CONTRACT_URL,
-  },
-  {
-    id: 'meme',
-    label: 'Meme Folder',
-    icon: '/assets/icons/win95/folder-hires.ico',
-    action: 'window',
-    target: 'meme',
-    windowTitle: 'Meme Gallery',
-    routeFallback: '/meme',
-  },
-  {
-    id: 'branding',
-    label: 'Branding',
-    icon: '/assets/icons/win95/folder-hires.ico',
-    action: 'window',
-    target: 'branding',
-    windowTitle: 'Branding Assets',
-    routeFallback: '/branding',
-  },
-  {
-    id: 'irl',
-    label: 'Dickbutts IRL',
-    icon: '/assets/icons/win95/folder-hires.ico',
-    action: 'window',
-    target: 'irl',
-    windowTitle: 'Dickbutt IRL - Real World Sightings',
-    routeFallback: '/irl',
-  },
-  {
-    id: 'tv',
-    label: 'TV',
-    icon: '/assets/icons/win95/tv.ico',
-    action: 'route',
-    target: '/tv',
-  },
-  {
-    id: 'videos',
-    label: 'Videos',
-    icon: '/assets/icons/win95/video.ico',
-    action: 'route',
-    target: '/videos',
-  },
-  {
-    id: 'nfts',
-    label: 'NFT Collection',
-    icon: '/assets/icons/win95/nft.ico',
-    action: 'route',
-    target: '/dickbutt-nfts',
-  },
-  {
-    id: 'dickbutt-exe',
-    label: 'dickbutt.exe',
-    icon: '/assets/branding/dickbuttpfp.jpg',
-    action: 'wizard',
-    target: 'wizard',
-  },
-];
 
 const DesktopContainer = styled.div<{ $background: string }>`
   position: fixed;
@@ -120,21 +54,6 @@ const WINDOW_CONFIGS = [
   { id: 'disclaimer', title: 'Disclaimer', content: 'disclaimer', fallback: { x: 620, y: 650 } },
   { id: 'dickbuttonbase', title: 'Dickbutt on Base', content: 'dickbuttonbase', fallback: { x: 300, y: 16 } },
 ];
-
-// Generate default windows with responsive rects
-function createDefaultWindows(
-  rects: Record<string, { x: number; y: number; width: number; height: number }>
-): Omit<WindowState, 'zIndex'>[] {
-  return WINDOW_CONFIGS.map(config => ({
-    id: config.id,
-    title: config.title,
-    content: config.content,
-    contentType: 'component' as const,
-    position: rects[config.id] ? { x: rects[config.id].x, y: rects[config.id].y } : config.fallback,
-    size: rects[config.id] ? { width: rects[config.id].width, height: rects[config.id].height } : undefined,
-    minimized: false,
-  }));
-}
 
 // Generate window configs for sequential opening
 function createWindowConfigs(
@@ -229,7 +148,6 @@ function DesktopContent() {
 function WizardCascadeHandler({ rects }: { rects: Record<string, { x: number; y: number; width: number; height: number }> }) {
   const { wizardVisible } = useWizard();
   const { openWindowsSequentially, windows } = useDesktop();
-  const hasCascadedRef = useRef(false);
   const wasVisibleRef = useRef(wizardVisible);
 
   // Watch for wizard becoming hidden (completed or skipped)
@@ -316,6 +234,19 @@ function DesktopWithProviders() {
   );
 }
 
+// Mobile view component - shows wizard or desktop based on completion
+function MobileView() {
+  const { wizardVisible } = useWizard();
+
+  // Show wizard if it's visible (either first time or reopened)
+  if (wizardVisible) {
+    return <MobileWizard />;
+  }
+
+  // After wizard is completed/skipped, show Win95 desktop
+  return <MobileWin95Desktop />;
+}
+
 // Use sessionStorage to track if user has navigated within the site
 const SESSION_NAV_KEY = 'dickbutt-session-nav';
 
@@ -351,12 +282,14 @@ export function Desktop() {
     setShowStartup(false);
   };
 
-  // Mobile/Tablet view (< 1024px) - stacked column layout
+  // Mobile/Tablet view (< 1024px) - wizard flow then Win95 desktop
   if (!isDesktop) {
     return (
       <React95Provider>
         <DesktopSettingsProvider>
-          <MobileDesktop />
+          <WizardProvider>
+            <MobileView />
+          </WizardProvider>
         </DesktopSettingsProvider>
       </React95Provider>
     );

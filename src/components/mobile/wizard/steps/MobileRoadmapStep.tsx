@@ -2,40 +2,41 @@
 
 import styled from 'styled-components';
 import { ProgressBar } from 'react95';
-import { useState } from 'react';
-import { GroupBox, Win98Frame, Win98Checkbox } from '@/components/ui/win98';
+import { GroupBox, Win98Frame } from '@/components/ui/win98';
 import { ROADMAP_PHASES } from '@/lib/constants/wizard';
 
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 16px;
+  padding: 16px;
   height: 100%;
+  overflow-y: auto;
 `;
 
 const Title = styled.h2`
-  font-size: 13px;
+  font-size: 18px;
   font-weight: bold;
   color: #000080;
   margin: 0;
-  flex-shrink: 0;
+  text-align: center;
 `;
 
 const StyledGroupBox = styled.div`
   flex: 1;
   min-height: 0;
-  padding: 6px;
+  padding: 12px;
 `;
 
 const TreeContainer = styled(Win98Frame)`
   background: #fff;
-  padding: 8px;
+  padding: 12px;
   height: 100%;
-  overflow: auto;
+  overflow-y: auto;
 `;
 
 const PhaseItem = styled.div`
-  margin-bottom: 8px;
+  margin-bottom: 16px;
 
   &:last-child {
     margin-bottom: 0;
@@ -45,23 +46,23 @@ const PhaseItem = styled.div`
 const PhaseHeader = styled.div<{ $completed?: boolean }>`
   display: flex;
   align-items: center;
-  gap: 6px;
-  font-size: 11px;
+  gap: 8px;
+  font-size: 14px;
   font-weight: bold;
   color: ${props => props.$completed ? '#008000' : '#000'};
-  margin-bottom: 4px;
+  margin-bottom: 8px;
 `;
 
 const CheckMark = styled(Win98Frame)<{ $checked?: boolean }>`
-  width: 12px;
-  height: 12px;
-  min-width: 12px;
-  min-height: 12px;
+  width: 16px;
+  height: 16px;
+  min-width: 16px;
+  min-height: 16px;
   background: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 9px;
+  font-size: 11px;
   font-weight: bold;
   color: ${props => props.$checked ? '#008000' : '#000'};
   padding: 0;
@@ -70,53 +71,43 @@ const CheckMark = styled(Win98Frame)<{ $checked?: boolean }>`
 const SubItem = styled.div<{ $completed?: boolean }>`
   display: flex;
   align-items: center;
-  gap: 4px;
-  font-size: 10px;
+  gap: 6px;
+  font-size: 13px;
   color: ${props => props.$completed ? '#008000' : '#666'};
-  padding-left: 18px;
-  margin-bottom: 2px;
+  padding-left: 24px;
+  margin-bottom: 4px;
 `;
 
 const TreeIcon = styled.span`
   font-family: 'Courier New', monospace;
   color: #808080;
-  font-size: 9px;
+  font-size: 12px;
 `;
 
 const ProgressSection = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
   flex-shrink: 0;
 `;
 
 const ProgressLabel = styled.div`
   display: flex;
   justify-content: space-between;
-  font-size: 10px;
+  font-size: 13px;
   color: #000;
 `;
 
-const AcknowledgeRow = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 0;
-  flex-shrink: 0;
-  font-size: 11px;
-`;
-
-export function RoadmapStep() {
-  const [acknowledged, setAcknowledged] = useState(false);
+export function MobileRoadmapStep() {
   const completedPhases = ROADMAP_PHASES.filter(p => p.completed).length;
   const totalPhases = ROADMAP_PHASES.length;
   const progressPercent = Math.round((completedPhases / totalPhases) * 100);
 
   return (
     <Container>
-      <Title>Project Roadmap</Title>
+      <Title>Roadmap</Title>
 
-      <GroupBox label="Deployment Phases" style={{ flex: 1, minHeight: 0, padding: 6 }}>
+      <GroupBox label="Deployment Phases" style={{ flex: 1, minHeight: 0, padding: 12 }}>
         <TreeContainer $variant="field">
           {ROADMAP_PHASES.map((phase, phaseIndex) => (
             <PhaseItem key={phaseIndex}>
@@ -144,14 +135,6 @@ export function RoadmapStep() {
         </ProgressLabel>
         <ProgressBar value={progressPercent} />
       </ProgressSection>
-
-      <AcknowledgeRow>
-        <Win98Checkbox
-          checked={acknowledged}
-          onChange={() => setAcknowledged(!acknowledged)}
-          label="I understand there is no formal roadmap"
-        />
-      </AcknowledgeRow>
     </Container>
   );
 }

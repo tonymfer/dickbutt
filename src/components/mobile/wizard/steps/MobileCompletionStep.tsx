@@ -1,8 +1,7 @@
 'use client';
 
 import styled from 'styled-components';
-import { useState } from 'react';
-import { Win98Button, Win98Frame, GroupBox, Win98Checkbox } from '@/components/ui/win98';
+import { Win98Button, Win98Frame, GroupBox } from '@/components/ui/win98';
 import { useCopyToClipboard } from '@/hooks/useCopyToClipboard';
 import { CONTRACT_ADDRESS, RESOURCE_LINKS, BUY_LINKS } from '@/lib/links';
 import { Win95Icon } from '@/components/ui/Win95Icon';
@@ -10,90 +9,90 @@ import { Win95Icon } from '@/components/ui/Win95Icon';
 const Container = styled.div`
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 16px;
+  padding: 16px;
   height: 100%;
+  overflow-y: auto;
 `;
 
 const SuccessHeader = styled.div`
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   flex-shrink: 0;
 `;
 
 const SuccessIcon = styled.div`
-  width: 28px;
-  height: 28px;
+  width: 36px;
+  height: 36px;
   background: #008000;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   color: white;
-  font-size: 16px;
+  font-size: 20px;
   font-weight: bold;
   flex-shrink: 0;
 `;
 
 const SuccessText = styled.div`
   h2 {
-    font-size: 13px;
+    font-size: 16px;
     font-weight: bold;
     color: #000080;
-    margin: 0 0 2px 0;
+    margin: 0 0 4px 0;
   }
 
   p {
-    font-size: 10px;
+    font-size: 13px;
     margin: 0;
     color: #333;
   }
 `;
 
 const StyledGroupBox = styled.div`
-  padding: 6px;
+  padding: 10px;
 `;
 
 const ContractFrame = styled(Win98Frame)`
-  padding: 6px;
+  padding: 10px;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 6px;
+  flex-direction: column;
+  gap: 8px;
   background: #fff;
 `;
 
 const ContractText = styled.code`
-  font-size: 8px;
+  font-size: 10px;
   word-break: break-all;
-  flex: 1;
   font-family: 'Courier New', monospace;
 `;
 
 const CopyButton = styled(Win98Button)`
-  font-size: 9px;
-  padding: 3px 10px;
-  height: 22px;
-  min-width: 50px;
+  font-size: 12px;
+  padding: 6px 16px;
+  height: 28px;
+  align-self: flex-start;
 `;
 
 const ButtonGrid = styled.div`
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 4px;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
 `;
 
 const ActionButton = styled(Win98Button)`
-  font-size: 9px;
-  padding: 4px 6px;
-  height: 24px;
+  font-size: 12px;
+  padding: 8px 10px;
+  height: 32px;
 `;
 
 const DisclaimerSection = styled(Win98Frame)`
   display: flex;
   align-items: flex-start;
-  gap: 6px;
-  padding: 6px;
+  gap: 10px;
+  padding: 10px;
   background: #ffffcc;
   flex-shrink: 0;
 `;
@@ -103,25 +102,14 @@ const DisclaimerIcon = styled.div`
 `;
 
 const DisclaimerText = styled.p`
-  font-size: 9px;
-  line-height: 1.3;
+  font-size: 11px;
+  line-height: 1.4;
   margin: 0;
   color: #333;
 `;
 
-const AcknowledgeRow = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 4px 0;
-  flex-shrink: 0;
-  font-size: 11px;
-  margin-top: auto;
-`;
-
-export function CompletionStep() {
+export function MobileCompletionStep() {
   const { copied, copy } = useCopyToClipboard();
-  const [acknowledged, setAcknowledged] = useState(false);
 
   const handleCopy = () => {
     copy(CONTRACT_ADDRESS);
@@ -141,16 +129,16 @@ export function CompletionStep() {
         </SuccessText>
       </SuccessHeader>
 
-      <GroupBox label="Contract Address" style={{ padding: 6 }}>
+      <GroupBox label="Contract Address" style={{ padding: 10 }}>
         <ContractFrame $variant="field">
           <ContractText>{CONTRACT_ADDRESS}</ContractText>
           <CopyButton onClick={handleCopy}>
-            {copied ? 'Copied!' : 'Copy'}
+            {copied ? 'Copied!' : 'Copy Address'}
           </CopyButton>
         </ContractFrame>
       </GroupBox>
 
-      <GroupBox label="Quick Links" style={{ padding: 6 }}>
+      <GroupBox label="Quick Links" style={{ padding: 10 }}>
         <ButtonGrid>
           <ActionButton onClick={() => openLink(BUY_LINKS.uniswap)}>Uniswap</ActionButton>
           <ActionButton onClick={() => openLink(RESOURCE_LINKS.dexscreener)}>DexScreener</ActionButton>
@@ -163,21 +151,13 @@ export function CompletionStep() {
 
       <DisclaimerSection $variant="field">
         <DisclaimerIcon>
-          <Win95Icon name="warning" size={20} />
+          <Win95Icon name="warning" size={24} />
         </DisclaimerIcon>
         <DisclaimerText>
           $DICKBUTT has no association with K.C. Green. This is a meme coin
           with no intrinsic value or expectation of financial return.
         </DisclaimerText>
       </DisclaimerSection>
-
-      <AcknowledgeRow>
-        <Win98Checkbox
-          checked={acknowledged}
-          onChange={() => setAcknowledged(!acknowledged)}
-          label="I accept this is a meme coin — LFG! 🚀"
-        />
-      </AcknowledgeRow>
     </Container>
   );
 }

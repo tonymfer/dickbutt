@@ -1,10 +1,12 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useDesktop } from '@/context/DesktopContext';
-import { MenuList, MenuListItem, Separator } from 'react95';
+import { useClickOutside } from '@/hooks/useClickOutside';
+import { MenuList, MenuListItem } from 'react95';
 import styled from 'styled-components';
+import { Win98Separator } from '@/components/ui/win98';
 /* eslint-disable @next/next/no-img-element */
 
 interface StartMenuProps {
@@ -108,19 +110,13 @@ export function StartMenu({ onClose }: StartMenuProps) {
   const [showPrograms, setShowPrograms] = useState(false);
   const [showDocuments, setShowDocuments] = useState(false);
 
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
-        const target = e.target as HTMLElement;
-        if (!target.closest('button')?.textContent?.includes('Start')) {
-          onClose();
-        }
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
+  const handleClickOutside = useCallback(() => {
+    onClose();
   }, [onClose]);
+
+  useClickOutside(menuRef, handleClickOutside, {
+    excludeSelector: 'button',
+  });
 
   const handleRoute = (path: string) => {
     router.push(path);
@@ -228,7 +224,7 @@ export function StartMenu({ onClose }: StartMenuProps) {
           <MenuLabel>TV Channel</MenuLabel>
         </MenuItem>
 
-        <Separator />
+        <Win98Separator />
 
         <MenuItem
           onClick={() => window.open('https://basescan.org/token/0x...', '_blank')}
@@ -238,7 +234,7 @@ export function StartMenu({ onClose }: StartMenuProps) {
           <MenuLabel>Run Contract</MenuLabel>
         </MenuItem>
 
-        <Separator />
+        <Win98Separator />
 
         <MenuItem
           onClick={onClose}

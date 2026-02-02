@@ -1,8 +1,10 @@
 'use client';
 
 import styled from 'styled-components';
-import { GroupBox, Frame, Checkbox } from 'react95';
 import { useState } from 'react';
+import { GroupBox, Win98Checkbox } from '@/components/ui/win98';
+import { CheckListItem } from '@/components/shared/CheckListItem';
+import { TOKENOMICS_DATA, TOKEN_DETAILS, SECURITY_SPECS } from '@/lib/constants/wizard';
 import { PieChart } from '../PieChart';
 
 const Container = styled.div`
@@ -25,38 +27,10 @@ const SpecsRow = styled.div`
   min-height: 0;
 `;
 
-const StyledGroupBox = styled(GroupBox)`
-  flex: 1;
-  padding: 8px;
-  font-size: 11px;
-`;
-
 const CheckList = styled.div`
   display: flex;
   flex-direction: column;
   gap: 4px;
-`;
-
-const CheckItem = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 10px;
-`;
-
-const CheckMark = styled(Frame)`
-  width: 12px;
-  height: 12px;
-  min-width: 12px;
-  min-height: 12px;
-  background: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 9px;
-  font-weight: bold;
-  color: #008000;
-  padding: 0;
 `;
 
 const AcknowledgeRow = styled.div`
@@ -68,60 +42,35 @@ const AcknowledgeRow = styled.div`
   font-size: 11px;
 `;
 
-const tokenomicsData = [
-  { label: 'Team', value: 10, color: '#ffff00' },
-  { label: 'Marketing', value: 20, color: '#ff00ff' },
-  { label: 'Liquidity', value: 20, color: '#00ff00' },
-  { label: 'Community', value: 50, color: '#00ffff' },
-];
-
-const tokenDetails = [
-  'Supply: 100B',
-  'Chain: Base (L2)',
-  'Tax: 0/0',
-];
-
-const securitySpecs = [
-  'Contract Renounced',
-  'LP Burned Forever',
-  'No Mint Function',
-];
-
 export function TokenomicsStep() {
   const [acknowledged, setAcknowledged] = useState(false);
 
   return (
     <Container>
       <ChartSection>
-        <PieChart data={tokenomicsData} size={100} />
+        <PieChart data={TOKENOMICS_DATA} size={100} />
       </ChartSection>
 
       <SpecsRow>
-        <StyledGroupBox label="Token Details">
+        <GroupBox label="Token Details" style={{ flex: 1, padding: 8, fontSize: 11 }}>
           <CheckList>
-            {tokenDetails.map((detail, index) => (
-              <CheckItem key={index}>
-                <CheckMark variant="field">✓</CheckMark>
-                <span>{detail}</span>
-              </CheckItem>
+            {TOKEN_DETAILS.map((detail, index) => (
+              <CheckListItem key={index} label={detail} size="sm" />
             ))}
           </CheckList>
-        </StyledGroupBox>
+        </GroupBox>
 
-        <StyledGroupBox label="Security">
+        <GroupBox label="Security" style={{ flex: 1, padding: 8, fontSize: 11 }}>
           <CheckList>
-            {securitySpecs.map((spec, index) => (
-              <CheckItem key={index}>
-                <CheckMark variant="field">✓</CheckMark>
-                <span>{spec}</span>
-              </CheckItem>
+            {SECURITY_SPECS.map((spec, index) => (
+              <CheckListItem key={index} label={spec} size="sm" />
             ))}
           </CheckList>
-        </StyledGroupBox>
+        </GroupBox>
       </SpecsRow>
 
       <AcknowledgeRow>
-        <Checkbox
+        <Win98Checkbox
           checked={acknowledged}
           onChange={() => setAcknowledged(!acknowledged)}
           label="I understand the tokenomics and security features"

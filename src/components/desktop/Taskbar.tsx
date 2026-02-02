@@ -1,23 +1,20 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useDesktop } from '@/context/DesktopContext';
+import { useWizard } from '@/context/WizardContext';
+import { useClock } from '@/hooks/useClock';
+import { WINDOW_ICONS } from '@/lib/constants/icons';
 import { StartMenu } from './StartMenu';
-import { AppBar, Toolbar, Button, Frame } from 'react95';
 import styled from 'styled-components';
+import { Win98AppBar, Win98Toolbar, Win98Frame } from '@/components/ui/win98';
 /* eslint-disable @next/next/no-img-element */
 
-const StyledAppBar = styled(AppBar)`
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  top: auto;
-  z-index: 9999;
+const StyledAppBar = styled(Win98AppBar)`
   height: 28px;
 `;
 
-const StyledToolbar = styled(Toolbar)`
+const StyledToolbar = styled(Win98Toolbar)`
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -32,31 +29,32 @@ const LeftSection = styled.div`
   gap: 2px;
 `;
 
-const StartButton = styled(Button).withConfig({
-  shouldForwardProp: (prop) =>
-    !['active', 'primary', 'fullWidth', 'square'].includes(prop),
-})<{ $active: boolean }>`
+const StartButton = styled.button<{ $active: boolean }>`
   font-weight: bold;
   font-size: 11px;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
   display: flex;
   align-items: center;
   gap: 3px;
   padding: 2px 6px;
   height: 22px;
+  cursor: pointer;
+  border: 2px solid;
   ${({ $active }) => $active
     ? `
       background-color: transparent;
-      border: 2px solid #808080;
-      box-shadow: none;
+      border-color: rgb(128, 128, 128) rgb(223, 223, 223) rgb(223, 223, 223) rgb(128, 128, 128);
       background-image: url("data:image/svg+xml,%3Csvg width='2' height='2' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='0' y='0' width='1' height='1' fill='%23ffffff'/%3E%3Crect x='1' y='1' width='1' height='1' fill='%23ffffff'/%3E%3C/svg%3E");
       background-size: 2px 2px;
     `
     : `
       background-color: #c0c0c0;
-      border: 2px solid;
       border-color: rgb(223, 223, 223) rgb(128, 128, 128) rgb(128, 128, 128) rgb(223, 223, 223);
-      box-shadow: none;
     `
+  }
+
+  &:active {
+    border-color: rgb(128, 128, 128) rgb(223, 223, 223) rgb(223, 223, 223) rgb(128, 128, 128);
   }
 `;
 
@@ -108,36 +106,38 @@ const WindowTabs = styled.div`
   overflow: hidden;
 `;
 
-const WindowTab = styled(Button).withConfig({
-  shouldForwardProp: (prop) =>
-    !['active', 'primary', 'fullWidth', 'square'].includes(prop),
-})<{ $active: boolean }>`
-  min-width: 24px;
-  max-width: 140px;
+const WindowTab = styled.button<{ $active: boolean }>`
+  width: 160px;
+  min-width: 80px;
+  flex-shrink: 1;
   height: 22px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   font-size: 11px;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
   padding: 2px 4px;
   display: flex;
   align-items: center;
   gap: 3px;
   justify-content: flex-start;
+  cursor: pointer;
+  border: 2px solid;
   ${({ $active }) => $active
     ? `
       background-color: transparent;
-      border: 2px solid #808080;
-      box-shadow: none;
+      border-color: rgb(128, 128, 128) rgb(223, 223, 223) rgb(223, 223, 223) rgb(128, 128, 128);
       background-image: url("data:image/svg+xml,%3Csvg width='2' height='2' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='0' y='0' width='1' height='1' fill='%23ffffff'/%3E%3Crect x='1' y='1' width='1' height='1' fill='%23ffffff'/%3E%3C/svg%3E");
       background-size: 2px 2px;
     `
     : `
       background-color: #c0c0c0;
-      border: 2px solid;
       border-color: rgb(223, 223, 223) rgb(128, 128, 128) rgb(128, 128, 128) rgb(223, 223, 223);
-      box-shadow: none;
     `
+  }
+
+  &:active {
+    border-color: rgb(128, 128, 128) rgb(223, 223, 223) rgb(223, 223, 223) rgb(128, 128, 128);
   }
 `;
 
@@ -154,23 +154,7 @@ const TabTitle = styled.span`
   white-space: nowrap;
 `;
 
-// Map window IDs to their icons
-const WINDOW_ICONS: Record<string, string> = {
-  resources: '/assets/icons/win95/book.ico',
-  product: '/assets/icons/win95/book.ico',
-  origin: '/assets/icons/win95/scroll.ico',
-  dickbutt: '/assets/icons/win95/money.ico',
-  wheretobuy: '/assets/icons/win95/cart.ico',
-  roadmap: '/assets/icons/win95/map.ico',
-  disclaimer: '/assets/icons/win95/warning.ico',
-  dickbuttonbase: '/assets/icons/win95/computer.ico',
-  settings: '/assets/icons/win95/settings.ico',
-  meme: '/assets/icons/win95/folder-hires.ico',
-  branding: '/assets/icons/win95/folder-hires.ico',
-  irl: '/assets/icons/win95/folder-hires.ico',
-};
-
-const SystemTray = styled(Frame)`
+const SystemTray = styled(Win98Frame)`
   display: flex;
   align-items: center;
   gap: 4px;
@@ -200,24 +184,9 @@ const Clock = styled.span`
 
 export function Taskbar() {
   const { windows, activeWindowId, focusWindow } = useDesktop();
+  const { wizardVisible } = useWizard();
   const [showStartMenu, setShowStartMenu] = useState(false);
-  const [time, setTime] = useState<string>('');
-
-  useEffect(() => {
-    const updateTime = () => {
-      const now = new Date();
-      setTime(
-        now.toLocaleTimeString('en-US', {
-          hour: 'numeric',
-          minute: '2-digit',
-          hour12: true,
-        })
-      );
-    };
-    updateTime();
-    const interval = setInterval(updateTime, 1000);
-    return () => clearInterval(interval);
-  }, []);
+  const time = useClock();
 
   return (
     <>
@@ -229,7 +198,7 @@ export function Taskbar() {
               $active={showStartMenu}
               onClick={() => setShowStartMenu(!showStartMenu)}
             >
-              <img src="/assets/icons/win95/windows-logo.ico" alt="" width={16} height={16} style={{ imageRendering: 'pixelated' }} />
+              <img src="/assets/icons/win95/start.png" alt="" width={16} height={14} style={{ imageRendering: 'pixelated' }} />
               Start
             </StartButton>
 
@@ -248,6 +217,15 @@ export function Taskbar() {
           </LeftSection>
 
           <WindowTabs>
+            {wizardVisible && (
+              <WindowTab $active={true}>
+                <TabIcon
+                  src="/assets/icons/win95/settings.ico"
+                  alt=""
+                />
+                <TabTitle>$DICKBUTT Setup</TabTitle>
+              </WindowTab>
+            )}
             {windows.map((win) => (
               <WindowTab
                 key={win.id}
@@ -263,12 +241,12 @@ export function Taskbar() {
             ))}
           </WindowTabs>
 
-          <SystemTray variant="well">
-            <TrayIcon title="Task Scheduler">
-              <img src="/assets/icons/win95/settings.ico" alt="Task Scheduler" />
+          <SystemTray $variant="well">
+            <TrayIcon title="Task Scheduler is not ready.">
+              <img src="/assets/icons/win95/task-scheduler-16x16.png" alt="Task Scheduler" />
             </TrayIcon>
             <TrayIcon title="Volume">
-              <img src="/assets/icons/win95/speaker.ico" alt="Volume" />
+              <img src="/assets/icons/win95/audio-okay-16x16.png" alt="Volume" />
             </TrayIcon>
             <Clock>{time}</Clock>
           </SystemTray>

@@ -1,8 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { Button, Tabs, Tab, TabBody } from 'react95';
+import { Tabs, Tab, TabBody } from 'react95';
 import styled from 'styled-components';
+import { Win98Button } from '@/components/ui/win98';
 import { WHERE_TO_BUY_CONTENT } from '@/lib/windowContent';
 
 const Container = styled.div`
@@ -36,10 +37,7 @@ const ExchangeGrid = styled.div`
   gap: 3px;
 `;
 
-const ExchangeButton = styled(Button).withConfig({
-  shouldForwardProp: (prop) =>
-    !['active', 'primary', 'fullWidth', 'square'].includes(prop),
-})<{ $featured?: boolean }>`
+const ExchangeButton = styled(Win98Button)<{ $featured?: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;

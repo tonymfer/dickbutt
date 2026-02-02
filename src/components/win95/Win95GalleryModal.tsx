@@ -2,11 +2,12 @@
 
 import { useEffect, useCallback, useState } from 'react';
 import Image from 'next/image';
-import { Window, WindowContent, Button, Frame } from 'react95';
+import { Window, WindowContent } from 'react95';
 import styled, { keyframes } from 'styled-components';
 import type { GalleryItem } from '@/lib/assets';
 import { getGalleryFullUrl, formatFileSize } from '@/lib/assets';
 import { Win95MediaPlayer } from './Win95MediaPlayer';
+import { Win98Button, Win98Frame } from '@/components/ui/win98';
 /* eslint-disable @next/next/no-img-element */
 
 const Overlay = styled.div`
@@ -109,7 +110,7 @@ const ContentArea = styled(WindowContent)`
   gap: 8px;
 `;
 
-const MediaContainer = styled(Frame)`
+const MediaContainer = styled(Win98Frame)`
   background: #000;
   display: flex;
   align-items: center;
@@ -134,10 +135,7 @@ const NavigationBar = styled.div`
   gap: 8px;
 `;
 
-const NavButton = styled(Button).withConfig({
-  shouldForwardProp: (prop) =>
-    !['active', 'primary', 'fullWidth', 'square'].includes(prop),
-})`
+const NavButton = styled(Win98Button)`
   min-width: 80px;
 `;
 
@@ -258,7 +256,7 @@ export function Win95GalleryModal({
         </WindowTitlebar>
 
         <ContentArea>
-          <MediaContainer variant="well">
+          <MediaContainer $variant="well">
             {isLoading && (
               <LoadingOverlay>
                 <HourglassIcon>⏳</HourglassIcon>
@@ -299,16 +297,16 @@ export function Win95GalleryModal({
           </NavigationBar>
 
           <StatusBar>
-            <Frame variant="status" style={{ flex: 1 }}>
+            <Win98Frame $variant="status" style={{ flex: 1 }}>
               <StatusItem>
                 {item.type.toUpperCase()} | {item.width}×{item.height} | {formatFileSize(item.size)}
               </StatusItem>
-            </Frame>
-            <Frame variant="status">
+            </Win98Frame>
+            <Win98Frame $variant="status">
               <StatusItem>
                 {item.ext}
               </StatusItem>
-            </Frame>
+            </Win98Frame>
           </StatusBar>
         </ContentArea>
       </ModalWindow>

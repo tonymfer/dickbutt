@@ -2,8 +2,8 @@
 
 import styled from 'styled-components';
 import Image from 'next/image';
-import { Frame, Button, Checkbox } from 'react95';
 import { useState } from 'react';
+import { Win98Frame, Win98Button, Win98Checkbox } from '@/components/ui/win98';
 
 const Container = styled.div`
   display: flex;
@@ -26,16 +26,13 @@ const Title = styled.h2`
   margin: 0;
 `;
 
-const ToggleButton = styled(Button).withConfig({
-  shouldForwardProp: (prop) =>
-    !['active', 'primary', 'fullWidth', 'square'].includes(prop),
-})`
+const ToggleButton = styled(Win98Button)`
   font-size: 10px;
   padding: 3px 8px;
   height: 22px;
 `;
 
-const ContentFrame = styled(Frame)`
+const ContentFrame = styled(Win98Frame)`
   flex: 1;
   min-height: 0;
   display: flex;
@@ -96,7 +93,7 @@ export function OriginStep() {
         </ToggleButton>
       </Header>
 
-      <ContentFrame variant="field">
+      <ContentFrame $variant="field">
         {showStory ? (
           <StoryContainer>
             <p>
@@ -128,7 +125,7 @@ export function OriginStep() {
       </ContentFrame>
 
       <AcknowledgeRow>
-        <Checkbox
+        <Win98Checkbox
           checked={acknowledged}
           onChange={() => setAcknowledged(!acknowledged)}
           label="I acknowledge Dickbutt as a legendary internet meme"

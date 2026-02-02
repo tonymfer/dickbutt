@@ -20,7 +20,7 @@ This project uses authentic Windows 98 styling. All UI components must follow th
 
 ## 3D Border / Bevel Specifications
 
-Use the `border` approach for 3D button effects (not `box-shadow`).
+Use plain `<button>` elements (not react95 Button) for consistent styling with the `border` approach.
 
 ### Raised Button (default state)
 ```css
@@ -30,7 +30,6 @@ border-color: rgb(223, 223, 223) rgb(128, 128, 128) rgb(128, 128, 128) rgb(223, 
 
 ### Pressed Button (active state)
 ```css
-border: 2px solid;
 border-color: rgb(128, 128, 128) rgb(223, 223, 223) rgb(223, 223, 223) rgb(128, 128, 128);
 ```
 

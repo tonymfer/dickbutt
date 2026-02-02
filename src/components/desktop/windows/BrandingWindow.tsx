@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import styled from 'styled-components';
-import { Frame } from 'react95';
+import { Win98Frame } from '@/components/ui/win98';
 
 const BRANDING_ASSETS = [
   {
@@ -164,7 +164,7 @@ export function BrandingWindow() {
       <ContentArea>
         <AssetGrid>
           {BRANDING_ASSETS.map((asset) => (
-            <Frame key={asset.file} variant="field">
+            <Win98Frame key={asset.file} $variant="field">
               <AssetCard>
                 <PreviewArea>
                   <Image
@@ -197,15 +197,15 @@ export function BrandingWindow() {
                   <DownloadButton>Download</DownloadButton>
                 </a>
               </AssetCard>
-            </Frame>
+            </Win98Frame>
           ))}
         </AssetGrid>
       </ContentArea>
 
       <FooterBar>
-        <Frame variant="status" style={{ flex: 1 }}>
+        <Win98Frame $variant="status" style={{ flex: 1 }}>
           <FooterItem>{BRANDING_ASSETS.length} items</FooterItem>
-        </Frame>
+        </Win98Frame>
       </FooterBar>
     </Container>
   );

@@ -1,7 +1,7 @@
 'use client';
 
 import styled from 'styled-components';
-import { Button, Separator } from 'react95';
+import { Win98Button, Win98Separator } from '@/components/ui/win98';
 
 interface WizardNavProps {
   currentStep: number;
@@ -26,10 +26,7 @@ const NavButtons = styled.div`
   padding: 12px 16px;
 `;
 
-const NavButton = styled(Button).withConfig({
-  shouldForwardProp: (prop) =>
-    !['active', 'primary', 'fullWidth', 'square'].includes(prop),
-})`
+const NavButton = styled(Win98Button)`
   min-width: 80px;
   height: 26px;
   font-size: 12px;
@@ -53,18 +50,18 @@ export function WizardNav({
 
   return (
     <NavContainer>
-      <Separator />
+      <Win98Separator />
       <NavButtons>
         <Spacer />
         <NavButton onClick={onBack} disabled={isFirstStep}>
           &lt; Back
         </NavButton>
         {isLastStep ? (
-          <NavButton primary onClick={onFinish}>
+          <NavButton $primary onClick={onFinish}>
             Finish
           </NavButton>
         ) : (
-          <NavButton primary onClick={onNext}>
+          <NavButton $primary onClick={onNext}>
             Next &gt;
           </NavButton>
         )}

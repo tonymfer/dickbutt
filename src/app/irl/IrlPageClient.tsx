@@ -3,9 +3,10 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useState, useCallback, useEffect } from 'react';
-import { Window, WindowHeader, WindowContent, Button, Toolbar, Frame } from 'react95';
+import { Window, WindowHeader, WindowContent, Toolbar } from 'react95';
 import { React95Provider } from '@/components/providers/React95Provider';
 import styled from 'styled-components';
+import { Win98Button, Win98Frame } from '@/components/ui/win98';
 
 const R2_BASE = 'https://pub-c5bbdf1eaf68478a9783e46a36a3c3b5.r2.dev/v1/gallery';
 
@@ -116,10 +117,7 @@ const StyledWindowHeader = styled(WindowHeader)`
   align-items: center;
 `;
 
-const CloseButton = styled(Button).withConfig({
-  shouldForwardProp: (prop) =>
-    !['active', 'primary', 'fullWidth', 'square'].includes(prop),
-})`
+const CloseButton = styled(Win98Button)`
   padding: 0 4px;
   min-width: 20px;
   height: 18px;
@@ -164,7 +162,7 @@ const ThumbnailButton = styled.button<{ $selected?: boolean }>`
   }
 `;
 
-const ThumbnailFrame = styled(Frame)`
+const ThumbnailFrame = styled(Win98Frame)`
   background: #008080;
   padding: 0;
   overflow: hidden;
@@ -243,7 +241,7 @@ const LightboxContent = styled(WindowContent)`
   gap: 8px;
 `;
 
-const LightboxImageFrame = styled(Frame)`
+const LightboxImageFrame = styled(Win98Frame)`
   background: #000;
   display: flex;
   align-items: center;
@@ -257,10 +255,7 @@ const LightboxNavigation = styled.div`
   gap: 8px;
 `;
 
-const NavButton = styled(Button).withConfig({
-  shouldForwardProp: (prop) =>
-    !['active', 'primary', 'fullWidth', 'square'].includes(prop),
-})`
+const NavButton = styled(Win98Button)`
   min-width: 80px;
 `;
 
@@ -303,7 +298,7 @@ function IrlContent() {
           <StyledWindowHeader>
             <span>Dickbutt IRL - Real World Sightings</span>
             <Link href="/">
-              <CloseButton size="sm">
+              <CloseButton>
                 <span>X</span>
               </CloseButton>
             </Link>
@@ -311,7 +306,7 @@ function IrlContent() {
 
           <Toolbar>
             <Link href="/">
-              <Button variant="thin" size="sm">← Back to Desktop</Button>
+              <Win98Button>← Back to Desktop</Win98Button>
             </Link>
           </Toolbar>
 
@@ -328,7 +323,7 @@ function IrlContent() {
                   $selected={selectedIndex === index}
                   onClick={() => setSelectedIndex(index)}
                 >
-                  <ThumbnailFrame variant="field">
+                  <ThumbnailFrame $variant="field">
                     <ImageWrapper>
                       <Image
                         src={`${R2_BASE}/${item.thumb}`}
@@ -351,9 +346,9 @@ function IrlContent() {
           </WindowContent>
 
           <StatusBar>
-            <Frame variant="status" style={{ flex: 1 }}>
+            <Win98Frame $variant="status" style={{ flex: 1 }}>
               <StatusItem>{IRL_ITEMS.length} items | Click to enlarge</StatusItem>
-            </Frame>
+            </Win98Frame>
           </StatusBar>
         </StyledWindow>
       </PageContainer>
@@ -363,13 +358,13 @@ function IrlContent() {
           <LightboxWindow onClick={(e) => e.stopPropagation()}>
             <LightboxHeader>
               <span>{selectedItem.title}</span>
-              <CloseButton size="sm" onClick={() => setSelectedIndex(null)}>
+              <CloseButton onClick={() => setSelectedIndex(null)}>
                 <span>X</span>
               </CloseButton>
             </LightboxHeader>
 
             <LightboxContent>
-              <LightboxImageFrame variant="well">
+              <LightboxImageFrame $variant="well">
                 <Image
                   src={`${R2_BASE}/${selectedItem.full}`}
                   alt={selectedItem.title}
@@ -405,9 +400,9 @@ function IrlContent() {
               </LightboxNavigation>
 
               <StatusBar style={{ padding: 0 }}>
-                <Frame variant="status" style={{ flex: 1 }}>
+                <Win98Frame $variant="status" style={{ flex: 1 }}>
                   <StatusItem>{selectedItem.description}</StatusItem>
-                </Frame>
+                </Win98Frame>
               </StatusBar>
             </LightboxContent>
           </LightboxWindow>

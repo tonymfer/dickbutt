@@ -2,8 +2,8 @@
 
 import { PRODUCT_CONTENT } from '@/lib/windowContent';
 import Image from 'next/image';
-import { Button, Frame } from 'react95';
 import styled from 'styled-components';
+import { Win98Button, Win98Frame } from '@/components/ui/win98';
 
 const Container = styled.div`
   display: flex;
@@ -15,7 +15,7 @@ const Container = styled.div`
   gap: 8px;
 `;
 
-const BookFrame = styled(Frame)`
+const BookFrame = styled(Win98Frame)`
   width: 120px;
   height: 160px;
   flex-shrink: 0;
@@ -64,12 +64,9 @@ const BookDescription = styled.p`
   flex: 1;
 `;
 
-const StyledButton = styled(Button).withConfig({
-  shouldForwardProp: (prop) =>
-    !['active', 'primary', 'fullWidth', 'square'].includes(prop),
-})`
+const StyledButton = styled(Win98Button)`
   height: 40px;
-  minHeight: 40px;
+  min-height: 40px;
   padding: 5px;
   font-size: 10px;
   font-weight: bold;
@@ -90,7 +87,7 @@ const NewBadge = styled.span`
   }
 `;
 
-const StatusFrame = styled(Frame)`
+const StatusFrame = styled(Win98Frame)`
   padding: 2px 6px;
   display: flex;
   align-items: center;
@@ -104,7 +101,7 @@ export function ProductWindow() {
 
   return (
     <Container>
-      <BookFrame variant="field">
+      <BookFrame $variant="field">
         <BookImageWrapper>
           <Image
             src={PRODUCT_CONTENT.imageUrl}
@@ -127,7 +124,7 @@ export function ProductWindow() {
 
         <BookDescription>{PRODUCT_CONTENT.description}</BookDescription>
 
-        <StyledButton primary onClick={handleViewProduct}>
+        <StyledButton $primary onClick={handleViewProduct}>
           {PRODUCT_CONTENT.buttonText}
         </StyledButton>
 

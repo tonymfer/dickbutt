@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import styled from 'styled-components';
-import { Frame } from 'react95';
+import { Win98Frame } from '@/components/ui/win98';
 import { fetchGalleryIndex, type GalleryItem } from '@/lib/assets';
 import { Win95Gallery } from '@/components/win95/Win95Gallery';
 import { Win95GalleryModal } from '@/components/win95/Win95GalleryModal';
@@ -181,14 +181,14 @@ export function MemeGalleryWindow() {
         </ContentArea>
 
         <FooterBar>
-          <Frame variant="status" style={{ flex: 1 }}>
+          <Win98Frame $variant="status" style={{ flex: 1 }}>
             <FooterItem>
               {displayedItems.length} of {totalCount} items
             </FooterItem>
-          </Frame>
-          <Frame variant="status">
+          </Win98Frame>
+          <Win98Frame $variant="status">
             <FooterItem>Click to view</FooterItem>
-          </Frame>
+          </Win98Frame>
         </FooterBar>
       </Container>
 

@@ -2,9 +2,10 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { Window, WindowHeader, WindowContent, Button, Toolbar, Frame } from 'react95';
+import { Window, WindowHeader, WindowContent, Toolbar } from 'react95';
 import { React95Provider } from '@/components/providers/React95Provider';
 import styled from 'styled-components';
+import { Win98Button, Win98Frame } from '@/components/ui/win98';
 
 const BRANDING_ASSETS = [
   {
@@ -84,10 +85,7 @@ const StyledWindowHeader = styled(WindowHeader)`
   align-items: center;
 `;
 
-const CloseButton = styled(Button).withConfig({
-  shouldForwardProp: (prop) =>
-    !['active', 'primary', 'fullWidth', 'square'].includes(prop),
-})`
+const CloseButton = styled(Win98Button)`
   padding: 0 4px;
   min-width: 20px;
   height: 18px;
@@ -156,10 +154,7 @@ const FileName = styled.p`
   font-family: monospace;
 `;
 
-const DownloadButton = styled(Button).withConfig({
-  shouldForwardProp: (prop) =>
-    !['active', 'primary', 'fullWidth', 'square'].includes(prop),
-})`
+const DownloadButton = styled(Win98Button)`
   margin: 4px;
   text-align: center;
   text-decoration: none;
@@ -185,7 +180,7 @@ function BrandingContent() {
         <StyledWindowHeader>
           <span>Branding Assets</span>
           <Link href="/">
-            <CloseButton size="sm">
+            <CloseButton>
               <span>X</span>
             </CloseButton>
           </Link>
@@ -193,7 +188,7 @@ function BrandingContent() {
 
         <Toolbar>
           <Link href="/">
-            <Button variant="thin" size="sm">← Back to Desktop</Button>
+            <Win98Button>← Back to Desktop</Win98Button>
           </Link>
         </Toolbar>
 
@@ -243,9 +238,9 @@ function BrandingContent() {
         </WindowContent>
 
         <StatusBar>
-          <Frame variant="status" style={{ flex: 1 }}>
+          <Win98Frame $variant="status" style={{ flex: 1 }}>
             <StatusItem>{BRANDING_ASSETS.length} items</StatusItem>
-          </Frame>
+          </Win98Frame>
         </StatusBar>
       </StyledWindow>
     </PageContainer>

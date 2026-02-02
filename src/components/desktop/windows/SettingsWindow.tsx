@@ -1,7 +1,8 @@
 'use client';
 
-import { Button, GroupBox, Checkbox, ColorInput } from 'react95';
+import { ColorInput } from 'react95';
 import styled from 'styled-components';
+import { Win98Button, GroupBox, Win98Checkbox } from '@/components/ui/win98';
 import { useDesktopSettings, PRESET_COLORS } from '@/context/DesktopSettingsContext';
 
 interface SettingsWindowProps {
@@ -16,7 +17,7 @@ const Container = styled.div`
   width: 280px;
 `;
 
-const StyledGroupBox = styled(GroupBox)`
+const StyledGroupBox = styled.div`
   padding: 12px;
 `;
 
@@ -74,10 +75,7 @@ const ButtonGroup = styled.div`
   justify-content: flex-end;
 `;
 
-const StyledButton = styled(Button).withConfig({
-  shouldForwardProp: (prop) =>
-    !['active', 'primary', 'fullWidth', 'square'].includes(prop),
-})`
+const StyledButton = styled(Win98Button)`
   min-width: 80px;
   height: 28px;
 `;
@@ -103,7 +101,7 @@ export function SettingsWindow({ onClose }: SettingsWindowProps) {
 
   return (
     <Container>
-      <StyledGroupBox label="Desktop Background">
+      <GroupBox label="Desktop Background" style={{ padding: 12 }}>
         <ColorRow>
           <ColorLabel>Color:</ColorLabel>
           <ColorInput
@@ -127,17 +125,17 @@ export function SettingsWindow({ onClose }: SettingsWindowProps) {
         </PresetGrid>
 
         <CheckboxRow>
-          <Checkbox
+          <Win98Checkbox
             label="Enable gradient"
             checked={settings.backgroundGradient}
             onChange={handleGradientChange}
           />
         </CheckboxRow>
-      </StyledGroupBox>
+      </GroupBox>
 
       <ButtonGroup>
         <StyledButton onClick={handleReset}>Reset</StyledButton>
-        <StyledButton primary onClick={onClose}>OK</StyledButton>
+        <StyledButton $primary onClick={onClose}>OK</StyledButton>
       </ButtonGroup>
     </Container>
   );

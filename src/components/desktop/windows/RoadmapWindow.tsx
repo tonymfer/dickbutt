@@ -1,8 +1,8 @@
 'use client';
 
-import { Button } from 'react95';
 import { useEffect, useRef } from 'react';
 import styled from 'styled-components';
+import { Win98Button } from '@/components/ui/win98';
 import { Win95Icon } from '@/components/ui/Win95Icon';
 import { ROADMAP_LINKS } from '@/lib/links';
 
@@ -45,10 +45,7 @@ const ButtonGroup = styled.div`
   justify-content: center;
 `;
 
-const StyledButton = styled(Button).withConfig({
-  shouldForwardProp: (prop) =>
-    !['active', 'primary', 'fullWidth', 'square'].includes(prop),
-})`
+const StyledButton = styled(Win98Button)`
   min-width: 70px;
   height: 24px;
   font-size: 11px;

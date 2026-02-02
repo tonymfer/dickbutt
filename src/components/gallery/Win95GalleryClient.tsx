@@ -2,14 +2,14 @@
 
 import { useState, useCallback } from 'react';
 import Link from 'next/link';
-import { Button, Frame } from 'react95';
+import { Window, WindowContent, Toolbar } from 'react95';
 import styled from 'styled-components';
 import type { GalleryItem } from '@/lib/assets';
 import { React95Provider } from '@/components/providers/React95Provider';
 import { Win95Gallery } from '@/components/win95/Win95Gallery';
 import { Win95GalleryModal } from '@/components/win95/Win95GalleryModal';
 import { PageContainer } from '@/components/win95/Win95Page';
-import { Window, WindowContent, Toolbar } from 'react95';
+import { Win98Button, Win98Frame } from '@/components/ui/win98';
 /* eslint-disable @next/next/no-img-element */
 
 const GalleryWindow = styled(Window)`
@@ -108,10 +108,7 @@ const LoadMoreContainer = styled.div`
   padding: 16px 0;
 `;
 
-const LoadMoreButton = styled(Button).withConfig({
-  shouldForwardProp: (prop) =>
-    !['active', 'primary', 'fullWidth', 'square'].includes(prop),
-})`
+const LoadMoreButton = styled(Win98Button)`
   padding: 8px 24px;
 `;
 
@@ -196,13 +193,13 @@ function Win95GalleryContent({ initialItems, totalCount }: Win95GalleryClientPro
 
           <StyledToolbar>
             <Link href="/">
-              <Button variant="thin" size="sm">Back</Button>
+              <Win98Button>Back</Win98Button>
             </Link>
             <Link href="/videos">
-              <Button variant="thin" size="sm">Videos</Button>
+              <Win98Button>Videos</Win98Button>
             </Link>
             <Link href="/irl">
-              <Button variant="thin" size="sm">IRL</Button>
+              <Win98Button>IRL</Win98Button>
             </Link>
           </StyledToolbar>
 
@@ -229,16 +226,16 @@ function Win95GalleryContent({ initialItems, totalCount }: Win95GalleryClientPro
           </ContentArea>
 
           <FooterBar>
-            <Frame variant="status" style={{ flex: 1 }}>
+            <Win98Frame $variant="status" style={{ flex: 1 }}>
               <FooterItem>
                 {displayedItems.length} of {totalCount} items
               </FooterItem>
-            </Frame>
-            <Frame variant="status">
+            </Win98Frame>
+            <Win98Frame $variant="status">
               <FooterItem>
                 Click to view
               </FooterItem>
-            </Frame>
+            </Win98Frame>
           </FooterBar>
         </GalleryWindow>
       </PageContainer>

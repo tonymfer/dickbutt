@@ -2,8 +2,8 @@
 
 import styled from 'styled-components';
 import Image from 'next/image';
-import { Button, Frame, Checkbox } from 'react95';
 import { useState } from 'react';
+import { Win98Button, Win98Frame, Win98Checkbox } from '@/components/ui/win98';
 import { PRODUCT_CONTENT } from '@/lib/windowContent';
 
 const Container = styled.div`
@@ -20,7 +20,7 @@ const BookSection = styled.div`
   min-height: 0;
 `;
 
-const BookFrame = styled(Frame)`
+const BookFrame = styled(Win98Frame)`
   width: 140px;
   min-width: 140px;
   padding: 4px;
@@ -70,10 +70,7 @@ const BookDescription = styled.div`
   overflow-y: auto;
 `;
 
-const StyledButton = styled(Button).withConfig({
-  shouldForwardProp: (prop) =>
-    !['active', 'primary', 'fullWidth', 'square'].includes(prop),
-})`
+const StyledButton = styled(Win98Button)`
   height: 28px;
   min-height: 28px;
   padding: 4px 16px;
@@ -102,7 +99,7 @@ export function EducationStep() {
   return (
     <Container>
       <BookSection>
-        <BookFrame variant="field">
+        <BookFrame $variant="field">
           <BookImageWrapper>
             <Image
               src={PRODUCT_CONTENT.imageUrl}
@@ -128,14 +125,14 @@ export function EducationStep() {
             with permissionless settlement on Base.
           </BookDescription>
 
-          <StyledButton primary onClick={handleViewProduct}>
+          <StyledButton $primary onClick={handleViewProduct}>
             {PRODUCT_CONTENT.buttonText}
           </StyledButton>
         </BookInfo>
       </BookSection>
 
       <AcknowledgeRow>
-        <Checkbox
+        <Win98Checkbox
           checked={acknowledged}
           onChange={() => setAcknowledged(!acknowledged)}
           label="I will educate myself on the Dickbutt Standard"

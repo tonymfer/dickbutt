@@ -2,10 +2,10 @@
 
 import { useState, useRef, useCallback } from 'react';
 import Image from 'next/image';
-import { Frame } from 'react95';
 import styled from 'styled-components';
 import type { GalleryItem } from '@/lib/assets';
 import { getGalleryThumbUrl, getGalleryFullUrl } from '@/lib/assets';
+import { Win98Frame } from '@/components/ui/win98';
 
 const Grid = styled.div`
   display: grid;
@@ -40,7 +40,7 @@ const ThumbnailButton = styled.button<{ $selected?: boolean }>`
   }
 `;
 
-const ThumbnailFrame = styled(Frame)`
+const ThumbnailFrame = styled(Win98Frame)`
   background: #fff;
   padding: 0;
   overflow: hidden;
@@ -107,7 +107,7 @@ function GalleryThumbnail({ item, isSelected, onSelect }: GalleryThumbnailProps)
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <ThumbnailFrame variant="field">
+      <ThumbnailFrame $variant="field">
         <ImageWrapper>
           {/* Static thumbnail - always rendered */}
           <Image

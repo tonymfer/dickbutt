@@ -1,6 +1,6 @@
 'use client';
 
-import { Frame, Window, WindowHeader, WindowContent } from 'react95';
+import { Window, WindowHeader, WindowContent } from 'react95';
 import styled from 'styled-components';
 import { ReactNode } from 'react';
 

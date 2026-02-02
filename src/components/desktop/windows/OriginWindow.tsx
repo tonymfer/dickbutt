@@ -1,6 +1,7 @@
 'use client';
 
-import { ScrollView, Frame } from 'react95';
+import { ScrollView } from 'react95';
+import { Win98Frame } from '@/components/ui/win98';
 import styled from 'styled-components';
 import Image from 'next/image';
 import { ORIGIN_CONTENT } from '@/lib/windowContent';
@@ -11,7 +12,7 @@ const Container = styled.div`
   box-sizing: border-box;
 `;
 
-const ImageFrame = styled(Frame)`
+const ImageFrame = styled(Win98Frame)`
   margin: 6px;
   padding: 3px;
   background: white;
@@ -42,7 +43,7 @@ export function OriginWindow() {
   return (
     <Container>
       <ScrollView style={{ height: '100%' }}>
-        <ImageFrame variant="field">
+        <ImageFrame $variant="field">
           <ComicImageWrap>
             <Image
               src={ORIGIN_CONTENT.imageUrl}

@@ -1,13 +1,11 @@
 'use client';
 
 import Image from 'next/image';
-import Link from 'next/link';
 import { useState } from 'react';
-import { Window, WindowHeader, WindowContent, ScrollView, Toolbar } from 'react95';
-import { React95Provider } from '@/components/providers/React95Provider';
-import { Win95MediaPlayer } from '@/components/win95/Win95MediaPlayer';
+import { ScrollView } from 'react95';
 import styled from 'styled-components';
 import { Win98Button, Win98Frame } from '@/components/ui/win98';
+import { Win95MediaPlayer } from '@/components/win95/Win95MediaPlayer';
 
 const R2_BASE = 'https://pub-c5bbdf1eaf68478a9783e46a36a3c3b5.r2.dev/v1';
 
@@ -34,23 +32,19 @@ const VIDEO_CLIPS = [
   { id: '41-pluto', title: 'On Pluto', thumb: 'thumb/7b76e9aeff29-41-dickbuttonpluto.webp', video: 'full/7b76e9aeff29-41-dickbuttonpluto.mp4' },
 ];
 
-const PageContainer = styled.div`
-  min-height: 100vh;
-  background: #c0c0c0;
-  padding: 16px;
+const Container = styled.div`
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
-`;
-
-const StyledWindow = styled(Window)`
-  width: 100%;
-  max-width: 900px;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
 `;
 
 const ContentLayout = styled.div`
+  flex: 1;
   display: flex;
   gap: 16px;
+  padding: 8px;
+  overflow: hidden;
 
   @media (max-width: 768px) {
     flex-direction: column;
@@ -59,16 +53,16 @@ const ContentLayout = styled.div`
 
 const VideoSection = styled.div`
   flex: 1;
-`;
-
-const StyledWindowHeader = styled(WindowHeader)`
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  flex-direction: column;
+  min-width: 0;
 `;
 
 const PlaylistSection = styled.div`
   width: 220px;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
 
   @media (max-width: 768px) {
     width: 100%;
@@ -110,7 +104,8 @@ const NowPlaying = styled.div`
 const StatusBar = styled.div`
   display: flex;
   gap: 4px;
-  margin-top: 8px;
+  padding: 4px 8px;
+  flex-shrink: 0;
 `;
 
 const StatusItem = styled.div`
@@ -124,7 +119,7 @@ const ControlButtons = styled.div`
   margin-top: 8px;
 `;
 
-function VideosContent() {
+export function VideosWindow() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
 
@@ -150,109 +145,85 @@ function VideosContent() {
   };
 
   return (
-    <PageContainer>
-      <StyledWindow>
-        <StyledWindowHeader>
-          <span>Video Clips</span>
-          <Link href="/">
-            <Win98Button>
-              <span style={{ fontWeight: 'bold' }}>X</span>
+    <Container>
+      <ContentLayout>
+        <VideoSection>
+          <Win95MediaPlayer
+            key={currentVideo.id}
+            src={`${R2_BASE}/gallery/${currentVideo.video}`}
+            poster={`${R2_BASE}/gallery/${currentVideo.thumb}`}
+            autoPlay={isPlaying}
+            onEnded={playNext}
+            showStatic={!isPlaying}
+          />
+
+          <ControlButtons>
+            <Win98Button onClick={playPrev} disabled={currentIndex === 0}>
+              ⏮ Prev
             </Win98Button>
-          </Link>
-        </StyledWindowHeader>
-        <Toolbar>
-          <Link href="/"><Win98Button>Back</Win98Button></Link>
-          <Link href="/tv"><Win98Button>TV Channel</Win98Button></Link>
-        </Toolbar>
-        <WindowContent>
-          <ContentLayout>
-            <VideoSection>
-              <Win95MediaPlayer
-                key={currentVideo.id}
-                src={`${R2_BASE}/gallery/${currentVideo.video}`}
-                poster={`${R2_BASE}/gallery/${currentVideo.thumb}`}
-                autoPlay={isPlaying}
-                onEnded={playNext}
-                showStatic={!isPlaying}
-              />
+            <Win98Button onClick={() => setIsPlaying(true)}>
+              ▶ Play
+            </Win98Button>
+            <Win98Button onClick={playNext} disabled={currentIndex === VIDEO_CLIPS.length - 1}>
+              Next ⏭
+            </Win98Button>
+            <a
+              href={`${R2_BASE}/gallery/${currentVideo.video}`}
+              download={`${currentVideo.title}.mp4`}
+              style={{ textDecoration: 'none' }}
+            >
+              <Win98Button as="span">
+                💾 Download
+              </Win98Button>
+            </a>
+          </ControlButtons>
 
-              <ControlButtons>
-                <Win98Button onClick={playPrev} disabled={currentIndex === 0}>
-                  ⏮ Prev
-                </Win98Button>
-                <Win98Button onClick={() => setIsPlaying(true)}>
-                  ▶ Play
-                </Win98Button>
-                <Win98Button onClick={playNext} disabled={currentIndex === VIDEO_CLIPS.length - 1}>
-                  Next ⏭
-                </Win98Button>
-                <a
-                  href={`${R2_BASE}/gallery/${currentVideo.video}`}
-                  download={`${currentVideo.title}.mp4`}
-                  style={{ textDecoration: 'none' }}
+          <Win98Frame $variant="field">
+            <NowPlaying>
+              {isPlaying ? `Now Playing: ${currentVideo.title}` : 'Select a video to play'}
+            </NowPlaying>
+          </Win98Frame>
+        </VideoSection>
+
+        <PlaylistSection>
+          <Win98Frame $variant="field" style={{ padding: 0, flex: 1, display: 'flex', flexDirection: 'column' }}>
+            <div style={{ background: '#000080', color: '#fff', padding: '4px 8px', fontSize: 12, fontWeight: 'bold' }}>
+              Playlist ({VIDEO_CLIPS.length})
+            </div>
+            <ScrollView style={{ flex: 1 }}>
+              {VIDEO_CLIPS.map((clip, index) => (
+                <PlaylistItem
+                  key={clip.id}
+                  $active={index === currentIndex}
+                  onClick={() => playVideo(index)}
                 >
-                  <Win98Button as="span">
-                    💾 Download
-                  </Win98Button>
-                </a>
-              </ControlButtons>
+                  <ThumbContainer>
+                    <Image
+                      src={`${R2_BASE}/gallery/${clip.thumb}`}
+                      alt={clip.title}
+                      fill
+                      style={{ objectFit: 'cover' }}
+                      sizes="48px"
+                    />
+                  </ThumbContainer>
+                  <span style={{ fontSize: 11, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {clip.title}
+                  </span>
+                </PlaylistItem>
+              ))}
+            </ScrollView>
+          </Win98Frame>
+        </PlaylistSection>
+      </ContentLayout>
 
-              <Win98Frame $variant="field">
-                <NowPlaying>
-                  {isPlaying ? `Now Playing: ${currentVideo.title}` : 'Select a video to play'}
-                </NowPlaying>
-              </Win98Frame>
-            </VideoSection>
-
-            <PlaylistSection>
-              <Win98Frame $variant="field" style={{ padding: 0 }}>
-                <div style={{ background: '#000080', color: '#fff', padding: '4px 8px', fontSize: 12, fontWeight: 'bold' }}>
-                  Playlist ({VIDEO_CLIPS.length})
-                </div>
-                <ScrollView style={{ height: 350 }}>
-                  {VIDEO_CLIPS.map((clip, index) => (
-                    <PlaylistItem
-                      key={clip.id}
-                      $active={index === currentIndex}
-                      onClick={() => playVideo(index)}
-                    >
-                      <ThumbContainer>
-                        <Image
-                          src={`${R2_BASE}/gallery/${clip.thumb}`}
-                          alt={clip.title}
-                          fill
-                          style={{ objectFit: 'cover' }}
-                          sizes="48px"
-                        />
-                      </ThumbContainer>
-                      <span style={{ fontSize: 11, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                        {clip.title}
-                      </span>
-                    </PlaylistItem>
-                  ))}
-                </ScrollView>
-              </Win98Frame>
-            </PlaylistSection>
-          </ContentLayout>
-
-          <StatusBar>
-            <Win98Frame $variant="status" style={{ flex: 1 }}>
-              <StatusItem>{currentIndex + 1} / {VIDEO_CLIPS.length}</StatusItem>
-            </Win98Frame>
-            <Win98Frame $variant="status">
-              <StatusItem>{isPlaying ? '▶ Playing' : '⏹ Stopped'}</StatusItem>
-            </Win98Frame>
-          </StatusBar>
-        </WindowContent>
-      </StyledWindow>
-    </PageContainer>
-  );
-}
-
-export default function VideosPage() {
-  return (
-    <React95Provider>
-      <VideosContent />
-    </React95Provider>
+      <StatusBar>
+        <Win98Frame $variant="status" style={{ flex: 1 }}>
+          <StatusItem>{currentIndex + 1} / {VIDEO_CLIPS.length}</StatusItem>
+        </Win98Frame>
+        <Win98Frame $variant="status">
+          <StatusItem>{isPlaying ? '▶ Playing' : '⏹ Stopped'}</StatusItem>
+        </Win98Frame>
+      </StatusBar>
+    </Container>
   );
 }

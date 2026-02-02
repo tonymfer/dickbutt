@@ -1,9 +1,9 @@
 'use client';
 
-import { Button, Frame } from 'react95';
 import styled from 'styled-components';
 import Image from 'next/image';
 import { PRODUCT_CONTENT } from '@/lib/windowContent';
+import { Win98Button, Win98Frame } from '@/components/ui/win98';
 
 const Container = styled.div`
   padding: 12px;
@@ -13,7 +13,7 @@ const Container = styled.div`
   gap: 12px;
 `;
 
-const BookFrame = styled(Frame)`
+const BookFrame = styled(Win98Frame)`
   padding: 8px;
   background: white;
   display: flex;
@@ -62,17 +62,14 @@ const ButtonRow = styled.div`
   gap: 8px;
 `;
 
-const StyledButton = styled(Button).withConfig({
-  shouldForwardProp: (prop) =>
-    !['active', 'primary', 'fullWidth', 'square'].includes(prop),
-})`
+const StyledButton = styled(Win98Button)`
   flex: 1;
   height: 32px;
   font-size: 12px;
   font-weight: bold;
 `;
 
-const StatusFrame = styled(Frame)`
+const StatusFrame = styled(Win98Frame)`
   padding: 4px 8px;
   display: flex;
   align-items: center;
@@ -101,7 +98,7 @@ export function MobileProduct() {
 
   return (
     <Container>
-      <BookFrame variant="field">
+      <BookFrame $variant="field">
         <BookImageWrapper>
           <Image
             src={PRODUCT_CONTENT.imageUrl}
@@ -124,12 +121,12 @@ export function MobileProduct() {
       </InfoSection>
 
       <ButtonRow>
-        <StyledButton primary onClick={handleViewProduct}>
+        <StyledButton $primary onClick={handleViewProduct}>
           {PRODUCT_CONTENT.buttonText}
         </StyledButton>
       </ButtonRow>
 
-      <StatusFrame variant="status">
+      <StatusFrame $variant="status">
         {PRODUCT_CONTENT.newBadge && <NewBadge>NEW</NewBadge>}
         <span>{PRODUCT_CONTENT.availability}</span>
         <span style={{ marginLeft: 'auto' }}>By {PRODUCT_CONTENT.author}</span>

@@ -2,7 +2,8 @@
 
 import { ReactNode } from 'react';
 import Link from 'next/link';
-import { Window, WindowContent, Toolbar, Frame } from 'react95';
+import { Window, WindowContent, Toolbar } from 'react95';
+import { Win98Frame } from '@/components/ui/win98';
 import { React95Provider } from '@/components/providers/React95Provider';
 import styled from 'styled-components';
 /* eslint-disable @next/next/no-img-element */
@@ -161,13 +162,13 @@ function Win95PageContent({
         {statusItems && statusItems.length > 0 && (
           <StatusBar>
             {statusItems.map((item, index) => (
-              <Frame
+              <Win98Frame
                 key={index}
-                variant="status"
+                $variant="status"
                 style={index === 0 ? { flex: 1 } : undefined}
               >
                 <StatusItem>{item}</StatusItem>
-              </Frame>
+              </Win98Frame>
             ))}
           </StatusBar>
         )}

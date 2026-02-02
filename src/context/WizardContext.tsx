@@ -2,8 +2,11 @@
 
 import React, { createContext, useContext, useState, useCallback, useEffect, ReactNode } from 'react';
 
+const WIZARD_COMPLETED_KEY = 'dickbutt-wizard-completed';
+
 interface WizardContextType {
   wizardVisible: boolean;
+  wizardCompleted: boolean;
   currentStep: number;
   totalSteps: number;
   nextStep: () => void;
@@ -18,12 +21,18 @@ const WizardContext = createContext<WizardContextType | null>(null);
 export function WizardProvider({ children }: { children: ReactNode }) {
   // Start with wizard not visible to avoid hydration mismatch
   const [wizardVisible, setWizardVisible] = useState(false);
+  const [wizardCompleted, setWizardCompleted] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const totalSteps = 5;
 
-  // Show wizard on mount (always shows on page load)
+  // Check sessionStorage on mount and show wizard if not completed
   useEffect(() => {
-    setWizardVisible(true);
+    const completed = sessionStorage.getItem(WIZARD_COMPLETED_KEY) === 'true';
+    setWizardCompleted(completed);
+    // Only show wizard if not already completed in this session
+    if (!completed) {
+      setWizardVisible(true);
+    }
   }, []);
 
   const nextStep = useCallback(() => {
@@ -37,11 +46,15 @@ export function WizardProvider({ children }: { children: ReactNode }) {
   const skipWizard = useCallback(() => {
     setWizardVisible(false);
     setCurrentStep(1);
+    setWizardCompleted(true);
+    sessionStorage.setItem(WIZARD_COMPLETED_KEY, 'true');
   }, []);
 
   const completeWizard = useCallback(() => {
     setWizardVisible(false);
     setCurrentStep(1);
+    setWizardCompleted(true);
+    sessionStorage.setItem(WIZARD_COMPLETED_KEY, 'true');
   }, []);
 
   const showWizard = useCallback(() => {
@@ -52,6 +65,7 @@ export function WizardProvider({ children }: { children: ReactNode }) {
   return (
     <WizardContext.Provider value={{
       wizardVisible,
+      wizardCompleted,
       currentStep,
       totalSteps,
       nextStep,

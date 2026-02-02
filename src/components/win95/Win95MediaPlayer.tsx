@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useState, useEffect, useCallback } from 'react';
-import { Button, Frame } from 'react95';
+import { Win98Button, Win98Frame } from '@/components/ui/win98';
 import styled from 'styled-components';
 
 const PlayerContainer = styled.div`
@@ -10,7 +10,7 @@ const PlayerContainer = styled.div`
   background: #c0c0c0;
 `;
 
-const VideoFrame = styled(Frame)`
+const VideoFrame = styled(Win98Frame)`
   background: #000;
   position: relative;
 `;
@@ -63,10 +63,7 @@ const ControlsBar = styled.div`
   background: #c0c0c0;
 `;
 
-const ControlButton = styled(Button).withConfig({
-  shouldForwardProp: (prop) =>
-    !['active', 'primary', 'fullWidth', 'square'].includes(prop),
-})`
+const ControlButton = styled(Win98Button)`
   min-width: 28px;
   height: 24px;
   padding: 0 4px;
@@ -285,7 +282,7 @@ export function Win95MediaPlayer({
 
   return (
     <PlayerContainer>
-      <VideoFrame variant="well">
+      <VideoFrame $variant="well">
         <div style={{ aspectRatio: '16/9', position: 'relative', background: '#000' }}>
           {showStatic && !hasStarted ? (
             <StaticScreen />

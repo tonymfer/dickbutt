@@ -1,16 +1,16 @@
 'use client';
 
-import { Frame } from 'react95';
 import styled from 'styled-components';
 import Image from 'next/image';
 import { ORIGIN_CONTENT } from '@/lib/windowContent';
+import { Win98Frame } from '@/components/ui/win98';
 
 const Container = styled.div`
   width: 100%;
   background: #c0c0c0;
 `;
 
-const ImageFrame = styled(Frame)`
+const ImageFrame = styled(Win98Frame)`
   margin: 0;
   padding: 3px;
   background: white;
@@ -40,7 +40,7 @@ const Content = styled.div`
 export function MobileOrigin() {
   return (
     <Container>
-      <ImageFrame variant="field">
+      <ImageFrame $variant="field">
         <ComicImageWrap>
           <Image
             src={ORIGIN_CONTENT.imageUrl}

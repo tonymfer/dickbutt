@@ -74,6 +74,7 @@ const WINDOW_TITLES: Record<string, string> = {
   meme: 'Meme Gallery',
   branding: 'Branding Assets',
   irl: 'Dickbutt IRL - Real World Sightings',
+  videos: 'Video Clips',
 };
 
 // Separate component for handling search params (must be wrapped in Suspense)

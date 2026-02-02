@@ -31,7 +31,7 @@ export const DESKTOP_ICONS: IconConfig[] = [
   { ...BASE_ICONS.branding, action: 'window', target: 'branding', windowTitle: 'Branding Assets', routeFallback: '/branding' },
   { ...BASE_ICONS.irl, action: 'window', target: 'irl', windowTitle: 'Dickbutt IRL - Real World Sightings', routeFallback: '/irl' },
   { ...BASE_ICONS.tv, action: 'route', target: '/tv' },
-  { ...BASE_ICONS.videos, action: 'route', target: '/videos' },
+  { ...BASE_ICONS.videos, action: 'window', target: 'videos', windowTitle: 'Video Clips', routeFallback: '/videos' },
   { ...BASE_ICONS.nfts, action: 'route', target: '/dickbutt-nfts' },
   { ...BASE_ICONS.dickbuttExe, action: 'wizard', target: 'wizard' },
 ];
@@ -62,4 +62,5 @@ export const WINDOW_ICONS: Record<string, string> = {
   meme: '/assets/icons/win95/folder-hires.ico',
   branding: '/assets/icons/win95/folder-hires.ico',
   irl: '/assets/icons/win95/folder-hires.ico',
+  videos: '/assets/icons/win95/video.ico',
 };

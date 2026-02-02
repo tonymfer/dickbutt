@@ -13,6 +13,7 @@ import { ProductWindow } from './ProductWindow';
 import { MemeGalleryWindow } from './MemeGalleryWindow';
 import { BrandingWindow } from './BrandingWindow';
 import { IrlGalleryWindow } from './IrlGalleryWindow';
+import { VideosWindow } from './VideosWindow';
 
 // Registry of window content components
 // Components can optionally receive onClose prop for close functionality
@@ -29,6 +30,7 @@ export const windowContentRegistry: Record<string, ComponentType<{ onClose?: () 
   meme: MemeGalleryWindow,
   branding: BrandingWindow,
   irl: IrlGalleryWindow,
+  videos: VideosWindow,
 };
 
 export {
@@ -44,4 +46,5 @@ export {
   MemeGalleryWindow,
   BrandingWindow,
   IrlGalleryWindow,
+  VideosWindow,
 };

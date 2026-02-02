@@ -3,7 +3,8 @@
 import Image from 'next/image';
 import { useState, useCallback, useEffect } from 'react';
 import styled from 'styled-components';
-import { Window, WindowContent, Frame } from 'react95';
+import { Window, WindowContent } from 'react95';
+import { Win98Frame } from '@/components/ui/win98';
 
 const R2_BASE = 'https://pub-c5bbdf1eaf68478a9783e46a36a3c3b5.r2.dev/v1/gallery';
 
@@ -139,7 +140,7 @@ const ThumbnailButton = styled.button<{ $selected?: boolean }>`
   }
 `;
 
-const ThumbnailFrame = styled(Frame)`
+const ThumbnailFrame = styled(Win98Frame)`
   background: #008080;
   padding: 0;
   overflow: hidden;
@@ -295,7 +296,7 @@ const LightboxContent = styled(WindowContent)`
   gap: 8px;
 `;
 
-const LightboxImageFrame = styled(Frame)`
+const LightboxImageFrame = styled(Win98Frame)`
   background: #000;
   display: flex;
   align-items: center;
@@ -373,7 +374,7 @@ export function IrlGalleryWindow() {
                 $selected={selectedIndex === index}
                 onClick={() => setSelectedIndex(index)}
               >
-                <ThumbnailFrame variant="field">
+                <ThumbnailFrame $variant="field">
                   <ImageWrapper>
                     <Image
                       src={`${R2_BASE}/${item.thumb}`}
@@ -396,9 +397,9 @@ export function IrlGalleryWindow() {
         </ContentArea>
 
         <FooterBar>
-          <Frame variant="status" style={{ flex: 1 }}>
+          <Win98Frame $variant="status" style={{ flex: 1 }}>
             <FooterItem>{IRL_ITEMS.length} items | Click to enlarge</FooterItem>
-          </Frame>
+          </Win98Frame>
         </FooterBar>
       </Container>
 
@@ -416,7 +417,7 @@ export function IrlGalleryWindow() {
             </WindowTitlebar>
 
             <LightboxContent>
-              <LightboxImageFrame variant="well">
+              <LightboxImageFrame $variant="well">
                 <Image
                   src={`${R2_BASE}/${selectedItem.full}`}
                   alt={selectedItem.title}
@@ -452,9 +453,9 @@ export function IrlGalleryWindow() {
               </LightboxNavigation>
 
               <FooterBar style={{ padding: 0 }}>
-                <Frame variant="status" style={{ flex: 1 }}>
+                <Win98Frame $variant="status" style={{ flex: 1 }}>
                   <FooterItem>{selectedItem.description}</FooterItem>
-                </Frame>
+                </Win98Frame>
               </FooterBar>
             </LightboxContent>
           </LightboxWindow>

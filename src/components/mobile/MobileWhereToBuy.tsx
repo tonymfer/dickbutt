@@ -1,9 +1,10 @@
 'use client';
 
 import { useState } from 'react';
-import { Button, Frame, Tabs, Tab, TabBody } from 'react95';
+import { Tabs, Tab, TabBody } from 'react95';
 import styled from 'styled-components';
 import { WHERE_TO_BUY_CONTENT } from '@/lib/windowContent';
+import { Win98Button, Win98Frame } from '@/components/ui/win98';
 
 const Container = styled.div`
   padding: 8px;
@@ -25,10 +26,7 @@ const ExchangeGrid = styled.div`
   gap: 8px;
 `;
 
-const ExchangeButton = styled(Button).withConfig({
-  shouldForwardProp: (prop) =>
-    !['active', 'primary', 'fullWidth', 'square'].includes(prop),
-})<{ $featured?: boolean }>`
+const ExchangeButton = styled(Win98Button)<{ $featured?: boolean }>`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -61,7 +59,7 @@ const FeaturedBadge = styled.span`
   border-radius: 2px;
 `;
 
-const BottomFrame = styled(Frame)`
+const BottomFrame = styled(Win98Frame)`
   margin-top: 8px;
   padding: 6px;
   display: flex;
@@ -123,7 +121,7 @@ export function MobileWhereToBuy() {
         )}
       </TabContent>
 
-      <BottomFrame variant="status">
+      <BottomFrame $variant="status">
         <span>💡</span>
         <HelpText>Tap an exchange to buy $DICKBUTT</HelpText>
       </BottomFrame>

@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { Frame, Separator } from 'react95';
 import styled from 'styled-components';
 import { RESOURCES_CONTENT } from '@/lib/windowContent';
+import { Win98Frame, Win98Separator } from '@/components/ui/win98';
 
 const Container = styled.div`
   padding: 8px;
@@ -57,7 +57,7 @@ const TreeLine = styled.div`
   margin-left: 9px;
 `;
 
-const StatusFrame = styled(Frame)`
+const StatusFrame = styled(Win98Frame)`
   margin-top: 8px;
   padding: 4px 8px;
   display: flex;
@@ -95,7 +95,7 @@ export function MobileResources() {
 
   return (
     <Container>
-      <Frame variant="field" style={{ padding: 8 }}>
+      <Win98Frame $variant="field" style={{ padding: 8 }}>
         {RESOURCES_CONTENT.map((group, groupIndex) => (
           <div key={group.label}>
             <ResourceItem onClick={() => toggleGroup(group.label)}>
@@ -126,13 +126,13 @@ export function MobileResources() {
             )}
 
             {groupIndex < RESOURCES_CONTENT.length - 1 && (
-              <Separator style={{ margin: '4px 0' }} />
+              <Win98Separator style={{ margin: '4px 0' }} />
             )}
           </div>
         ))}
-      </Frame>
+      </Win98Frame>
 
-      <StatusFrame variant="status">
+      <StatusFrame $variant="status">
         <span>📋</span>
         <ObjectCount>{totalItems} object(s)</ObjectCount>
         <span style={{ marginLeft: 'auto' }}>🌐 Internet Explorer</span>

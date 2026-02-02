@@ -1,9 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-import { Frame, Separator } from 'react95';
 import styled from 'styled-components';
 import { RESOURCES_CONTENT } from '@/lib/windowContent';
+import { Win98Frame, Win98Separator } from '@/components/ui/win98';
 
 const Container = styled.div`
   display: flex;
@@ -14,7 +14,7 @@ const Container = styled.div`
   background: #c0c0c0;
 `;
 
-const TreeContainer = styled(Frame)`
+const TreeContainer = styled(Win98Frame)`
   flex: 1;
   margin: 4px;
   padding: 4px;
@@ -73,7 +73,7 @@ const TreeLine = styled.div`
   margin-left: 7px;
 `;
 
-const StatusFrame = styled(Frame)`
+const StatusFrame = styled(Win98Frame)`
   margin: 0 4px 4px;
   padding: 2px 6px;
   display: flex;
@@ -108,7 +108,7 @@ export function ResourcesWindow() {
 
   return (
     <Container>
-      <TreeContainer variant="field">
+      <TreeContainer $variant="field">
         {RESOURCES_CONTENT.map((group, groupIndex) => (
           <div key={group.label}>
             <ResourceItem onClick={() => toggleGroup(group.label)}>
@@ -139,13 +139,13 @@ export function ResourcesWindow() {
             )}
 
             {groupIndex < RESOURCES_CONTENT.length - 1 && (
-              <Separator style={{ margin: '2px 0' }} />
+              <Win98Separator style={{ margin: '2px 0' }} />
             )}
           </div>
         ))}
       </TreeContainer>
 
-      <StatusFrame variant="status">
+      <StatusFrame $variant="status">
         <span>📋</span>
         <span>{totalItems} object(s)</span>
       </StatusFrame>

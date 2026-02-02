@@ -3,8 +3,8 @@
 import { BASESCAN_CONTRACT_URL, BUY_LINKS, CONTRACT_ADDRESS, RESOURCE_LINKS } from '@/lib/links';
 import Image from 'next/image';
 import { useEffect, useRef, useState } from 'react';
-import { Button, TextInput } from 'react95';
 import styled from 'styled-components';
+import { Win98Button, Win98TextInput } from '@/components/ui/win98';
 
 const Container = styled.div`
   display: flex;
@@ -55,17 +55,14 @@ const CARow = styled.div`
   align-items: center;
 `;
 
-const CAInput = styled(TextInput)`
+const CAInput = styled(Win98TextInput)`
   flex: 1;
   font-family: monospace;
   font-size: 11px;
   height: 24px;
 `;
 
-const CopyButton = styled(Button).withConfig({
-  shouldForwardProp: (prop) =>
-    !['active', 'primary', 'fullWidth', 'square'].includes(prop),
-})`
+const CopyButton = styled(Win98Button)`
   min-width: 50px;
   height: 24px;
   font-size: 11px;
@@ -78,10 +75,7 @@ const ButtonRow = styled.div`
   gap: 4px;
 `;
 
-const LinkButton = styled(Button).withConfig({
-  shouldForwardProp: (prop) =>
-    !['active', 'primary', 'fullWidth', 'square'].includes(prop),
-})`
+const LinkButton = styled(Win98Button)`
   height: 22px;
   font-size: 10px;
   padding: 0 8px;

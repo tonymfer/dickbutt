@@ -3,6 +3,15 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+
+  /* Windows 98 Titlebar Colors */
+  --ActiveTitle: rgb(0, 0, 128);
+  --GradientActiveTitle: rgb(16, 132, 208);
+  --InactiveTitle: rgb(128, 128, 128);
+  --GradientInactiveTitle: rgb(181, 181, 181);
+  --TitleText: rgb(255, 255, 255);
+  --InactiveTitleText: rgb(192, 192, 192);
+  --ButtonFace: rgb(192, 192, 192);
 }
 
 @theme inline {

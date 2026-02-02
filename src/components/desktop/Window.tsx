@@ -5,10 +5,8 @@ import { motion, useDragControls, useMotionValue } from 'framer-motion';
 import Image from 'next/image';
 import { useEffect, type CSSProperties } from 'react';
 import {
-  Button,
   Window as Win95Window,
   WindowContent,
-  WindowHeader,
 } from 'react95';
 import styled from 'styled-components';
 import { windowContentRegistry } from './windows';
@@ -16,6 +14,24 @@ import { windowContentRegistry } from './windows';
 interface WindowProps {
   window: WindowState;
 }
+
+// Window icon mapping
+const WINDOW_ICONS: Record<string, string> = {
+  dickbutt: '/assets/icons/win95/paint.ico',
+  dickbuttonbase: '/assets/icons/win95/globe.ico',
+  disclaimer: '/assets/icons/win95/warning.ico',
+  roadmap: '/assets/icons/win95/map.ico',
+  origin: '/assets/icons/win95/book.ico',
+  resources: '/assets/icons/win95/folder.ico',
+  wheretobuy: '/assets/icons/win95/cart.ico',
+  settings: '/assets/icons/win95/settings.ico',
+  product: '/assets/icons/win95/cart.ico',
+  meme: '/assets/icons/win95/media.ico',
+  branding: '/assets/icons/win95/paint.ico',
+  irl: '/assets/icons/win95/camera.ico',
+};
+
+const DEFAULT_ICON = '/assets/icons/win95/folder.ico';
 
 const StyledWindow = styled(Win95Window)`
   display: flex;
@@ -27,49 +43,129 @@ const StyledWindow = styled(Win95Window)`
   padding: 0px;
 `;
 
-const StyledWindowHeader = styled(WindowHeader)`
+const WindowTitlebar = styled.div<{ $active?: boolean }>`
   display: flex;
+  flex-direction: row;
   align-items: center;
-  justify-content: space-between;
+  white-space: nowrap;
+  overflow: hidden;
+  flex-shrink: 0;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 12px;
+  font-weight: bold;
+  height: 18px;
+  padding: 0 2px;
   cursor: move;
-  padding: 2px 2px 2px 4px;
-  min-height: 18px;
+  background: ${({ $active }) =>
+    $active
+      ? 'linear-gradient(to right, var(--ActiveTitle) 0%, var(--GradientActiveTitle) 100%)'
+      : 'linear-gradient(to right, var(--InactiveTitle) 0%, var(--GradientInactiveTitle) 100%)'};
+  color: ${({ $active }) => ($active ? 'var(--TitleText)' : 'var(--InactiveTitleText)')};
 `;
 
-const TitleText = styled.span`
-  font-size: 11px;
-  font-weight: bold;
+const TitlebarIcon = styled.img`
+  width: 16px;
+  height: 16px;
+  margin-right: 3px;
+  flex-shrink: 0;
+`;
+
+const WindowTitleArea = styled.div`
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+`;
+
+const WindowTitle = styled.span`
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  flex: 1;
   line-height: 1;
 `;
 
-const ButtonGroup = styled.div`
-  display: flex;
-  gap: 1px;
-  margin-left: 2px;
-`;
-
-const WindowButton = styled(Button).withConfig({
-  shouldForwardProp: (prop) =>
-    !['active', 'primary', 'fullWidth', 'square'].includes(prop),
-})`
+const WindowButton = styled.button`
+  display: block;
   width: 16px;
   height: 14px;
-  min-width: 16px;
-  min-height: 14px;
   padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #c0c0c0;
+  margin: 0 0 0 2px;
+  background-color: var(--ButtonFace);
   border: none;
   box-shadow: inset -1px -1px #0a0a0a, inset 1px 1px #ffffff, inset -2px -2px #808080, inset 2px 2px #dfdfdf;
+  position: relative;
+  flex-shrink: 0;
+  cursor: pointer;
 
   &:active {
     box-shadow: inset 1px 1px #0a0a0a, inset -1px -1px #ffffff, inset 2px 2px #808080, inset -2px -2px #dfdfdf;
+  }
+
+  &:active .window-button-icon {
+    transform: translate(1px, 1px);
+  }
+
+  .window-button-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  /* Minimize button - horizontal line at bottom */
+  &.window-minimize-button .window-button-icon {
+    width: 6px;
+    height: 2px;
+    background-color: #000;
+    margin-top: 3px;
+  }
+
+  &.window-minimize-button:active .window-button-icon {
+    transform: translate(calc(-50% + 1px), calc(-50% + 1px));
+    margin-top: 3px;
+  }
+
+  /* Maximize button - box outline */
+  &.window-maximize-button .window-button-icon {
+    width: 8px;
+    height: 8px;
+    border: 1px solid #000;
+    border-top-width: 2px;
+    background: transparent;
+    box-sizing: border-box;
+  }
+
+  &.window-maximize-button:active .window-button-icon {
+    transform: translate(calc(-50% + 1px), calc(-50% + 1px));
+  }
+
+  /* Close button - X shape */
+  &.window-close-button .window-button-icon {
+    width: 8px;
+    height: 8px;
+  }
+
+  &.window-close-button .window-button-icon::before,
+  &.window-close-button .window-button-icon::after {
+    content: '';
+    position: absolute;
+    width: 10px;
+    height: 2px;
+    background-color: #000;
+    top: 50%;
+    left: 50%;
+  }
+
+  &.window-close-button .window-button-icon::before {
+    transform: translate(-50%, -50%) rotate(45deg);
+  }
+
+  &.window-close-button .window-button-icon::after {
+    transform: translate(-50%, -50%) rotate(-45deg);
+  }
+
+  &.window-close-button:active .window-button-icon {
+    transform: translate(calc(-50% + 1px), calc(-50% + 1px));
   }
 `;
 
@@ -112,6 +208,9 @@ export function Window({ window: win }: WindowProps) {
     ? { width: win.size.width, height: win.size.height }
     : undefined;
 
+  // Get icon for this window type
+  const iconUrl = WINDOW_ICONS[win.content] || DEFAULT_ICON;
+
   return (
     <motion.div
       style={{
@@ -121,14 +220,6 @@ export function Window({ window: win }: WindowProps) {
         y,
         top: 0,
         left: 0,
-      }}
-      initial={{ scale: 0.8, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
-      transition={{
-        type: 'spring',
-        stiffness: 400,
-        damping: 25,
-        duration: 0.3,
       }}
       drag
       dragControls={dragControls}
@@ -144,34 +235,55 @@ export function Window({ window: win }: WindowProps) {
       onMouseDown={() => focusWindow(win.id)}
     >
       <StyledWindow style={windowStyle}>
-        <StyledWindowHeader
-          active={isActive}
+        <WindowTitlebar
+          $active={isActive}
           onPointerDown={(e) => {
             // Don't start drag if clicking buttons
             if ((e.target as HTMLElement).closest('button')) return;
             dragControls.start(e);
           }}
         >
-          <TitleText>{win.title}</TitleText>
-          <ButtonGroup>
-            <WindowButton
-              onClick={(e: React.MouseEvent) => {
-                e.stopPropagation();
-                minimizeWindow(win.id);
-              }}
-            >
-              <span style={{ marginTop: '2px' }}>_</span>
-            </WindowButton>
-            <WindowButton
-              onClick={(e: React.MouseEvent) => {
-                e.stopPropagation();
-                closeWindow(win.id);
-              }}
-            >
-              ×
-            </WindowButton>
-          </ButtonGroup>
-        </StyledWindowHeader>
+          <TitlebarIcon
+            src={iconUrl}
+            width={16}
+            height={16}
+            alt=""
+            draggable={false}
+          />
+          <WindowTitleArea>
+            <WindowTitle>{win.title}</WindowTitle>
+          </WindowTitleArea>
+          <WindowButton
+            className="window-minimize-button"
+            aria-label="Minimize window"
+            onClick={(e: React.MouseEvent) => {
+              e.stopPropagation();
+              minimizeWindow(win.id);
+            }}
+          >
+            <span className="window-button-icon" />
+          </WindowButton>
+          <WindowButton
+            className="window-maximize-button"
+            aria-label="Maximize window"
+            onClick={(e: React.MouseEvent) => {
+              e.stopPropagation();
+              // Maximize functionality not implemented yet
+            }}
+          >
+            <span className="window-button-icon" />
+          </WindowButton>
+          <WindowButton
+            className="window-close-button"
+            aria-label="Close window"
+            onClick={(e: React.MouseEvent) => {
+              e.stopPropagation();
+              closeWindow(win.id);
+            }}
+          >
+            <span className="window-button-icon" />
+          </WindowButton>
+        </WindowTitlebar>
 
         <StyledWindowContent>
           {ContentComponent ? (

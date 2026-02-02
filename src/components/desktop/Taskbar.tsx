@@ -43,7 +43,19 @@ const StartButton = styled(Button).withConfig({
   gap: 3px;
   padding: 2px 6px;
   height: 22px;
-  ${({ $active }) => $active && 'box-shadow: inset 1px 1px 0px 1px #808080, inset -1px -1px 0px 1px #dfdfdf;'}
+  ${({ $active }) => $active
+    ? `
+      background-color: transparent;
+      border: 2px solid #808080;
+      box-shadow: none;
+      background-image: url("data:image/svg+xml,%3Csvg width='2' height='2' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='0' y='0' width='1' height='1' fill='%23ffffff'/%3E%3Crect x='1' y='1' width='1' height='1' fill='%23ffffff'/%3E%3C/svg%3E");
+      background-size: 2px 2px;
+    `
+    : `
+      background-color: #c0c0c0;
+      box-shadow: inset -1px -1px #0a0a0a, inset 1px 1px #fff, inset -2px -2px #808080, inset 2px 2px #dfdfdf;
+    `
+  }
 `;
 
 const VerticalDivider = styled.div`
@@ -110,7 +122,19 @@ const WindowTab = styled(Button).withConfig({
   align-items: center;
   gap: 3px;
   justify-content: flex-start;
-  ${({ $active }) => $active && 'box-shadow: inset 1px 1px 0px 1px #808080, inset -1px -1px 0px 1px #dfdfdf;'}
+  ${({ $active }) => $active
+    ? `
+      background-color: transparent;
+      border: 2px solid #808080;
+      box-shadow: none;
+      background-image: url("data:image/svg+xml,%3Csvg width='2' height='2' xmlns='http://www.w3.org/2000/svg'%3E%3Crect x='0' y='0' width='1' height='1' fill='%23ffffff'/%3E%3Crect x='1' y='1' width='1' height='1' fill='%23ffffff'/%3E%3C/svg%3E");
+      background-size: 2px 2px;
+    `
+    : `
+      background-color: #c0c0c0;
+      box-shadow: inset -1px -1px #0a0a0a, inset 1px 1px #fff, inset -2px -2px #808080, inset 2px 2px #dfdfdf;
+    `
+  }
 `;
 
 const TabIcon = styled.img`
@@ -236,6 +260,9 @@ export function Taskbar() {
           </WindowTabs>
 
           <SystemTray variant="well">
+            <TrayIcon title="Task Scheduler">
+              <img src="/assets/icons/win95/settings.ico" alt="Task Scheduler" />
+            </TrayIcon>
             <TrayIcon title="Volume">
               <img src="/assets/icons/win95/speaker.ico" alt="Volume" />
             </TrayIcon>

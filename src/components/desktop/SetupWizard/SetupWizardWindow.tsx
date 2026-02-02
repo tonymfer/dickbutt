@@ -3,9 +3,7 @@
 import styled from 'styled-components';
 import {
   Window as Win95Window,
-  WindowHeader,
   WindowContent,
-  Button,
 } from 'react95';
 import { WizardSidebar } from './WizardSidebar';
 import { WizardNav } from './WizardNav';
@@ -15,6 +13,7 @@ import { RoadmapStep } from './steps/RoadmapStep';
 import { EducationStep } from './steps/EducationStep';
 import { CompletionStep } from './steps/CompletionStep';
 import { useWizard } from '@/context/WizardContext';
+/* eslint-disable @next/next/no-img-element */
 
 const Overlay = styled.div`
   position: fixed;
@@ -36,34 +35,40 @@ const StyledWindow = styled(Win95Window)`
   overflow: hidden;
 `;
 
-const StyledWindowHeader = styled(WindowHeader)`
+const WindowTitlebar = styled.div`
+  height: 18px;
+  background: linear-gradient(to right, var(--ActiveTitle) 0%, var(--GradientActiveTitle) 100%);
+  color: var(--TitleText);
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 2px 2px 2px 4px;
-  min-height: 20px;
+  padding: 0 2px;
+  gap: 3px;
 `;
 
-const TitleText = styled.span`
-  font-size: 12px;
+const TitlebarIcon = styled.img`
+  width: 16px;
+  height: 16px;
+  image-rendering: pixelated;
+  flex-shrink: 0;
+`;
+
+const WindowTitleArea = styled.div`
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+`;
+
+const WindowTitle = styled.span`
+  font-size: 11px;
   font-weight: bold;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  flex: 1;
-  line-height: 1;
+  text-shadow: none;
 `;
 
-const ButtonGroup = styled.div`
-  display: flex;
-  gap: 2px;
-  margin-left: 4px;
-`;
-
-const WindowButton = styled(Button).withConfig({
-  shouldForwardProp: (prop) =>
-    !['active', 'primary', 'fullWidth', 'square'].includes(prop),
-})`
+const WindowButton = styled.button`
   width: 16px;
   height: 14px;
   min-width: 16px;
@@ -75,9 +80,29 @@ const WindowButton = styled(Button).withConfig({
   background: #c0c0c0;
   border: none;
   box-shadow: inset -1px -1px #0a0a0a, inset 1px 1px #ffffff, inset -2px -2px #808080, inset 2px 2px #dfdfdf;
+  cursor: pointer;
+  position: relative;
 
   &:active {
     box-shadow: inset 1px 1px #0a0a0a, inset -1px -1px #ffffff, inset 2px 2px #808080, inset -2px -2px #dfdfdf;
+  }
+
+  /* Close button X icon */
+  &.window-close-button::before,
+  &.window-close-button::after {
+    content: '';
+    position: absolute;
+    width: 8px;
+    height: 2px;
+    background: #000;
+    top: 50%;
+    left: 50%;
+  }
+  &.window-close-button::before {
+    transform: translate(-50%, -50%) rotate(45deg);
+  }
+  &.window-close-button::after {
+    transform: translate(-50%, -50%) rotate(-45deg);
   }
 `;
 
@@ -142,16 +167,15 @@ export function SetupWizardWindow() {
   return (
     <Overlay>
       <StyledWindow>
-        <StyledWindowHeader active>
-          <TitleText>
-            $DICKBUTT Setup - Step {currentStep} of {totalSteps}: {stepTitles[currentStep]}
-          </TitleText>
-          <ButtonGroup>
-            <WindowButton onClick={skipWizard}>
-              ×
-            </WindowButton>
-          </ButtonGroup>
-        </StyledWindowHeader>
+        <WindowTitlebar>
+          <TitlebarIcon src="/assets/icons/win95/settings.ico" alt="" />
+          <WindowTitleArea>
+            <WindowTitle>
+              $DICKBUTT Setup - Step {currentStep} of {totalSteps}: {stepTitles[currentStep]}
+            </WindowTitle>
+          </WindowTitleArea>
+          <WindowButton className="window-close-button" onClick={skipWizard} />
+        </WindowTitlebar>
 
         <StyledWindowContent>
           <MainContent>

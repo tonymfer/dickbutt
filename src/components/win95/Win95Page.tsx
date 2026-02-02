@@ -2,9 +2,10 @@
 
 import { ReactNode } from 'react';
 import Link from 'next/link';
-import { Window, WindowHeader, WindowContent, Button, Toolbar, Frame } from 'react95';
+import { Window, WindowContent, Toolbar, Frame } from 'react95';
 import { React95Provider } from '@/components/providers/React95Provider';
 import styled from 'styled-components';
+/* eslint-disable @next/next/no-img-element */
 
 const PageContainer = styled.div`
   min-height: 100vh;
@@ -23,21 +24,76 @@ const StyledWindow = styled(Window)`
   max-height: calc(100vh - 32px);
 `;
 
-const StyledWindowHeader = styled(WindowHeader)`
+const WindowTitlebar = styled.div`
+  height: 18px;
+  background: linear-gradient(to right, var(--ActiveTitle) 0%, var(--GradientActiveTitle) 100%);
+  color: var(--TitleText);
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  padding: 0 2px;
+  gap: 3px;
   flex-shrink: 0;
 `;
 
-const CloseButton = styled(Button).withConfig({
-  shouldForwardProp: (prop) =>
-    !['active', 'primary', 'fullWidth', 'square'].includes(prop),
-})`
-  padding: 0 4px;
-  min-width: 20px;
-  height: 18px;
+const TitlebarIcon = styled.img`
+  width: 16px;
+  height: 16px;
+  image-rendering: pixelated;
+  flex-shrink: 0;
+`;
+
+const WindowTitleArea = styled.div`
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+`;
+
+const WindowTitle = styled.span`
+  font-size: 11px;
   font-weight: bold;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: none;
+`;
+
+const WindowButton = styled.button`
+  width: 16px;
+  height: 14px;
+  min-width: 16px;
+  min-height: 14px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #c0c0c0;
+  border: none;
+  box-shadow: inset -1px -1px #0a0a0a, inset 1px 1px #ffffff, inset -2px -2px #808080, inset 2px 2px #dfdfdf;
+  cursor: pointer;
+  position: relative;
+
+  &:active {
+    box-shadow: inset 1px 1px #0a0a0a, inset -1px -1px #ffffff, inset 2px 2px #808080, inset -2px -2px #dfdfdf;
+  }
+
+  /* Close button X icon */
+  &.window-close-button::before,
+  &.window-close-button::after {
+    content: '';
+    position: absolute;
+    width: 8px;
+    height: 2px;
+    background: #000;
+    top: 50%;
+    left: 50%;
+  }
+  &.window-close-button::before {
+    transform: translate(-50%, -50%) rotate(45deg);
+  }
+  &.window-close-button::after {
+    transform: translate(-50%, -50%) rotate(-45deg);
+  }
 `;
 
 const StyledToolbar = styled(Toolbar)`
@@ -68,6 +124,7 @@ interface Win95PageProps {
   toolbar?: ReactNode;
   statusItems?: string[];
   maxWidth?: number;
+  icon?: string;
 }
 
 function Win95PageContent({
@@ -76,18 +133,20 @@ function Win95PageContent({
   toolbar,
   statusItems,
   maxWidth = 1000,
+  icon = '/assets/icons/win95/document.ico',
 }: Win95PageProps) {
   return (
     <PageContainer>
       <StyledWindow style={{ maxWidth }}>
-        <StyledWindowHeader>
-          <span>{title}</span>
+        <WindowTitlebar>
+          <TitlebarIcon src={icon} alt="" />
+          <WindowTitleArea>
+            <WindowTitle>{title}</WindowTitle>
+          </WindowTitleArea>
           <Link href="/">
-            <CloseButton size="sm">
-              <span>X</span>
-            </CloseButton>
+            <WindowButton className="window-close-button" />
           </Link>
-        </StyledWindowHeader>
+        </WindowTitlebar>
 
         {toolbar && (
           <StyledToolbar>
@@ -126,4 +185,4 @@ export function Win95Page(props: Win95PageProps) {
 }
 
 // Export commonly used styled components for consistency
-export { PageContainer, StyledWindow, StyledWindowHeader, CloseButton, StatusBar, StatusItem };
+export { PageContainer, StyledWindow, WindowTitlebar, WindowTitle, WindowButton, StatusBar, StatusItem };

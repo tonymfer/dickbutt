@@ -2,11 +2,12 @@
 
 import { useEffect, useCallback, useState } from 'react';
 import Image from 'next/image';
-import { Window, WindowHeader, WindowContent, Button, Frame } from 'react95';
+import { Window, WindowContent, Button, Frame } from 'react95';
 import styled, { keyframes } from 'styled-components';
 import type { GalleryItem } from '@/lib/assets';
 import { getGalleryFullUrl, formatFileSize } from '@/lib/assets';
 import { Win95MediaPlayer } from './Win95MediaPlayer';
+/* eslint-disable @next/next/no-img-element */
 
 const Overlay = styled.div`
   position: fixed;
@@ -27,29 +28,76 @@ const ModalWindow = styled(Window)`
   width: auto;
 `;
 
-const StyledWindowHeader = styled(WindowHeader)`
+const WindowTitlebar = styled.div`
+  height: 18px;
+  background: linear-gradient(to right, var(--ActiveTitle) 0%, var(--GradientActiveTitle) 100%);
+  color: var(--TitleText);
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  padding: 0 2px;
+  gap: 3px;
   flex-shrink: 0;
 `;
 
-const TitleText = styled.span`
-  flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  margin-right: 8px;
+const TitlebarIcon = styled.img`
+  width: 16px;
+  height: 16px;
+  image-rendering: pixelated;
+  flex-shrink: 0;
 `;
 
-const CloseButton = styled(Button).withConfig({
-  shouldForwardProp: (prop) =>
-    !['active', 'primary', 'fullWidth', 'square'].includes(prop),
-})`
-  min-width: 20px;
-  height: 18px;
-  padding: 0 4px;
+const WindowTitleArea = styled.div`
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+`;
+
+const WindowTitle = styled.span`
+  font-size: 11px;
   font-weight: bold;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: none;
+`;
+
+const WindowButton = styled.button`
+  width: 16px;
+  height: 14px;
+  min-width: 16px;
+  min-height: 14px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #c0c0c0;
+  border: none;
+  box-shadow: inset -1px -1px #0a0a0a, inset 1px 1px #ffffff, inset -2px -2px #808080, inset 2px 2px #dfdfdf;
+  cursor: pointer;
+  position: relative;
+
+  &:active {
+    box-shadow: inset 1px 1px #0a0a0a, inset -1px -1px #ffffff, inset 2px 2px #808080, inset -2px -2px #dfdfdf;
+  }
+
+  /* Close button X icon */
+  &.window-close-button::before,
+  &.window-close-button::after {
+    content: '';
+    position: absolute;
+    width: 8px;
+    height: 2px;
+    background: #000;
+    top: 50%;
+    left: 50%;
+  }
+  &.window-close-button::before {
+    transform: translate(-50%, -50%) rotate(45deg);
+  }
+  &.window-close-button::after {
+    transform: translate(-50%, -50%) rotate(-45deg);
+  }
 `;
 
 const ContentArea = styled(WindowContent)`
@@ -201,12 +249,13 @@ export function Win95GalleryModal({
   return (
     <Overlay onClick={handleOverlayClick}>
       <ModalWindow>
-        <StyledWindowHeader>
-          <TitleText>{item.slug}</TitleText>
-          <CloseButton size="sm" onClick={onClose}>
-            X
-          </CloseButton>
-        </StyledWindowHeader>
+        <WindowTitlebar>
+          <TitlebarIcon src="/assets/icons/win95/media.ico" alt="" />
+          <WindowTitleArea>
+            <WindowTitle>{item.slug}</WindowTitle>
+          </WindowTitleArea>
+          <WindowButton className="window-close-button" onClick={onClose} />
+        </WindowTitlebar>
 
         <ContentArea>
           <MediaContainer variant="well">

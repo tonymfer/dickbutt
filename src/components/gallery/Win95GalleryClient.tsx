@@ -8,8 +8,9 @@ import type { GalleryItem } from '@/lib/assets';
 import { React95Provider } from '@/components/providers/React95Provider';
 import { Win95Gallery } from '@/components/win95/Win95Gallery';
 import { Win95GalleryModal } from '@/components/win95/Win95GalleryModal';
-import { PageContainer, CloseButton } from '@/components/win95/Win95Page';
-import { Window, WindowHeader, WindowContent, Toolbar } from 'react95';
+import { PageContainer } from '@/components/win95/Win95Page';
+import { Window, WindowContent, Toolbar } from 'react95';
+/* eslint-disable @next/next/no-img-element */
 
 const GalleryWindow = styled(Window)`
   width: 100%;
@@ -19,11 +20,76 @@ const GalleryWindow = styled(Window)`
   max-height: calc(100vh - 32px);
 `;
 
-const Header = styled(WindowHeader)`
+const WindowTitlebar = styled.div`
+  height: 18px;
+  background: linear-gradient(to right, var(--ActiveTitle) 0%, var(--GradientActiveTitle) 100%);
+  color: var(--TitleText);
   display: flex;
-  justify-content: space-between;
   align-items: center;
+  padding: 0 2px;
+  gap: 3px;
   flex-shrink: 0;
+`;
+
+const TitlebarIcon = styled.img`
+  width: 16px;
+  height: 16px;
+  image-rendering: pixelated;
+  flex-shrink: 0;
+`;
+
+const WindowTitleArea = styled.div`
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+`;
+
+const WindowTitle = styled.span`
+  font-size: 11px;
+  font-weight: bold;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow: none;
+`;
+
+const WindowButton = styled.button`
+  width: 16px;
+  height: 14px;
+  min-width: 16px;
+  min-height: 14px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #c0c0c0;
+  border: none;
+  box-shadow: inset -1px -1px #0a0a0a, inset 1px 1px #ffffff, inset -2px -2px #808080, inset 2px 2px #dfdfdf;
+  cursor: pointer;
+  position: relative;
+
+  &:active {
+    box-shadow: inset 1px 1px #0a0a0a, inset -1px -1px #ffffff, inset 2px 2px #808080, inset -2px -2px #dfdfdf;
+  }
+
+  /* Close button X icon */
+  &.window-close-button::before,
+  &.window-close-button::after {
+    content: '';
+    position: absolute;
+    width: 8px;
+    height: 2px;
+    background: #000;
+    top: 50%;
+    left: 50%;
+  }
+  &.window-close-button::before {
+    transform: translate(-50%, -50%) rotate(45deg);
+  }
+  &.window-close-button::after {
+    transform: translate(-50%, -50%) rotate(-45deg);
+  }
 `;
 
 const StyledToolbar = styled(Toolbar)`
@@ -118,14 +184,15 @@ function Win95GalleryContent({ initialItems, totalCount }: Win95GalleryClientPro
     <>
       <PageContainer>
         <GalleryWindow>
-          <Header>
-            <span>Meme Gallery</span>
+          <WindowTitlebar>
+            <TitlebarIcon src="/assets/icons/win95/folder-hires.ico" alt="" />
+            <WindowTitleArea>
+              <WindowTitle>Meme Gallery</WindowTitle>
+            </WindowTitleArea>
             <Link href="/">
-              <CloseButton size="sm">
-                <span>X</span>
-              </CloseButton>
+              <WindowButton className="window-close-button" />
             </Link>
-          </Header>
+          </WindowTitlebar>
 
           <StyledToolbar>
             <Link href="/">
